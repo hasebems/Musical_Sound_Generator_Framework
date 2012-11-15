@@ -11,13 +11,13 @@
 #define __msgf_type__
 namespace msgf {
 
-typedef	unsigned char	Uint8;
-typedef	unsigned short	Uint16;
-typedef	unsigned long	Uint32;
+typedef	uint8_t		Uint8;
+typedef	uint16_t	Uint16;
+typedef	uint32_t	Uint32;
 
-typedef	signed char		Sint8;
-typedef	signed short	Sint16;
-typedef	signed long		Sint32;
+typedef	int8_t		Sint8;
+typedef	int16_t		Sint16;
+typedef	int32_t		Sint32;
 
 
 }

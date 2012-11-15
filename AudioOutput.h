@@ -24,7 +24,7 @@
 			  busnum: (UInt32) inBusNumber
 		   numframes: (UInt32) inNumberFrames
 				data: (AudioBufferList*) ioData;
-- (void)reveiveMidi:	(UInt8)firstByte
+- (void)receiveMidi:	(UInt8)firstByte
 			   msg2:	(UInt8)secondByte
 			   msg3:	(UInt8)thirdByte;
 

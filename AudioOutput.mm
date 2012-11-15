@@ -167,7 +167,7 @@ static OSStatus OutputCallback(void *inRefCon,
 //--------------------------------------------------------
 //		Receive MIDI Command
 //--------------------------------------------------------
-- (void)reveiveMidi:(UInt8)firstByte
+- (void)receiveMidi:(UInt8)firstByte
 			   msg2:(UInt8)secondByte
 			   msg3:(UInt8)thirdByte
 {
