@@ -19,13 +19,13 @@ typedef enum {
 
 	//	All type are Integer
 
-	VP_VOLUME,		//	0 - 100
-	VP_PAN,			//	-100 - 0 - 100	,0:center
+	VP_VOLUME,			//	0 - 100
+	VP_PAN,				//	-100 - 0 - 100	,0:center
 
-	VP_TUNING,		//	-100 - 100(cent)
-	VP_TRANSPOSE,	//	-24 - 24(seminote)
+	VP_TUNING,			//	-100 - 100(cent)
+	VP_TRANSPOSE,		//	-24 - 24(seminote)
 
-	VP_WAVE_TYPE,	//	0:sine, 1:tri, 2:saw, 3:square, 4:pulse
+	VP_WAVEFORM,		//	0:sine, 1:tri, 2:saw, 3:square, 4:pulse
 
 	VP_AEG_ATTACK_TIME,	//	0 - 1000 (10ms)
 	VP_AEG_DECAY1_LEVEL,//	0 - 100

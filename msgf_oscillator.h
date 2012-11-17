@@ -24,30 +24,46 @@ typedef enum {
 	
 } OSCILLATOR_STATE;
 //---------------------------------------------------------
+typedef enum {
+		
+	SINE,
+	TRIANGLE,
+	SAW,
+	SQUARE,
+	PULSE,
+	WAVEFORM_MAX
+
+} WAVEFORM;
+//---------------------------------------------------------
 class TgAudioBuffer;
 class Note;
 //---------------------------------------------------------
 class Oscillator {
 
 public:
-	Oscillator( Note* parent ):
-		_parentNote( parent ),
-		_state(NOT_YET),
-		_dacCounter(-1) {}
+	Oscillator( Note* parent );
 	~Oscillator( void ){}
 
 	void	process( TgAudioBuffer& buf );
-	
+
+	//	Accessor
+	void	setWaveform( int wvfm ){ _waveform = wvfm; }
+
 private:
 	double	calcPitch( const Uint8 note );
-	double	generateWave( double phase );
-
+	void	generateSine( TgAudioBuffer& buf, double phase );
+	void	generateTriangle( TgAudioBuffer& buf, double phase );
+	void	generateSaw( TgAudioBuffer& buf, double phase );
+	void	generateSquare( TgAudioBuffer& buf, double phase );
+	void	generatePulse( TgAudioBuffer& buf, double phase );
+	
 	static const double tPitchOfA[10];
 	
 	Note*	_parentNote;
 	OSCILLATOR_STATE	_state;
 	long	_dacCounter;
 
+	int		_waveform;
 	double	_pitch;
 	double	_crntPhase;
 };

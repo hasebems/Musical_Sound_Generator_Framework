@@ -11,15 +11,25 @@
 #include "msgf_oscillator.h"
 #include "msgf_audio_buffer.h"
 #include "msgf_note.h"
+#include "msgf_voice_context.h"
 using namespace msgf;
+
+//---------------------------------------------------------
+//		Constructor
+//---------------------------------------------------------
+Oscillator::Oscillator( Note* parent ):
+_parentNote( parent ),
+_state(NOT_YET),
+_dacCounter(-1)
+{
+	_waveform = _parentNote->getVoiceContext()->getParameter( VP_WAVEFORM );
+}
 
 //---------------------------------------------------------
 //		Process Function
 //---------------------------------------------------------
 void Oscillator::process( TgAudioBuffer& buf )
 {
-	double	diff = 0;
-	
 	if ( _state == NOT_YET ){
 		if ( _parentNote->conditionKeyOn() == true ){
 			_dacCounter = 0;
@@ -29,14 +39,13 @@ void Oscillator::process( TgAudioBuffer& buf )
 	}
 
 	if ( _state == STEADY_STATE	){
-		//	Calclate pitch
-		_pitch = calcPitch( _parentNote->getNote() );
-		diff = (2 * M_PI * _pitch )/ SMPL_FREQUENCY;
-
-		for ( int i=0; i<buf.bufferSize(); i++ ){
-			//	write wave
-			buf.setAudioBuffer( i, generateWave(_crntPhase) );
-			_crntPhase += diff;
+		switch ( _waveform ){
+			default:
+			case SINE		: generateSine(buf,_crntPhase); break;
+			case TRIANGLE	: generateTriangle(buf,_crntPhase); break;
+			case SAW		: generateSaw(buf,_crntPhase); break;
+			case SQUARE		: generateSquare(buf,_crntPhase); break;
+			case PULSE		: generatePulse(buf,_crntPhase); break;
 		}
 		_dacCounter += buf.bufferSize();
 	}
@@ -75,7 +84,88 @@ double Oscillator::calcPitch( const Uint8 note )
 //---------------------------------------------------------
 //		Generate Wave
 //---------------------------------------------------------
-double Oscillator::generateWave( double phase )
+void Oscillator::generateSine( TgAudioBuffer& buf, double phase )
 {
-	return sin(phase);
+	double	diff = 0;
+
+	//	Calclate pitch
+	_pitch = calcPitch( _parentNote->getNote() );
+	diff = (2 * M_PI * _pitch )/ SMPL_FREQUENCY;
+	
+	for ( int i=0; i<buf.bufferSize(); i++ ){
+		//	write Sine wave
+		buf.setAudioBuffer( i, sin(_crntPhase) );
+		_crntPhase += diff;
+	}	
 }
+//---------------------------------------------------------
+void Oscillator::generateTriangle( TgAudioBuffer& buf, double phase )
+{
+	double	diff = 0;
+	
+	//	Calclate pitch
+	_pitch = calcPitch( _parentNote->getNote() );
+	diff = (2 * M_PI * _pitch )/ SMPL_FREQUENCY;
+	
+	for ( int i=0; i<buf.bufferSize(); i++ ){
+		//	write Triangle wave
+		double amp, ps = fmod(_crntPhase,(2*M_PI))/(2*M_PI);
+		if ( ps < 0.5 ) amp = 2*ps - 0.5;
+		else amp = 2 - 2*ps;
+		buf.setAudioBuffer( i, amp );
+		_crntPhase += diff;
+	}
+}
+//---------------------------------------------------------
+void Oscillator::generateSaw( TgAudioBuffer& buf, double phase )
+{
+	double	diff = 0;
+	
+	//	Calclate pitch
+	_pitch = calcPitch( _parentNote->getNote() );
+	diff = (2 * M_PI * _pitch )/ SMPL_FREQUENCY;
+	
+	for ( int i=0; i<buf.bufferSize(); i++ ){
+		//	write Saw wave
+		buf.setAudioBuffer( i, fmod(_crntPhase,(2*M_PI))/(2*M_PI)-0.5 );
+		_crntPhase += diff;
+	}
+}
+//---------------------------------------------------------
+void Oscillator::generateSquare( TgAudioBuffer& buf, double phase )
+{
+	double	diff = 0;
+	
+	//	Calclate pitch
+	_pitch = calcPitch( _parentNote->getNote() );
+	diff = (2 * M_PI * _pitch )/ SMPL_FREQUENCY;
+	
+	for ( int i=0; i<buf.bufferSize(); i++ ){
+		//	write Square wave
+		double amp, ps = fmod(_crntPhase,(2*M_PI))/(2*M_PI);
+		if ( ps < 0.5 ) amp = 0.5;
+		else amp = -0.5;
+		buf.setAudioBuffer( i, amp );
+		_crntPhase += diff;
+	}
+}
+//---------------------------------------------------------
+void Oscillator::generatePulse( TgAudioBuffer& buf, double phase )
+{
+	double	diff = 0;
+	
+	//	Calclate pitch
+	_pitch = calcPitch( _parentNote->getNote() );
+	diff = (2 * M_PI * _pitch )/ SMPL_FREQUENCY;
+	
+	for ( int i=0; i<buf.bufferSize(); i++ ){
+		//	write Square wave
+		double amp, ps = fmod(_crntPhase,(2*M_PI))/(2*M_PI);
+		if ( ps < 0.1 ) amp = 0.5;
+		else if ( ps < 0.2 ) amp = -0.5;
+		else amp = 0;
+		buf.setAudioBuffer( i, amp );
+		_crntPhase += diff;
+	}
+}
+
