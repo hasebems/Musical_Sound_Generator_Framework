@@ -57,7 +57,7 @@ private:
 	void	generateSquare( TgAudioBuffer& buf, double phase );
 	void	generatePulse( TgAudioBuffer& buf, double phase );
 	
-	static const double tPitchOfA[10];
+	static const double tPitchOfA[11];
 	
 	Note*	_parentNote;
 	OSCILLATOR_STATE	_state;

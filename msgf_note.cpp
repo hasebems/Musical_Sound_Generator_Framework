@@ -12,6 +12,7 @@
 #include "msgf_event_info.h"
 #include "msgf_voice_context.h"
 #include "msgf_oscillator.h"
+#include "msgf_filter.h"
 #include "msgf_amplitude.h"
 #include "msgf_audio_buffer.h"
 using namespace msgf;
@@ -27,15 +28,17 @@ Note::Note( Instrument* inst ) :
 	_cndSustainPedal(false),
 	_audioCounter(0)
 {
-	osc = new Oscillator(this);
-	amp = new Amplitude(this);
+	_osc = new Oscillator(this);
+	_flt = new Filter(this);
+	_amp = new Amplitude(this);
 }
 //---------------------------------------------------------
 Note::~Note( void )
 {
 	releaseMe();
-	delete amp;
-	delete osc;
+	delete _amp;
+	delete _flt;
+	delete _osc;
 }
 
 //---------------------------------------------------------
@@ -114,13 +117,13 @@ bool Note::process( TgAudioBuffer& buf )
 	nbuf.obtainAudioBuffer(buf.bufferSize());
 	
 	//	Oscillator
-	osc->process(nbuf);
+	_osc->process(nbuf);
 	
 	//	Filter
-
+	_flt->process(nbuf);
 	
 	//	Amplitude
-	amp->process(nbuf);
+	_amp->process(nbuf);
 	
 	//	Effect
 

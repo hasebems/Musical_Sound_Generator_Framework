@@ -20,6 +20,7 @@ class TgAudioBuffer;
 class Instrument;
 class VoiceContext;
 class Oscillator;
+	class Filter;
 class Amplitude;
 //---------------------------------------------------------
 class Note {
@@ -68,8 +69,9 @@ private:
 	long	_audioCounter;
 
 	//	Audio Engines
-	Oscillator*		osc;
-	Amplitude*		amp;
+	Oscillator*		_osc;
+	Filter*			_flt;
+	Amplitude*		_amp;
 };
 }
 #endif /* defined(__msgf_note__) */

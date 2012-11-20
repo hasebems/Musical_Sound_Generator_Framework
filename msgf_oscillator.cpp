@@ -54,9 +54,10 @@ void Oscillator::process( TgAudioBuffer& buf )
 //---------------------------------------------------------
 //		Calculate Pitch
 //---------------------------------------------------------
-const double Oscillator::tPitchOfA[10] =
+const double Oscillator::tPitchOfA[11] =
 {
-	27.5, 55, 110, 220, 440, 880, 1760, 3520, 7040, 14080
+//	-3     9     21  33   45   57   69   81    93    105   117
+	13.75, 27.5, 55, 110, 220, 440, 880, 1760, 3520, 7040, 14080
 };
 //---------------------------------------------------------
 double Oscillator::calcPitch( const Uint8 note )
@@ -124,10 +125,15 @@ void Oscillator::generateSaw( TgAudioBuffer& buf, double phase )
 	//	Calclate pitch
 	_pitch = calcPitch( _parentNote->getNote() );
 	diff = (2 * M_PI * _pitch )/ SMPL_FREQUENCY;
-	
+	int maxOverTone = 20000/_pitch;
+
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 		//	write Saw wave
-		buf.setAudioBuffer( i, fmod(_crntPhase,(2*M_PI))/(2*M_PI)-0.5 );
+		double saw = 0;
+		for ( int j=1; j<maxOverTone; j++ ){
+			saw += 0.25*sin(_crntPhase*j)/j;
+		}
+		buf.setAudioBuffer( i, saw );
 		_crntPhase += diff;
 	}
 }
@@ -139,13 +145,19 @@ void Oscillator::generateSquare( TgAudioBuffer& buf, double phase )
 	//	Calclate pitch
 	_pitch = calcPitch( _parentNote->getNote() );
 	diff = (2 * M_PI * _pitch )/ SMPL_FREQUENCY;
-	
+	int maxOverTone = 20000/_pitch;
+
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 		//	write Square wave
-		double amp, ps = fmod(_crntPhase,(2*M_PI))/(2*M_PI);
-		if ( ps < 0.5 ) amp = 0.5;
-		else amp = -0.5;
-		buf.setAudioBuffer( i, amp );
+		double sqr = 0;
+		for ( int j=1; j<maxOverTone; j+=2 ){
+			sqr += 0.25*sin(_crntPhase*j)/j;
+		}
+		
+		//double amp, ps = fmod(_crntPhase,(2*M_PI))/(2*M_PI);
+		//if ( ps < 0.5 ) amp = 0.5;
+		//else amp = -0.5;
+		buf.setAudioBuffer( i, sqr );
 		_crntPhase += diff;
 	}
 }

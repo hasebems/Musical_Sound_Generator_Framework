@@ -33,7 +33,11 @@ typedef enum {
 	VP_AEG_DECAY2_LEVEL,//	0 - 100
 	VP_AEG_DECAY2_TIME,	//	0 - 1000 (10ms)
 	VP_AEG_RELEASE_TIME,//	0 - 1000 (10ms)
-	
+
+	VP_FILTER_TYPE,		//	0:LPF,
+	VP_FILTER_CUTOFF,	//	[Hz]
+	VP_FILTER_RESO,		//	1 - 100 ?
+
 	VP_MAX_ID
 
 } VoiceParameterId;
