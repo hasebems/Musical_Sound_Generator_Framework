@@ -27,17 +27,23 @@ typedef enum {
 
 	VP_WAVEFORM,		//	0:sine, 1:tri, 2:saw, 3:square, 4:pulse
 
-	VP_AEG_ATTACK_TIME,	//	0 - 1000 (10ms)
+	VP_AEG_ATTACK_TIME,	//	0 - 1000 (*10ms)
 	VP_AEG_DECAY1_LEVEL,//	0 - 100
-	VP_AEG_DECAY1_TIME,	//	0 - 1000 (10ms)
+	VP_AEG_DECAY1_TIME,	//	0 - 1000 (*10ms)
 	VP_AEG_DECAY2_LEVEL,//	0 - 100
-	VP_AEG_DECAY2_TIME,	//	0 - 1000 (10ms)
-	VP_AEG_RELEASE_TIME,//	0 - 1000 (10ms)
+	VP_AEG_DECAY2_TIME,	//	0 - 1000 (*10ms)
+	VP_AEG_RELEASE_TIME,//	0 - 1000 (*10ms)
 
 	VP_FILTER_TYPE,		//	0:LPF,
 	VP_FILTER_CUTOFF,	//	[Hz]
 	VP_FILTER_RESO,		//	1 - 100 ?
 
+	VP_FEG_ATTACK_TIME,		//	0 - 1000 (*10ms)
+	VP_FEG_ATTACK_LEVEL,	//	-32 - 0 - +32 (1/2 - 2[times*Hz])
+	VP_FEG_RELEASE_TIME,	//	0 - 1000 (*10ms)
+	VP_FEG_RELEASE_LEVEL,	//	-32 - 0 - +32 (1/2 - 2[times*Hz])
+		
+	
 	VP_MAX_ID
 
 } VoiceParameterId;
