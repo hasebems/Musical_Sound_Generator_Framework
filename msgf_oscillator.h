@@ -12,17 +12,9 @@
 
 #include <iostream>
 #include "msgf_type.h"
+#include "msgf_signal_process_core.h"
 
 namespace msgf {
-//---------------------------------------------------------
-typedef enum {
-
-	NOT_YET,
-	STEADY_STATE,
-	STOP_STATE,
-	OSCILLATOR_STATE_MAX
-	
-} OSCILLATOR_STATE;
 //---------------------------------------------------------
 typedef enum {
 		
@@ -38,12 +30,15 @@ typedef enum {
 class TgAudioBuffer;
 class Note;
 //---------------------------------------------------------
-class Oscillator {
+class Oscillator : public SignalProcessCore {
 
 public:
-	Oscillator( Note* parent );
+	Oscillator( Note* parent ):
+	SignalProcessCore(parent) {}
+
 	~Oscillator( void ){}
 
+	void	init( void );
 	void	process( TgAudioBuffer& buf );
 
 	//	Accessor
@@ -58,10 +53,6 @@ private:
 	void	generatePulse( TgAudioBuffer& buf, double phase );
 	
 	static const double tPitchOfA[11];
-	
-	Note*	_parentNote;
-	OSCILLATOR_STATE	_state;
-	long	_dacCounter;
 
 	int		_waveform;
 	double	_pitch;

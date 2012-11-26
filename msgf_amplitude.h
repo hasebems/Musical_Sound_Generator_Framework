@@ -12,34 +12,21 @@
 
 #include <iostream>
 #include "msgf_type.h"
+#include "msgf_signal_process_core.h"
 
 namespace msgf {
-//---------------------------------------------------------
-typedef enum {
-	
-	AMPLITUDE_NOT_YET,
-	ATTACK,
-	DECAY1,
-	DECAY2,
-	DECAY2_STEADY,
-	RELEASE,
-	DAMP,
-	AMPLITUDE_STATE_MAX
-	
-} AMPLITUDE_STATE;
 //---------------------------------------------------------
 class TgAudioBuffer;
 class Note;
 //---------------------------------------------------------
-class Amplitude {
+class Amplitude : public SignalProcessCore {
 	
 public:
 	Amplitude( Note* parent ):
-		_parentNote( parent ),
-		_state(AMPLITUDE_NOT_YET),
-		_dacCounter(-1) {}
+		SignalProcessCore(parent) {}
 	~Amplitude( void ){}
 	
+	void	init( void ){}
 	void	process( TgAudioBuffer& buf );
 	
 private:
@@ -49,16 +36,16 @@ private:
 	void	toDecay2Steady( void );
 	void	toRelease( void );
 	
-	int		getTotalDacCount( int time );
+//	int		getTotalDacCount( int time );
 	double	getAegLevel( long crntDac, long targetDac, int startLvl, int targetLvl );
 	double	calcVolume( double amp );
 	
-	Note*	_parentNote;
-	AMPLITUDE_STATE	_state;
-	long	_dacCounter;
+//	Note*	_parentNote;
+//	EG_STATE	_state;
+//	long	_dacCounter;
 
-	long	_startDac;
-	long	_targetDac;
+//	long	_startDac;
+//	long	_targetDac;
 	int		_startLvl;
 	int		_targetLvl;
 

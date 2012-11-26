@@ -22,22 +22,22 @@ const int VoiceContext::tVoiceParameter[1][VP_MAX_ID] =
 	0,		//VP_TUNING,		//	-100 - 100(cent)
 	0,		//VP_TRANSPOSE,	//	-24 - 24(seminote)
 	
-	3,		//VP_WAVE_TYPE,	//	0:sine, 1:tri, 2:saw, 3:square, 4:pulse
+	2,		//VP_WAVE_TYPE,	//	0:sine, 1:tri, 2:saw, 3:square, 4:pulse
 	
 	10,		//VP_AEG_ATTACK_TIME,	//	0 - 1000 (10ms)
 	80,		//VP_AEG_DECAY1_LEVEL,	//	0 - 100
 	10,		//VP_AEG_DECAY1_TIME,	//	0 - 1000 (10ms)
 	60,		//VP_AEG_DECAY2_LEVEL,	//	0 - 100
 	200,	//VP_AEG_DECAY2_TIME,	//	0 - 1000 (10ms)
-	200,	//VP_AEG_RELEASE_TIME,	//	0 - 1000 (10ms)
+	20,		//VP_AEG_RELEASE_TIME,	//	0 - 1000 (10ms)
 
 	0,		//VP_FILTER_TYPE,		//	0:LPF,
-	1000,	//VP_FILTER_CUTOFF,		//	[Hz]
+	2000,	//VP_FILTER_CUTOFF,		//	[Hz]
 	7,		//VP_FILTER_RESO,		//	1 - 100 ?
 
-	50,		//VP_FEG_ATTACK_TIME,		//	0 - 1000 (*10ms)
+	40,		//VP_FEG_ATTACK_TIME,		//	0 - 1000 (*10ms)
 	32,		//VP_FEG_ATTACK_LEVEL,	//	-32 - 0 - +32 (1/2 - 2[times*Hz])
-	50,		//VP_FEG_RELEASE_TIME,	//	0 - 1000 (*10ms)
+	40,		//VP_FEG_RELEASE_TIME,	//	0 - 1000 (*10ms)
 	-32,		//VP_FEG_RELEASE_LEVEL,	//	-32 - 0 - +32 (1/2 - 2[times*Hz])
 
 

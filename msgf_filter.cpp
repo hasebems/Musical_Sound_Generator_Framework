@@ -18,24 +18,22 @@ using namespace msgf;
 //		Constructor
 //---------------------------------------------------------
 Filter::Filter( Note* parent ):
-_parentNote(parent),
-_dacCounter(-1),
-_startDac(0),
-_targetDac(0),
+SignalProcessCore(parent),
 _fegStartLevel(0),
 _fegCrntLevel(0),
 _fegLevel(0),
-_state(FEG_NOT_YET),
 _x_m2(0),
 _x_m1(0),
 _y_m2(0),
 _y_m1(0)
+{}
+//---------------------------------------------------------
+void Filter::init( void )
 {
 	int fc = _parentNote->getVoiceContext()->getParameter( VP_FILTER_CUTOFF );
 	int reso = _parentNote->getVoiceContext()->getParameter( VP_FILTER_RESO );
 	setCoef( fc, ((double)reso)/10 );
 }
-
 //---------------------------------------------------------
 //		Calculate Coef
 //---------------------------------------------------------
@@ -81,9 +79,9 @@ void Filter::setOneCoef( double fc, double qValue, Coef& cf )
 //---------------------------------------------------------
 void Filter::toAttack( void )
 {
-	_state = FEG_ATTACK;
-	_startDac = _dacCounter = 0;
-	_targetDac = _startDac
+	_state = ATTACK;
+	_egStartDac = _dacCounter = 0;
+	_egTargetDac = _egStartDac
 		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_FEG_ATTACK_TIME));
 	_fegLevel = _fegStartLevel = _parentNote->getVoiceContext()->getParameter(VP_FEG_ATTACK_LEVEL);
 }
@@ -91,27 +89,19 @@ void Filter::toAttack( void )
 void Filter::toSteady( void )
 {
 	_state = KEY_ON_STEADY;
-	_startDac = _dacCounter;
-	_targetDac = _startDac;
+	_egStartDac = _dacCounter;
+	_egTargetDac = _egStartDac;
 	_fegLevel = 0;
 }
 //---------------------------------------------------------
 void Filter::toRelease( void )
 {
-	_state = FEG_RELEASE;
-	_startDac = _dacCounter;
-	_targetDac = _startDac
+	_state = RELEASE;
+	_egStartDac = _dacCounter;
+	_egTargetDac = _egStartDac
 		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_FEG_RELEASE_TIME));
 	_fegLevel = _parentNote->getVoiceContext()->getParameter(VP_FEG_RELEASE_LEVEL);
 	_fegStartLevel = _fegCrntLevel;
-}
-
-//---------------------------------------------------------
-//		Convert Time(10msec) to Dac count
-//---------------------------------------------------------
-int Filter::getTotalDacCount( int time )
-{
-	return time*(SMPL_FREQUENCY/100);
 }
 
 //---------------------------------------------------------
@@ -119,16 +109,16 @@ int Filter::getTotalDacCount( int time )
 //---------------------------------------------------------
 Coef* Filter::getFegCoef( void )
 {
-	long time = _dacCounter-_startDac;
-	long targetTime = _targetDac-_startDac;
+	long time = _dacCounter-_egStartDac;
+	long targetTime = _egTargetDac-_egStartDac;
 
 	if ( targetTime == 0 ) return &_center;
 	if ( time >= targetTime ) time = targetTime-1;
 
-	if ( _state == FEG_ATTACK ){
+	if ( _state == ATTACK ){
 		_fegCrntLevel = (targetTime-1-time)*_fegLevel/targetTime;
 	}
-	else if ( _state == FEG_RELEASE ){
+	else if ( _state == RELEASE ){
 		_fegCrntLevel = time*(_fegLevel-_fegStartLevel)/targetTime + _fegStartLevel;
 	}
 		
@@ -143,7 +133,7 @@ Coef* Filter::getFegCoef( void )
 void Filter::process( TgAudioBuffer& buf )
 {
 	//	FEG State
-	if ( _state == FEG_NOT_YET ){
+	if ( _state == EG_NOT_YET ){
 		if ( _parentNote->conditionKeyOn() == true ){
 			//	Start key On
 			toAttack();
@@ -160,9 +150,9 @@ void Filter::process( TgAudioBuffer& buf )
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 		Coef* crntCf = &_center;
 
-		if ( _dacCounter >= _targetDac ){
+		if ( _dacCounter >= _egTargetDac ){
 			switch (_state){
-				case FEG_ATTACK: toSteady(); break;
+				case ATTACK: toSteady(); break;
 				default: break;
 			}
 		}

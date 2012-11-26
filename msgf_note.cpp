@@ -28,9 +28,14 @@ Note::Note( Instrument* inst ) :
 	_cndSustainPedal(false),
 	_audioCounter(0)
 {
+	_vc = _parentInst->getVoiceContext();
 	_osc = new Oscillator(this);
 	_flt = new Filter(this);
 	_amp = new Amplitude(this);
+
+	_osc->init();
+	_flt->init();
+	_amp->init();
 }
 //---------------------------------------------------------
 Note::~Note( void )
@@ -50,7 +55,6 @@ void Note::keyOn( EventInfo* ei )
 	_cndKeyOn = true;
 	_noteNumber = ei->getNote();
 	_velocity = ei->getVelocity();
-	_vc = ei->getVoiceContext();
 
 	//	Make List
 	Note* lastKeyOnNote = _parentInst->getEndNote();
@@ -109,8 +113,6 @@ void Note::releaseMe( void )
 //---------------------------------------------------------
 //		Process Function
 //---------------------------------------------------------
-const double	DAMP_LIMIT_DEPTH = 0.0001;
-//---------------------------------------------------------
 bool Note::process( TgAudioBuffer& buf )
 {
 	TgAudioBuffer	nbuf;
@@ -129,19 +131,12 @@ bool Note::process( TgAudioBuffer& buf )
 
 	
 	//	Add to Buffer and Check no sound
-	int cnt = 0;
-	for ( int i=0; i<nbuf.bufferSize(); i++ ){
-		double val = nbuf.getAudioBuffer(i);
-		buf.addAudioBuffer( i, val );
-		if ( val < DAMP_LIMIT_DEPTH ) cnt++;
-	}
+	bool noSound = buf.mixAndCheckNoSound(nbuf);
 	nbuf.releaseAudioBuffer();
-
-	if ( cnt >= nbuf.bufferSize() ){
-		if ( _cndKeyOn == false ){
-			//	this will be released
-			return false;
-		}
+		
+	if (( noSound == true ) && ( _cndKeyOn == false )){
+		//	this will be released
+		return false;
 	}
 
 	return true;

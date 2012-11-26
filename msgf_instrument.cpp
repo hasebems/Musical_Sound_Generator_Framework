@@ -46,7 +46,6 @@ void Instrument::keyOn( Uint8 note, Uint8 velocity )
 
 	ei->setVelocity( velocity );
 	ei->setNote( note );
-	ei->setVoiceContext( _vc );
 	nt->keyOn( ei );
 
 	if ( _topNote == 0 ){

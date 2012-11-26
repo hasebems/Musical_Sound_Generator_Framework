@@ -11,18 +11,9 @@
 
 #include <iostream>
 #include "msgf_type.h"
+#include "msgf_signal_process_core.h"
 
 namespace msgf {
-//---------------------------------------------------------
-typedef enum {
-	
-	FEG_NOT_YET,
-	FEG_ATTACK,
-	KEY_ON_STEADY,
-	FEG_RELEASE,
-	FEG_STATE_MAX
-
-} FEG_STATE;
 //---------------------------------------------------------
 struct Coef {
 
@@ -35,9 +26,8 @@ struct Coef {
 };
 //---------------------------------------------------------
 class Note;
-class TgAudioBuffer;
 //---------------------------------------------------------
-class Filter {
+class Filter : public SignalProcessCore {
 
 public:
 	Filter( Note* parent );
@@ -46,19 +36,17 @@ public:
 	void	setCoef( double freq, double qValue );
 	void	setOneCoef( double fc, double qValue, Coef& cf );
 	
+	void	init( void );
 	void	process( TgAudioBuffer& buf );
 
 	static const int FEG_MAX = 32;
-	static const int FEG_DEPTH_MAX = 8; // *Fc[Hz]
+	static const int FEG_DEPTH_MAX = 16; // *Fc[Hz]
 	
 private:
 	void	toAttack( void );
 	void	toSteady( void );
 	void	toRelease( void );
-	int		getTotalDacCount( int time );
 	Coef*	getFegCoef( void );
-	
-	Note*	_parentNote;
 
 	Coef	_center;
 	Coef	_upper[FEG_MAX];
@@ -69,14 +57,9 @@ private:
 	double	_y_m2;
 	double	_y_m1;
 
-	long	_dacCounter;
-	long	_startDac;
-	long	_targetDac;
-
 	int		_fegStartLevel;
 	int		_fegCrntLevel;
 	int		_fegLevel;
-	FEG_STATE	_state;
 };
 }
 #endif /* defined(__ToneGenerator__msgf_filter__) */

@@ -34,6 +34,8 @@ public:
 	
 	int		bufferSize( void ){ return _bufSize; }
 
+	bool	mixAndCheckNoSound( TgAudioBuffer &srcBuf );
+	
 private:
 	int			_bufSize;
 	double*		_abuf;		//	-1 -- 0 -- 1

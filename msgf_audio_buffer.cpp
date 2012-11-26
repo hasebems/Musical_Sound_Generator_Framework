@@ -8,3 +8,23 @@
 //
 
 #include "msgf_audio_buffer.h"
+using namespace msgf;
+
+//---------------------------------------------------------
+//		Mix And Check
+//---------------------------------------------------------
+const double	DAMP_LIMIT_DEPTH = 0.0001;
+//---------------------------------------------------------
+bool TgAudioBuffer::mixAndCheckNoSound( TgAudioBuffer &srcBuf )
+{
+	int cnt = 0;
+	for ( int i=0; i<_bufSize; i++ ){
+		double val = srcBuf.getAudioBuffer(i);
+		addAudioBuffer( i, val );
+		if ( val < DAMP_LIMIT_DEPTH ) cnt++;
+	}
+
+	if ( cnt >= _bufSize ) return true;
+
+	return false;
+}

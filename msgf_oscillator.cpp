@@ -17,10 +17,7 @@ using namespace msgf;
 //---------------------------------------------------------
 //		Constructor
 //---------------------------------------------------------
-Oscillator::Oscillator( Note* parent ):
-_parentNote( parent ),
-_state(NOT_YET),
-_dacCounter(-1)
+void Oscillator::init( void )
 {
 	_waveform = _parentNote->getVoiceContext()->getParameter( VP_WAVEFORM );
 }
@@ -30,15 +27,15 @@ _dacCounter(-1)
 //---------------------------------------------------------
 void Oscillator::process( TgAudioBuffer& buf )
 {
-	if ( _state == NOT_YET ){
+	if ( _state == EG_NOT_YET ){
 		if ( _parentNote->conditionKeyOn() == true ){
 			_dacCounter = 0;
 			_crntPhase = 0;
-			_state = STEADY_STATE;
+			_state = KEY_ON_STEADY;
 		}
 	}
 
-	if ( _state == STEADY_STATE	){
+	if ( _state == KEY_ON_STEADY ){
 		switch ( _waveform ){
 			default:
 			case SINE		: generateSine(buf,_crntPhase); break;

@@ -22,21 +22,18 @@ class EventInfo {
 	
 public:
 	EventInfo( void ):
-		_velocity(127), _note(60), _vc(0) {}
+		_velocity(127), _note(60) {}
 
 	//	Accessor
 	void	setVelocity( Uint8 vel ){ _velocity = vel;}
 	void	setNote( Uint8 nt ){ _note = nt; }
-	void	setVoiceContext( VoiceContext* vctx ){ _vc = vctx; }
 
 	Uint8	getVelocity( void ){ return _velocity; }
 	Uint8	getNote( void ){ return _note; }
-	VoiceContext*	getVoiceContext( void ){ return _vc; }
-	
+
 private:
 	Uint8			_velocity;
 	Uint8			_note;
-	VoiceContext*	_vc;
 	
 };
 }

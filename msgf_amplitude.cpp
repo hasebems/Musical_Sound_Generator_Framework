@@ -25,8 +25,8 @@ using namespace msgf;
 void Amplitude::toAttack( void )
 {
 	_state = ATTACK;
-	_startDac = _dacCounter = 0;
-	_targetDac = _startDac
+	_egStartDac = _dacCounter = 0;
+	_egTargetDac = _egStartDac
 		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_AEG_ATTACK_TIME));
 	_startLvl = EG_LEVEL_MIN;
 	_targetLvl = EG_LEVEL_MAX;
@@ -35,8 +35,8 @@ void Amplitude::toAttack( void )
 void Amplitude::toDecay1( void )
 {
 	_state = DECAY1;
-	_startDac = _dacCounter;
-	_targetDac = _startDac +
+	_egStartDac = _dacCounter;
+	_egTargetDac = _egStartDac +
 		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_AEG_DECAY1_TIME));
 	_startLvl = EG_LEVEL_MAX;
 	_targetLvl = _parentNote->getVoiceContext()->getParameter(VP_AEG_DECAY1_LEVEL);
@@ -45,8 +45,8 @@ void Amplitude::toDecay1( void )
 void Amplitude::toDecay2( void )
 {
 	_state = DECAY2;
-	_startDac = _dacCounter;
-	_targetDac = _startDac +
+	_egStartDac = _dacCounter;
+	_egTargetDac = _egStartDac +
 		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_AEG_DECAY2_TIME));
 	_startLvl = _targetLvl;
 	_targetLvl = _parentNote->getVoiceContext()->getParameter(VP_AEG_DECAY2_LEVEL);
@@ -54,27 +54,19 @@ void Amplitude::toDecay2( void )
 //---------------------------------------------------------
 void Amplitude::toDecay2Steady( void )
 {
-	_state = DECAY2_STEADY;
-	_startDac = _dacCounter;
+	_state = KEY_ON_STEADY;
+	_egStartDac = _dacCounter;
 	_startLvl = _targetLvl;
 }
 //---------------------------------------------------------
 void Amplitude::toRelease( void )
 {
 	_state = RELEASE;
-	_startLvl = static_cast<int>(getAegLevel( _dacCounter-_startDac, _targetDac-_startDac, _startLvl, _targetLvl ));
-	_startDac = _dacCounter;
-	_targetDac = _startDac
+	_startLvl = static_cast<int>(getAegLevel( _dacCounter-_egStartDac, _egTargetDac-_egStartDac, _startLvl, _targetLvl ));
+	_egStartDac = _dacCounter;
+	_egTargetDac = _egStartDac
 		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_AEG_RELEASE_TIME));
 	_targetLvl = EG_LEVEL_MIN;
-}
-
-//---------------------------------------------------------
-//		Convert Time(10msec) to Dac count
-//---------------------------------------------------------
-int Amplitude::getTotalDacCount( int time )
-{
-	return time*(SMPL_FREQUENCY/100);
 }
 
 //---------------------------------------------------------
@@ -108,13 +100,13 @@ double Amplitude::calcVolume( double amp )
 void Amplitude::process( TgAudioBuffer& buf )
 {
 	// check Event
-	if ( _state == AMPLITUDE_NOT_YET ){
+	if ( _state == EG_NOT_YET ){
 		if ( _parentNote->conditionKeyOn() == true ){
 			//	Start key On
 			toAttack();
 		}
 	}
-	if ( _state <= DECAY2_STEADY ){
+	if ( _state <= KEY_ON_STEADY ){
 		if ( _parentNote->conditionKeyOn() == false ){
 			//	Key Off
 			toRelease();
@@ -125,7 +117,7 @@ void Amplitude::process( TgAudioBuffer& buf )
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 
 		//	Change AEG Segment
-		if ( _dacCounter >= _targetDac ){
+		if ( _dacCounter >= _egTargetDac ){
 			switch (_state){
 				case ATTACK:
 					toDecay1();
@@ -144,7 +136,7 @@ void Amplitude::process( TgAudioBuffer& buf )
 		}
 
 		//	calc real amplitude
-		double aeg = getAegLevel( _dacCounter-_startDac, _targetDac-_startDac, _startLvl, _targetLvl );
+		double aeg = getAegLevel( _dacCounter-_egStartDac, _egTargetDac-_egStartDac, _startLvl, _targetLvl );
 		aeg /= EG_LEVEL_MAX;
 
 		//	calculate Volume
