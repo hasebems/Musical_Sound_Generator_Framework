@@ -44,15 +44,33 @@ public:
 	//	Accessor
 	void	setWaveform( int wvfm ){ _waveform = wvfm; }
 
+	static const int PEG_MAX = 32;
+	static const int PEG_DEPTH_MAX = 2; // /2 Octave
+
 private:
+	//	override
+	void	toAttack( void );
+	void	toSteady( void );
+	void	toRelease( void );
+
 	double	calcPitch( const Uint8 note );
-	void	generateSine( TgAudioBuffer& buf, double phase );
-	void	generateTriangle( TgAudioBuffer& buf, double phase );
-	void	generateSaw( TgAudioBuffer& buf, double phase );
-	void	generateSquare( TgAudioBuffer& buf, double phase );
-	void	generatePulse( TgAudioBuffer& buf, double phase );
+	void	calcPegPitch( double pch );
+	double	getFegCurrentPitch( void );
+
+	void	generateSine( TgAudioBuffer& buf, double diff );
+	void	generateTriangle( TgAudioBuffer& buf, double diff );
+	void	generateSaw( TgAudioBuffer& buf, double diff );
+	void	generateSquare( TgAudioBuffer& buf, double diff );
+	void	generatePulse( TgAudioBuffer& buf, double diff );
 	
 	static const double tPitchOfA[11];
+
+	//	PEG
+	double	_upper[PEG_MAX];
+	double	_lower[PEG_MAX];
+	int		_pegStartLevel;
+	int		_pegCrntLevel;
+	int		_pegLevel;
 
 	int		_waveform;
 	double	_pitch;

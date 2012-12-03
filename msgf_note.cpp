@@ -32,10 +32,6 @@ Note::Note( Instrument* inst ) :
 	_osc = new Oscillator(this);
 	_flt = new Filter(this);
 	_amp = new Amplitude(this);
-
-	_osc->init();
-	_flt->init();
-	_amp->init();
 }
 //---------------------------------------------------------
 Note::~Note( void )
@@ -61,6 +57,11 @@ void Note::keyOn( EventInfo* ei )
 	if ( lastKeyOnNote != 0 ) lastKeyOnNote->setNextNote(this);
 	_prevNote = lastKeyOnNote;
 	_nextNote = 0;
+
+	//	Init
+	_osc->init();
+	_flt->init();
+	_amp->init();
 }
 
 //---------------------------------------------------------

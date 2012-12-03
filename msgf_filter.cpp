@@ -49,7 +49,7 @@ void Filter::setCoef( double fc, double qValue )
 		setOneCoef( fctmp, qValue, _upper[i] );
 	}
 
-	ratio = -log(2)/FEG_MAX;
+	ratio = -log(FEG_DEPTH_MAX)/FEG_MAX;
 	ratio = exp(ratio);
 	fctmp = fc;
 	for ( int j=0; j<FEG_MAX; j++ ){
@@ -79,27 +79,36 @@ void Filter::setOneCoef( double fc, double qValue, Coef& cf )
 //---------------------------------------------------------
 void Filter::toAttack( void )
 {
+	//	time
 	_state = ATTACK;
 	_egStartDac = _dacCounter = 0;
 	_egTargetDac = _egStartDac
 		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_FEG_ATTACK_TIME));
+
+	//	level
 	_fegLevel = _fegStartLevel = _parentNote->getVoiceContext()->getParameter(VP_FEG_ATTACK_LEVEL);
 }
 //---------------------------------------------------------
 void Filter::toSteady( void )
 {
+	//	time
 	_state = KEY_ON_STEADY;
 	_egStartDac = _dacCounter;
 	_egTargetDac = _egStartDac;
+
+	//	level
 	_fegLevel = 0;
 }
 //---------------------------------------------------------
 void Filter::toRelease( void )
 {
+	//	time
 	_state = RELEASE;
 	_egStartDac = _dacCounter;
 	_egTargetDac = _egStartDac
 		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_FEG_RELEASE_TIME));
+
+	//	level
 	_fegLevel = _parentNote->getVoiceContext()->getParameter(VP_FEG_RELEASE_LEVEL);
 	_fegStartLevel = _fegCrntLevel;
 }

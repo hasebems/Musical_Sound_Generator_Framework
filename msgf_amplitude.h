@@ -30,22 +30,17 @@ public:
 	void	process( TgAudioBuffer& buf );
 	
 private:
+	//	override
 	void	toAttack( void );
 	void	toDecay1( void );
 	void	toDecay2( void );
 	void	toDecay2Steady( void );
 	void	toRelease( void );
 	
-//	int		getTotalDacCount( int time );
+	//	original
 	double	getAegLevel( long crntDac, long targetDac, int startLvl, int targetLvl );
 	double	calcVolume( double amp );
-	
-//	Note*	_parentNote;
-//	EG_STATE	_state;
-//	long	_dacCounter;
 
-//	long	_startDac;
-//	long	_targetDac;
 	int		_startLvl;
 	int		_targetLvl;
 

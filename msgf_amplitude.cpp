@@ -24,38 +24,50 @@ using namespace msgf;
 //---------------------------------------------------------
 void Amplitude::toAttack( void )
 {
+	//	time
 	_state = ATTACK;
 	_egStartDac = _dacCounter = 0;
 	_egTargetDac = _egStartDac
 		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_AEG_ATTACK_TIME));
+
+	//	level
 	_startLvl = EG_LEVEL_MIN;
 	_targetLvl = EG_LEVEL_MAX;
 }
 //---------------------------------------------------------
 void Amplitude::toDecay1( void )
 {
+	//	time
 	_state = DECAY1;
 	_egStartDac = _dacCounter;
 	_egTargetDac = _egStartDac +
 		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_AEG_DECAY1_TIME));
+	
+	//	level
 	_startLvl = EG_LEVEL_MAX;
 	_targetLvl = _parentNote->getVoiceContext()->getParameter(VP_AEG_DECAY1_LEVEL);
 }
 //---------------------------------------------------------
 void Amplitude::toDecay2( void )
 {
+	//	time
 	_state = DECAY2;
 	_egStartDac = _dacCounter;
 	_egTargetDac = _egStartDac +
 		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_AEG_DECAY2_TIME));
+	
+	//	level
 	_startLvl = _targetLvl;
 	_targetLvl = _parentNote->getVoiceContext()->getParameter(VP_AEG_DECAY2_LEVEL);
 }
 //---------------------------------------------------------
 void Amplitude::toDecay2Steady( void )
 {
+	//	time
 	_state = KEY_ON_STEADY;
 	_egStartDac = _dacCounter;
+
+	//	level
 	_startLvl = _targetLvl;
 }
 //---------------------------------------------------------
@@ -63,9 +75,12 @@ void Amplitude::toRelease( void )
 {
 	_state = RELEASE;
 	_startLvl = static_cast<int>(getAegLevel( _dacCounter-_egStartDac, _egTargetDac-_egStartDac, _startLvl, _targetLvl ));
+
+	//	time
 	_egStartDac = _dacCounter;
 	_egTargetDac = _egStartDac
 		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_AEG_RELEASE_TIME));
+
 	_targetLvl = EG_LEVEL_MIN;
 }
 

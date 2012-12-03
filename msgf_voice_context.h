@@ -27,6 +27,11 @@ typedef enum {
 
 	VP_WAVEFORM,		//	0:sine, 1:tri, 2:saw, 3:square, 4:pulse
 
+	VP_PEG_ATTACK_TIME,		//	0 - 1000 (*10ms)
+	VP_PEG_ATTACK_LEVEL,	//	-32 - 0 - +32 (1/2 - 2[times*Hz])
+	VP_PEG_RELEASE_TIME,	//	0 - 1000 (*10ms)
+	VP_PEG_RELEASE_LEVEL,	//	-32 - 0 - +32 (1/2 - 2[times*Hz])
+	
 	VP_AEG_ATTACK_TIME,	//	0 - 1000 (*10ms)
 	VP_AEG_DECAY1_LEVEL,//	0 - 100
 	VP_AEG_DECAY1_TIME,	//	0 - 1000 (*10ms)

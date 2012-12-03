@@ -43,23 +43,24 @@ public:
 	static const int FEG_DEPTH_MAX = 16; // *Fc[Hz]
 	
 private:
+	//	override
 	void	toAttack( void );
 	void	toSteady( void );
 	void	toRelease( void );
 	Coef*	getFegCoef( void );
 
+	//	FEG
 	Coef	_center;
 	Coef	_upper[FEG_MAX];
 	Coef	_lower[FEG_MAX];
+	int		_fegStartLevel;
+	int		_fegCrntLevel;
+	int		_fegLevel;
 
 	double	_x_m2;
 	double	_x_m1;
 	double	_y_m2;
 	double	_y_m1;
-
-	int		_fegStartLevel;
-	int		_fegCrntLevel;
-	int		_fegLevel;
 };
 }
 #endif /* defined(__ToneGenerator__msgf_filter__) */

@@ -20,6 +20,127 @@ using namespace msgf;
 void Oscillator::init( void )
 {
 	_waveform = _parentNote->getVoiceContext()->getParameter( VP_WAVEFORM );
+	_pitch = calcPitch( _parentNote->getNote() );
+	calcPegPitch( _pitch );
+
+	_crntPhase = 0;
+	_pegStartLevel = 0;
+	_pegCrntLevel = 0;
+	_pegLevel = 0;
+}
+
+//---------------------------------------------------------
+//		Calculate Pitch
+//---------------------------------------------------------
+const double Oscillator::tPitchOfA[11] =
+{
+	//	-3     9     21  33   45   57   69   81    93    105   117
+	13.75, 27.5, 55, 110, 220, 440, 880, 1760, 3520, 7040, 14080
+};
+//---------------------------------------------------------
+double Oscillator::calcPitch( const Uint8 note )
+{
+	int toneName, octave;
+	
+	if ( note >= 9 ){
+		toneName = (note-9)%12;
+		octave = (note-9)/12 + 1;
+	}
+	else {
+		toneName = note+3;
+		octave = 0;
+	}
+	
+	double ap = tPitchOfA[octave];
+	double ratio = exp(log(2)/12);
+	for ( int i=0; i<toneName; i++ ){
+		ap *= ratio;
+	}
+	
+	return ap;
+}
+//---------------------------------------------------------
+void Oscillator::calcPegPitch( double pch )
+{
+	double pttmp, ratio = log(PEG_DEPTH_MAX)/PEG_MAX;
+	int	i;
+
+	ratio = exp(ratio);
+	pttmp = pch;
+	for ( i=0; i<PEG_MAX; i++ ){
+		pttmp = pttmp*ratio;
+		_upper[i] = pttmp;
+	}
+	
+	ratio = -log(PEG_DEPTH_MAX)/PEG_MAX;
+	ratio = exp(ratio);
+	pttmp = pch;
+	for ( i=0; i<PEG_MAX; i++ ){
+		pttmp = pttmp*ratio;
+		_lower[i] = pttmp;
+	}
+}
+
+//---------------------------------------------------------
+//		Move to next segment
+//---------------------------------------------------------
+void Oscillator::toAttack( void )
+{
+	//	time
+	_state = ATTACK;
+	_egStartDac = _dacCounter = 0;
+	_egTargetDac = _egStartDac
+		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_PEG_ATTACK_TIME));
+
+	//	level
+	_pegLevel = _pegStartLevel = _parentNote->getVoiceContext()->getParameter(VP_PEG_ATTACK_LEVEL);
+}
+//---------------------------------------------------------
+void Oscillator::toSteady( void )
+{
+	//	time
+	_state = KEY_ON_STEADY;
+	_egStartDac = _dacCounter;
+	_egTargetDac = _egStartDac;
+
+	//	level
+	_pegLevel = 0;
+}
+//---------------------------------------------------------
+void Oscillator::toRelease( void )
+{
+	//	time
+	_state = RELEASE;
+	_egStartDac = _dacCounter;
+	_egTargetDac = _egStartDac
+		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_PEG_RELEASE_TIME));
+
+	//	level
+	_pegLevel = _parentNote->getVoiceContext()->getParameter(VP_PEG_RELEASE_LEVEL);
+	_pegStartLevel = _pegCrntLevel;
+}
+
+//---------------------------------------------------------
+//		Get PEG Current Pitch
+//---------------------------------------------------------
+double Oscillator::getFegCurrentPitch( void )
+{
+	long time = _dacCounter-_egStartDac;
+	long targetTime = _egTargetDac-_egStartDac;
+	
+	if ( targetTime == 0 ) return _pitch;
+	if ( time >= targetTime ) time = targetTime-1;
+	
+	if ( _state == ATTACK ){
+		_pegCrntLevel = (targetTime-1-time)*_pegLevel/targetTime;
+	}
+	else if ( _state == RELEASE ){
+		_pegCrntLevel = time*(_pegLevel-_pegStartLevel)/targetTime + _pegStartLevel;
+	}
+	
+	if ( _pegCrntLevel > 0 ) return _upper[_pegCrntLevel];
+	else if ( _pegCrntLevel < 0 ) return _lower[-_pegCrntLevel];
+	return _pitch;
 }
 
 //---------------------------------------------------------
@@ -29,67 +150,45 @@ void Oscillator::process( TgAudioBuffer& buf )
 {
 	if ( _state == EG_NOT_YET ){
 		if ( _parentNote->conditionKeyOn() == true ){
-			_dacCounter = 0;
-			_crntPhase = 0;
-			_state = KEY_ON_STEADY;
+			//	Start key On
+			toAttack();
 		}
 	}
+	else if ( _state <= KEY_ON_STEADY ){
+		if ( _parentNote->conditionKeyOn() == false ){
+			//	Key Off
+			toRelease();
+		}
+	}
+	
+	if ( _state != EG_NOT_YET ){
 
-	if ( _state == KEY_ON_STEADY ){
+		if ( _dacCounter >= _egTargetDac ){
+			switch (_state){
+				case ATTACK: toSteady(); break;
+				default: break;
+			}
+		}
+		double	pch = getFegCurrentPitch();
+		double	diff = (2 * M_PI * pch )/ SMPL_FREQUENCY;
+
 		switch ( _waveform ){
 			default:
-			case SINE		: generateSine(buf,_crntPhase); break;
-			case TRIANGLE	: generateTriangle(buf,_crntPhase); break;
-			case SAW		: generateSaw(buf,_crntPhase); break;
-			case SQUARE		: generateSquare(buf,_crntPhase); break;
-			case PULSE		: generatePulse(buf,_crntPhase); break;
+			case SINE		: generateSine(buf,diff); break;
+			case TRIANGLE	: generateTriangle(buf,diff); break;
+			case SAW		: generateSaw(buf,diff); break;
+			case SQUARE		: generateSquare(buf,diff); break;
+			case PULSE		: generatePulse(buf,diff); break;
 		}
 		_dacCounter += buf.bufferSize();
 	}
 }
 
 //---------------------------------------------------------
-//		Calculate Pitch
-//---------------------------------------------------------
-const double Oscillator::tPitchOfA[11] =
-{
-//	-3     9     21  33   45   57   69   81    93    105   117
-	13.75, 27.5, 55, 110, 220, 440, 880, 1760, 3520, 7040, 14080
-};
-//---------------------------------------------------------
-double Oscillator::calcPitch( const Uint8 note )
-{
-	int toneName, octave;
-
-	if ( note >= 9 ){
-		toneName = (note-9)%12;
-		octave = (note-9)/12 + 1;
-	}
-	else {
-		toneName = note+3;
-		octave = 0;
-	}
-
-	double ap = tPitchOfA[octave];
-	double ratio = exp(log(2)/12);
-	for ( int i=0; i<toneName; i++ ){
-		ap *= ratio;
-	}
-
-	return ap;
-}
-
-//---------------------------------------------------------
 //		Generate Wave
 //---------------------------------------------------------
-void Oscillator::generateSine( TgAudioBuffer& buf, double phase )
+void Oscillator::generateSine( TgAudioBuffer& buf, double diff )
 {
-	double	diff = 0;
-
-	//	Calclate pitch
-	_pitch = calcPitch( _parentNote->getNote() );
-	diff = (2 * M_PI * _pitch )/ SMPL_FREQUENCY;
-	
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 		//	write Sine wave
 		buf.setAudioBuffer( i, sin(_crntPhase) );
@@ -97,14 +196,8 @@ void Oscillator::generateSine( TgAudioBuffer& buf, double phase )
 	}	
 }
 //---------------------------------------------------------
-void Oscillator::generateTriangle( TgAudioBuffer& buf, double phase )
+void Oscillator::generateTriangle( TgAudioBuffer& buf, double diff )
 {
-	double	diff = 0;
-	
-	//	Calclate pitch
-	_pitch = calcPitch( _parentNote->getNote() );
-	diff = (2 * M_PI * _pitch )/ SMPL_FREQUENCY;
-	
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 		//	write Triangle wave
 		double amp, ps = fmod(_crntPhase,(2*M_PI))/(2*M_PI);
@@ -115,13 +208,8 @@ void Oscillator::generateTriangle( TgAudioBuffer& buf, double phase )
 	}
 }
 //---------------------------------------------------------
-void Oscillator::generateSaw( TgAudioBuffer& buf, double phase )
+void Oscillator::generateSaw( TgAudioBuffer& buf, double diff )
 {
-	double	diff = 0;
-	
-	//	Calclate pitch
-	_pitch = calcPitch( _parentNote->getNote() );
-	diff = (2 * M_PI * _pitch )/ SMPL_FREQUENCY;
 	int maxOverTone = 20000/_pitch;
 
 	for ( int i=0; i<buf.bufferSize(); i++ ){
@@ -135,13 +223,8 @@ void Oscillator::generateSaw( TgAudioBuffer& buf, double phase )
 	}
 }
 //---------------------------------------------------------
-void Oscillator::generateSquare( TgAudioBuffer& buf, double phase )
+void Oscillator::generateSquare( TgAudioBuffer& buf, double diff )
 {
-	double	diff = 0;
-	
-	//	Calclate pitch
-	_pitch = calcPitch( _parentNote->getNote() );
-	diff = (2 * M_PI * _pitch )/ SMPL_FREQUENCY;
 	int maxOverTone = 20000/_pitch;
 
 	for ( int i=0; i<buf.bufferSize(); i++ ){
@@ -159,14 +242,8 @@ void Oscillator::generateSquare( TgAudioBuffer& buf, double phase )
 	}
 }
 //---------------------------------------------------------
-void Oscillator::generatePulse( TgAudioBuffer& buf, double phase )
+void Oscillator::generatePulse( TgAudioBuffer& buf, double diff )
 {
-	double	diff = 0;
-	
-	//	Calclate pitch
-	_pitch = calcPitch( _parentNote->getNote() );
-	diff = (2 * M_PI * _pitch )/ SMPL_FREQUENCY;
-	
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 		//	write Square wave
 		double amp, ps = fmod(_crntPhase,(2*M_PI))/(2*M_PI);
