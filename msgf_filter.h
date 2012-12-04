@@ -37,6 +37,8 @@ public:
 	void	setOneCoef( double fc, double qValue, Coef& cf );
 	
 	void	init( void );
+	void	checkEvent( void );
+	void	checkSegmentEnd( void );
 	void	process( TgAudioBuffer& buf );
 
 	static const int FEG_MAX = 32;

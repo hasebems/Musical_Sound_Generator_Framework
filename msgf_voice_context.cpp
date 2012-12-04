@@ -25,16 +25,16 @@ const int VoiceContext::tVoiceParameter[1][VP_MAX_ID] =
 	3,		//VP_WAVE_TYPE,	//	0:sine, 1:tri, 2:saw, 3:square, 4:pulse
 
 	20,		//VP_PEG_ATTACK_TIME,		//	0 - 1000 (*10ms)
-	-32,		//VP_PEG_ATTACK_LEVEL,	//	-32 - 0 - +32 (1/2 - 2[times*Hz])
+	-60,		//VP_PEG_ATTACK_LEVEL,	//	-60 - 0 - +60 (1/2 - 2[times*Hz])
 	40,		//VP_PEG_RELEASE_TIME,	//	0 - 1000 (*10ms)
-	32,	//VP_PEG_RELEASE_LEVEL,	//	-32 - 0 - +32 (1/2 - 2[times*Hz])
+	60,		//VP_PEG_RELEASE_LEVEL,	//	-60 - 0 - +60 (1/2 - 2[times*Hz])
 	
 	10,		//VP_AEG_ATTACK_TIME,	//	0 - 1000 (10ms)
 	80,		//VP_AEG_DECAY1_LEVEL,	//	0 - 100
 	10,		//VP_AEG_DECAY1_TIME,	//	0 - 1000 (10ms)
 	60,		//VP_AEG_DECAY2_LEVEL,	//	0 - 100
 	200,	//VP_AEG_DECAY2_TIME,	//	0 - 1000 (10ms)
-	20,		//VP_AEG_RELEASE_TIME,	//	0 - 1000 (10ms)
+	100,		//VP_AEG_RELEASE_TIME,	//	0 - 1000 (10ms)
 
 	0,		//VP_FILTER_TYPE,		//	0:LPF,
 	1000,	//VP_FILTER_CUTOFF,		//	[Hz]

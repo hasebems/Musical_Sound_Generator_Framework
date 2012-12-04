@@ -146,29 +146,49 @@ double Oscillator::getFegCurrentPitch( void )
 //---------------------------------------------------------
 //		Process Function
 //---------------------------------------------------------
+void Oscillator::checkEvent( void )
+{
+	switch (_state){
+		case EG_NOT_YET:{
+			if ( _parentNote->conditionKeyOn() == true ){
+				//	Start key On
+				toAttack();
+			}
+			break;
+		}
+		case ATTACK:
+		case DECAY1:
+		case DECAY2:
+		case KEY_ON_STEADY:{
+			if ( _parentNote->conditionKeyOn() == false ){
+				//	Key Off
+				toRelease();
+			}
+			break;
+		}
+		default: break;
+	}
+}
+//---------------------------------------------------------
+void Oscillator::checkSegmentEnd( void )
+{
+	switch (_state){
+		case ATTACK: toSteady(); break;
+		default: break;
+	}
+}
+//---------------------------------------------------------
 void Oscillator::process( TgAudioBuffer& buf )
 {
-	if ( _state == EG_NOT_YET ){
-		if ( _parentNote->conditionKeyOn() == true ){
-			//	Start key On
-			toAttack();
-		}
-	}
-	else if ( _state <= KEY_ON_STEADY ){
-		if ( _parentNote->conditionKeyOn() == false ){
-			//	Key Off
-			toRelease();
-		}
-	}
-	
+	//	check Event
+	checkEvent();
+
 	if ( _state != EG_NOT_YET ){
 
 		if ( _dacCounter >= _egTargetDac ){
-			switch (_state){
-				case ATTACK: toSteady(); break;
-				default: break;
-			}
+			checkSegmentEnd();
 		}
+
 		double	pch = getFegCurrentPitch();
 		double	diff = (2 * M_PI * pch )/ SMPL_FREQUENCY;
 

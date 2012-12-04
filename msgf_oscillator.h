@@ -39,12 +39,14 @@ public:
 	~Oscillator( void ){}
 
 	void	init( void );
+	void	checkEvent( void );
+	void	checkSegmentEnd( void );
 	void	process( TgAudioBuffer& buf );
 
 	//	Accessor
 	void	setWaveform( int wvfm ){ _waveform = wvfm; }
 
-	static const int PEG_MAX = 32;
+	static const int PEG_MAX = 60;
 	static const int PEG_DEPTH_MAX = 2; // /2 Octave
 
 private:

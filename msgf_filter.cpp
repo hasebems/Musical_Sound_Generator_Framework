@@ -139,31 +139,49 @@ Coef* Filter::getFegCoef( void )
 //---------------------------------------------------------
 //		Process Function
 //---------------------------------------------------------
+void Filter::checkEvent( void )
+{
+	switch (_state){
+		case EG_NOT_YET:{
+			if ( _parentNote->conditionKeyOn() == true ){
+				//	Start key On
+				toAttack();
+			}
+			break;
+		}
+		case ATTACK:
+		case DECAY1:
+		case DECAY2:
+		case KEY_ON_STEADY:{
+			if ( _parentNote->conditionKeyOn() == false ){
+				//	Key Off
+				toRelease();
+			}
+			break;
+		}
+		default: break;
+	}
+}
+//---------------------------------------------------------
+void Filter::checkSegmentEnd( void )
+{
+	switch (_state){
+		case ATTACK: toSteady(); break;
+		default: break;
+	}	
+}
+//---------------------------------------------------------
 void Filter::process( TgAudioBuffer& buf )
 {
-	//	FEG State
-	if ( _state == EG_NOT_YET ){
-		if ( _parentNote->conditionKeyOn() == true ){
-			//	Start key On
-			toAttack();
-		}
-	}
-	if ( _state <= KEY_ON_STEADY ){
-		if ( _parentNote->conditionKeyOn() == false ){
-			//	Key Off
-			toRelease();
-		}
-	}
+	//	check Event
+	checkEvent();
 	
 	//	Filter Calculate
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 		Coef* crntCf = &_center;
 
 		if ( _dacCounter >= _egTargetDac ){
-			switch (_state){
-				case ATTACK: toSteady(); break;
-				default: break;
-			}
+			checkSegmentEnd();
 		}
 		crntCf = getFegCoef();
 		

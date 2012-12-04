@@ -43,8 +43,9 @@ namespace msgf {
 		virtual ~SignalProcessCore( void ){}
 
 		virtual void	init( void ) = 0;
+		virtual	void	checkEvent( void ) = 0;
 		virtual void	process( TgAudioBuffer& buf ) = 0;
-
+		
 	protected:
 		//	Move to next EG Segment
 		virtual void	toAttack( void ){}

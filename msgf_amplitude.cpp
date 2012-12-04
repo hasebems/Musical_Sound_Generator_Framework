@@ -112,42 +112,60 @@ double Amplitude::calcVolume( double amp )
 //---------------------------------------------------------
 //		Process Function
 //---------------------------------------------------------
+void Amplitude::checkEvent( void )
+{
+	switch (_state){
+		case EG_NOT_YET:{
+			if ( _parentNote->conditionKeyOn() == true ){
+				//	Start key On
+				toAttack();
+			}
+			break;
+		}
+		case ATTACK:
+		case DECAY1:
+		case DECAY2:
+		case KEY_ON_STEADY:{
+			if ( _parentNote->conditionKeyOn() == false ){
+				//	Key Off
+				toRelease();
+			}
+			break;
+		}
+		default: break;
+	}
+}
+//---------------------------------------------------------
+void Amplitude::checkSegmentEnd( void )
+{
+	switch (_state){
+		case ATTACK:
+			toDecay1();
+			break;
+		case DECAY1:
+			toDecay2();
+			break;
+		case DECAY2:{
+			if ( _targetLvl != EG_LEVEL_MIN ){
+			}
+			break;
+		}
+		case RELEASE:
+		default: break;
+	}
+}
+//---------------------------------------------------------
 void Amplitude::process( TgAudioBuffer& buf )
 {
-	// check Event
-	if ( _state == EG_NOT_YET ){
-		if ( _parentNote->conditionKeyOn() == true ){
-			//	Start key On
-			toAttack();
-		}
-	}
-	if ( _state <= KEY_ON_STEADY ){
-		if ( _parentNote->conditionKeyOn() == false ){
-			//	Key Off
-			toRelease();
-		}
-	}
-
+	//	check Event
+	checkEvent();
+	
 	//	write Buffer
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 
 		//	Change AEG Segment
 		if ( _dacCounter >= _egTargetDac ){
-			switch (_state){
-				case ATTACK:
-					toDecay1();
-					break;
-				case DECAY1:
-					toDecay2();
-					break;
-				case DECAY2:{
-					if ( _targetLvl != EG_LEVEL_MIN ){
-					}
-					break;
-				}
-				case RELEASE:
-				default: break;
-			}
+			checkSegmentEnd();
 		}
 
 		//	calc real amplitude

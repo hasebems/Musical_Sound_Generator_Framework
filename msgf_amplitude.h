@@ -27,6 +27,8 @@ public:
 	~Amplitude( void ){}
 	
 	void	init( void ){}
+	void	checkEvent( void );
+	void	checkSegmentEnd( void );
 	void	process( TgAudioBuffer& buf );
 	
 private:
