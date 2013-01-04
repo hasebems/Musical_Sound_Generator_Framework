@@ -11,7 +11,6 @@
 #include "msgf_oscillator.h"
 #include "msgf_audio_buffer.h"
 #include "msgf_note.h"
-#include "msgf_voice_context.h"
 using namespace msgf;
 
 //---------------------------------------------------------
@@ -19,7 +18,7 @@ using namespace msgf;
 //---------------------------------------------------------
 void Oscillator::init( void )
 {
-	_waveform = _parentNote->getVoiceContext()->getParameter( VP_WAVEFORM );
+	_waveform = getVoicePrm( VP_WAVEFORM );
 	_pitch = calcPitch( _parentNote->getNote() );
 	calcPegPitch( _pitch );
 
@@ -27,6 +26,22 @@ void Oscillator::init( void )
 	_pegStartLevel = 0;
 	_pegCrntLevel = 0;
 	_pegLevel = 0;
+
+	//	LFO Settings
+	_pm = new Lfo();
+	_pm->setFrequency(static_cast<double>(getVoicePrm(VP_LFO_FREQUENCY))/10);
+	_pm->setDelay(getVoicePrm(VP_LFO_DELAY_TIME));
+	_pm->setFadeIn(getVoicePrm(VP_LFO_FADEIN_TIME));
+
+	_pm->setWave(LFO_TRI);
+	_pm->setCoef();
+	_pm->start();
+	_pmd = static_cast<double>(getVoicePrm(VP_LFO_PMD))/100;
+}
+//---------------------------------------------------------
+Oscillator::~Oscillator( void )
+{
+	delete _pm;
 }
 
 //---------------------------------------------------------
@@ -90,10 +105,10 @@ void Oscillator::toAttack( void )
 	_state = ATTACK;
 	_egStartDac = _dacCounter = 0;
 	_egTargetDac = _egStartDac
-		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_PEG_ATTACK_TIME));
+		+ getTotalDacCount(getVoicePrm(VP_PEG_ATTACK_TIME));
 
 	//	level
-	_pegLevel = _pegStartLevel = _parentNote->getVoiceContext()->getParameter(VP_PEG_ATTACK_LEVEL);
+	_pegLevel = _pegStartLevel = getVoicePrm(VP_PEG_ATTACK_LEVEL);
 }
 //---------------------------------------------------------
 void Oscillator::toSteady( void )
@@ -113,17 +128,17 @@ void Oscillator::toRelease( void )
 	_state = RELEASE;
 	_egStartDac = _dacCounter;
 	_egTargetDac = _egStartDac
-		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_PEG_RELEASE_TIME));
+		+ getTotalDacCount(getVoicePrm(VP_PEG_RELEASE_TIME));
 
 	//	level
-	_pegLevel = _parentNote->getVoiceContext()->getParameter(VP_PEG_RELEASE_LEVEL);
+	_pegLevel = getVoicePrm(VP_PEG_RELEASE_LEVEL);
 	_pegStartLevel = _pegCrntLevel;
 }
 
 //---------------------------------------------------------
 //		Get PEG Current Pitch
 //---------------------------------------------------------
-double Oscillator::getFegCurrentPitch( void )
+double Oscillator::getPegCurrentPitch( void )
 {
 	long time = _dacCounter-_egStartDac;
 	long targetTime = _egTargetDac-_egStartDac;
@@ -172,6 +187,8 @@ void Oscillator::checkEvent( void )
 //---------------------------------------------------------
 void Oscillator::checkSegmentEnd( void )
 {
+	if ( _dacCounter < _egTargetDac ) return;
+
 	switch (_state){
 		case ATTACK: toSteady(); break;
 		default: break;
@@ -185,38 +202,51 @@ void Oscillator::process( TgAudioBuffer& buf )
 
 	if ( _state != EG_NOT_YET ){
 
-		if ( _dacCounter >= _egTargetDac ){
-			checkSegmentEnd();
-		}
+		//	Check AEG Segment
+		checkSegmentEnd();
 
-		double	pch = getFegCurrentPitch();
+		double	pch = getPegCurrentPitch();
 		double	diff = (2 * M_PI * pch )/ SMPL_FREQUENCY;
 
+		//	get LFO pattern
+		double*	lfoBuf = new double[buf.bufferSize()];
+		_pm->process( buf.bufferSize(), lfoBuf );
+		
 		switch ( _waveform ){
 			default:
-			case SINE		: generateSine(buf,diff); break;
-			case TRIANGLE	: generateTriangle(buf,diff); break;
-			case SAW		: generateSaw(buf,diff); break;
-			case SQUARE		: generateSquare(buf,diff); break;
-			case PULSE		: generatePulse(buf,diff); break;
+			case SINE		: generateSine(buf,lfoBuf,diff); break;
+			case TRIANGLE	: generateTriangle(buf,lfoBuf,diff); break;
+			case SAW		: generateSaw(buf,lfoBuf,diff); break;
+			case SQUARE		: generateSquare(buf,lfoBuf,diff); break;
+			case PULSE		: generatePulse(buf,lfoBuf,diff); break;
 		}
 		_dacCounter += buf.bufferSize();
+
+		delete[] lfoBuf;
 	}
+}
+
+//---------------------------------------------------------
+//		Calcrate Delta considering LFO
+//---------------------------------------------------------
+double Oscillator::calcDeltaLFO( double lfoDpt, double diff )
+{
+	return (1+(lfoDpt*_pmd))*diff;	// add LFO pattern
 }
 
 //---------------------------------------------------------
 //		Generate Wave
 //---------------------------------------------------------
-void Oscillator::generateSine( TgAudioBuffer& buf, double diff )
+void Oscillator::generateSine( TgAudioBuffer& buf, double* lfobuf, double diff )
 {
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 		//	write Sine wave
 		buf.setAudioBuffer( i, sin(_crntPhase) );
-		_crntPhase += diff;
+		_crntPhase += calcDeltaLFO( lfobuf[i], diff );
 	}	
 }
 //---------------------------------------------------------
-void Oscillator::generateTriangle( TgAudioBuffer& buf, double diff )
+void Oscillator::generateTriangle( TgAudioBuffer& buf, double* lfobuf, double diff )
 {
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 		//	write Triangle wave
@@ -224,11 +254,11 @@ void Oscillator::generateTriangle( TgAudioBuffer& buf, double diff )
 		if ( ps < 0.5 ) amp = 2*ps - 0.5;
 		else amp = 2 - 2*ps;
 		buf.setAudioBuffer( i, amp );
-		_crntPhase += diff;
+		_crntPhase += calcDeltaLFO( lfobuf[i], diff );
 	}
 }
 //---------------------------------------------------------
-void Oscillator::generateSaw( TgAudioBuffer& buf, double diff )
+void Oscillator::generateSaw( TgAudioBuffer& buf, double* lfobuf, double diff )
 {
 	int maxOverTone = 20000/_pitch;
 
@@ -239,11 +269,11 @@ void Oscillator::generateSaw( TgAudioBuffer& buf, double diff )
 			saw += 0.25*sin(_crntPhase*j)/j;
 		}
 		buf.setAudioBuffer( i, saw );
-		_crntPhase += diff;
+		_crntPhase += calcDeltaLFO( lfobuf[i], diff );
 	}
 }
 //---------------------------------------------------------
-void Oscillator::generateSquare( TgAudioBuffer& buf, double diff )
+void Oscillator::generateSquare( TgAudioBuffer& buf, double* lfobuf, double diff )
 {
 	int maxOverTone = 20000/_pitch;
 
@@ -257,12 +287,13 @@ void Oscillator::generateSquare( TgAudioBuffer& buf, double diff )
 		//double amp, ps = fmod(_crntPhase,(2*M_PI))/(2*M_PI);
 		//if ( ps < 0.5 ) amp = 0.5;
 		//else amp = -0.5;
+
 		buf.setAudioBuffer( i, sqr );
-		_crntPhase += diff;
+		_crntPhase += calcDeltaLFO( lfobuf[i], diff );
 	}
 }
 //---------------------------------------------------------
-void Oscillator::generatePulse( TgAudioBuffer& buf, double diff )
+void Oscillator::generatePulse( TgAudioBuffer& buf, double* lfobuf, double diff )
 {
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 		//	write Square wave
@@ -271,7 +302,7 @@ void Oscillator::generatePulse( TgAudioBuffer& buf, double diff )
 		else if ( ps < 0.2 ) amp = -0.5;
 		else amp = 0;
 		buf.setAudioBuffer( i, amp );
-		_crntPhase += diff;
+		_crntPhase += calcDeltaLFO( lfobuf[i], diff );
 	}
 }
 

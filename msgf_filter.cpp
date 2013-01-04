@@ -165,6 +165,8 @@ void Filter::checkEvent( void )
 //---------------------------------------------------------
 void Filter::checkSegmentEnd( void )
 {
+	if ( _dacCounter < _egTargetDac ) return;
+
 	switch (_state){
 		case ATTACK: toSteady(); break;
 		default: break;
@@ -180,9 +182,9 @@ void Filter::process( TgAudioBuffer& buf )
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 		Coef* crntCf = &_center;
 
-		if ( _dacCounter >= _egTargetDac ){
-			checkSegmentEnd();
-		}
+		//	Check AEG Segment
+		checkSegmentEnd();
+
 		crntCf = getFegCoef();
 		
 		//	Calculate Filter

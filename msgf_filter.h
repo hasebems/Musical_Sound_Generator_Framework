@@ -6,8 +6,8 @@
 //  Copyright (c) 2012年 長谷部 雅彦. All rights reserved.
 //
 
-#ifndef __ToneGenerator__msgf_filter__
-#define __ToneGenerator__msgf_filter__
+#ifndef __msgf_filter__
+#define __msgf_filter__
 
 #include <iostream>
 #include "msgf_type.h"
@@ -65,4 +65,4 @@ private:
 	double	_y_m1;
 };
 }
-#endif /* defined(__ToneGenerator__msgf_filter__) */
+#endif /* defined(__msgf_filter__) */

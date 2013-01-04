@@ -138,6 +138,8 @@ void Amplitude::checkEvent( void )
 //---------------------------------------------------------
 void Amplitude::checkSegmentEnd( void )
 {
+	if ( _dacCounter < _egTargetDac ) return;
+
 	switch (_state){
 		case ATTACK:
 			toDecay1();
@@ -163,10 +165,8 @@ void Amplitude::process( TgAudioBuffer& buf )
 	//	write Buffer
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 
-		//	Change AEG Segment
-		if ( _dacCounter >= _egTargetDac ){
-			checkSegmentEnd();
-		}
+		//	Check AEG Segment
+		checkSegmentEnd();
 
 		//	calc real amplitude
 		double aeg = getAegLevel( _dacCounter-_egStartDac, _egTargetDac-_egStartDac, _startLvl, _targetLvl );

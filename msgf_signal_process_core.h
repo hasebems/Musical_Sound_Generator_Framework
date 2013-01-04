@@ -6,8 +6,8 @@
 //  Copyright (c) 2012年 長谷部 雅彦. All rights reserved.
 //
 
-#ifndef ToneGenerator_msgf_signal_process_core_h
-#define ToneGenerator_msgf_signal_process_core_h
+#ifndef __msgf_signal_process_core__
+#define __msgf_signal_process_core__
 
 #include <iostream>
 #include "msgf_type.h"
@@ -43,20 +43,23 @@ namespace msgf {
 		virtual ~SignalProcessCore( void ){}
 
 		virtual void	init( void ) = 0;
-		virtual	void	checkEvent( void ) = 0;
 		virtual void	process( TgAudioBuffer& buf ) = 0;
 		
 	protected:
 		//	Move to next EG Segment
-		virtual void	toAttack( void ){}
-		virtual void	toDecay1( void ){}
-		virtual void	toDecay2( void ){}
-		virtual void	toKeyOnSteady( void ){}
-		virtual void	toRelease( void ){}
-		virtual void	toKeyOffSteady( void ){}
+		virtual void	toAttack( void ){}			//	EG_NOT_YET -> ATTACK
+		virtual void	toDecay1( void ){}			//	ATTACK -> DECAY1
+		virtual void	toDecay2( void ){}			//	DECAY1 -> DECAY2
+		virtual void	toKeyOnSteady( void ){}		//	keep DECAY2
+		virtual void	toRelease( void ){}			//	any Segment -> RELEASE
+		virtual void	toKeyOffSteady( void ){}	//	keep RELEASE
 
+		//	Judge Segment change
+		virtual	void	checkEvent( void ){}
+		virtual void	checkSegmentEnd( void ){}
+		
 		int		getTotalDacCount( const int time ){return time*(SMPL_FREQUENCY/100);}
-
+		
 		//	Basic Variables
 		Note*	_parentNote;
 		long	_dacCounter;		//	should be incremented by buffer size in process

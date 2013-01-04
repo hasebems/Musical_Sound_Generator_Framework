@@ -13,6 +13,9 @@
 #include <iostream>
 #include "msgf_type.h"
 #include "msgf_signal_process_core.h"
+#include "msgf_voice_context.h"
+#include "msgf_note.h"
+#include "msgf_lfo.h"
 
 namespace msgf {
 //---------------------------------------------------------
@@ -28,15 +31,13 @@ typedef enum {
 } WAVEFORM;
 //---------------------------------------------------------
 class TgAudioBuffer;
-class Note;
 //---------------------------------------------------------
 class Oscillator : public SignalProcessCore {
 
 public:
 	Oscillator( Note* parent ):
 	SignalProcessCore(parent) {}
-
-	~Oscillator( void ){}
+	~Oscillator( void );
 
 	void	init( void );
 	void	checkEvent( void );
@@ -55,15 +56,17 @@ private:
 	void	toSteady( void );
 	void	toRelease( void );
 
+	int		getVoicePrm( VoiceParameterId id ){ return _parentNote->getVoiceContext()->getParameter( id ); }
 	double	calcPitch( const Uint8 note );
 	void	calcPegPitch( double pch );
-	double	getFegCurrentPitch( void );
+	double	getPegCurrentPitch( void );
 
-	void	generateSine( TgAudioBuffer& buf, double diff );
-	void	generateTriangle( TgAudioBuffer& buf, double diff );
-	void	generateSaw( TgAudioBuffer& buf, double diff );
-	void	generateSquare( TgAudioBuffer& buf, double diff );
-	void	generatePulse( TgAudioBuffer& buf, double diff );
+	double	calcDeltaLFO( double lfoDpt, double diff );
+	void	generateSine( TgAudioBuffer& buf, double* lfobuf, double diff );
+	void	generateTriangle( TgAudioBuffer& buf, double* lfobuf, double diff );
+	void	generateSaw( TgAudioBuffer& buf, double* lfobuf, double diff );
+	void	generateSquare( TgAudioBuffer& buf, double* lfobuf, double diff );
+	void	generatePulse( TgAudioBuffer& buf, double* lfobuf, double diff );
 	
 	static const double tPitchOfA[11];
 
@@ -74,9 +77,14 @@ private:
 	int		_pegCrntLevel;
 	int		_pegLevel;
 
+	//	generate waveform
 	int		_waveform;
 	double	_pitch;
 	double	_crntPhase;
+
+	//	LFO
+	Lfo*	_pm;
+	double	_pmd;
 };
 }
 #endif /* defined(__msgf_oscillator__) */
