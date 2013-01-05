@@ -14,7 +14,7 @@
 using namespace msgf;
 
 //---------------------------------------------------------
-//		Constructor
+//		Initialize
 //---------------------------------------------------------
 void Oscillator::init( void )
 {
@@ -27,12 +27,13 @@ void Oscillator::init( void )
 	_pegCrntLevel = 0;
 	_pegLevel = 0;
 
-	//	LFO Settings
+	//	LFO Settings as delegation who intend to use LFO
 	_pm = new Lfo();
 	_pm->setFrequency(static_cast<double>(getVoicePrm(VP_LFO_FREQUENCY))/10);
 	_pm->setDelay(getVoicePrm(VP_LFO_DELAY_TIME));
 	_pm->setFadeIn(getVoicePrm(VP_LFO_FADEIN_TIME));
 
+	//	LFO Settings only for Pitch
 	_pm->setWave(LFO_TRI);
 	_pm->setCoef();
 	_pm->start();

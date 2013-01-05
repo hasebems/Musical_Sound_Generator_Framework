@@ -30,12 +30,30 @@ _y_m1(0)
 //---------------------------------------------------------
 void Filter::init( void )
 {
-	int fc = _parentNote->getVoiceContext()->getParameter( VP_FILTER_CUTOFF );
-	int reso = _parentNote->getVoiceContext()->getParameter( VP_FILTER_RESO );
+	int fc = getVoicePrm( VP_FILTER_CUTOFF );
+	int reso = getVoicePrm( VP_FILTER_RESO );
 	setCoef( fc, ((double)reso)/10 );
 }
 //---------------------------------------------------------
+Filter::~Filter( void )
+{
+}
+
+//---------------------------------------------------------
 //		Calculate Coef
+//---------------------------------------------------------
+void Filter::setOneCoef( double fc, double qValue, Coef& cf )
+{
+	double freq = tan(M_PI*fc/SMPL_FREQUENCY)/(2.0*M_PI);
+	double fc2 = freq*freq;
+	double tmp = 1.0 + (2.0*M_PI*freq)/qValue + (4.0*M_PI*M_PI*fc2);
+	
+	cf._b0 = (4.0*M_PI*M_PI*fc2)/tmp;
+	cf._b1 = (8.0*M_PI*M_PI*fc2)/tmp;
+	cf._b2 = cf._b0;
+	cf._a1 = (8.0*M_PI*M_PI*fc2 - 2.0)/tmp;
+	cf._a2 = (1.0 - 2.0*M_PI*freq/qValue + 4.0*M_PI*M_PI*fc2)/tmp;
+}
 //---------------------------------------------------------
 void Filter::setCoef( double fc, double qValue )
 {
@@ -59,22 +77,6 @@ void Filter::setCoef( double fc, double qValue )
 }
 
 //---------------------------------------------------------
-//		Calculate Coef
-//---------------------------------------------------------
-void Filter::setOneCoef( double fc, double qValue, Coef& cf )
-{
-	double freq = tan(M_PI*fc/SMPL_FREQUENCY)/(2.0*M_PI);
-	double fc2 = freq*freq;
-	double tmp = 1.0 + (2.0*M_PI*freq)/qValue + (4.0*M_PI*M_PI*fc2);
-	
-	cf._b0 = (4.0*M_PI*M_PI*fc2)/tmp;
-	cf._b1 = (8.0*M_PI*M_PI*fc2)/tmp;
-	cf._b2 = cf._b0;
-	cf._a1 = (8.0*M_PI*M_PI*fc2 - 2.0)/tmp;
-	cf._a2 = (1.0 - 2.0*M_PI*freq/qValue + 4.0*M_PI*M_PI*fc2)/tmp;
-}
-
-//---------------------------------------------------------
 //		Move to next segment
 //---------------------------------------------------------
 void Filter::toAttack( void )
@@ -83,10 +85,10 @@ void Filter::toAttack( void )
 	_state = ATTACK;
 	_egStartDac = _dacCounter = 0;
 	_egTargetDac = _egStartDac
-		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_FEG_ATTACK_TIME));
+		+ getTotalDacCount(getVoicePrm(VP_FEG_ATTACK_TIME));
 
 	//	level
-	_fegLevel = _fegStartLevel = _parentNote->getVoiceContext()->getParameter(VP_FEG_ATTACK_LEVEL);
+	_fegLevel = _fegStartLevel = getVoicePrm(VP_FEG_ATTACK_LEVEL);
 }
 //---------------------------------------------------------
 void Filter::toSteady( void )
@@ -106,10 +108,10 @@ void Filter::toRelease( void )
 	_state = RELEASE;
 	_egStartDac = _dacCounter;
 	_egTargetDac = _egStartDac
-		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_FEG_RELEASE_TIME));
+		+ getTotalDacCount(getVoicePrm(VP_FEG_RELEASE_TIME));
 
 	//	level
-	_fegLevel = _parentNote->getVoiceContext()->getParameter(VP_FEG_RELEASE_LEVEL);
+	_fegLevel = getVoicePrm(VP_FEG_RELEASE_LEVEL);
 	_fegStartLevel = _fegCrntLevel;
 }
 
@@ -177,7 +179,7 @@ void Filter::process( TgAudioBuffer& buf )
 {
 	//	check Event
 	checkEvent();
-	
+
 	//	Filter Calculate
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 		Coef* crntCf = &_center;

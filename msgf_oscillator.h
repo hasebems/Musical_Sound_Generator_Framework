@@ -46,7 +46,7 @@ public:
 
 	//	Accessor
 	void	setWaveform( int wvfm ){ _waveform = wvfm; }
-
+	
 	static const int PEG_MAX = 60;
 	static const int PEG_DEPTH_MAX = 2; // /2 Octave
 
@@ -56,7 +56,6 @@ private:
 	void	toSteady( void );
 	void	toRelease( void );
 
-	int		getVoicePrm( VoiceParameterId id ){ return _parentNote->getVoiceContext()->getParameter( id ); }
 	double	calcPitch( const Uint8 note );
 	void	calcPegPitch( double pch );
 	double	getPegCurrentPitch( void );
@@ -67,6 +66,8 @@ private:
 	void	generateSaw( TgAudioBuffer& buf, double* lfobuf, double diff );
 	void	generateSquare( TgAudioBuffer& buf, double* lfobuf, double diff );
 	void	generatePulse( TgAudioBuffer& buf, double* lfobuf, double diff );
+
+	int		getVoicePrm( VoiceParameterId id ){ return _parentNote->getVoiceContext()->getParameter( id ); }
 	
 	static const double tPitchOfA[11];
 

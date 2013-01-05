@@ -46,9 +46,11 @@ const int VoiceContext::tVoiceParameter[1][VP_MAX_ID] =
 	0,		//VP_FEG_RELEASE_LEVEL,	//	-32 - 0 - +32 (1/2 - 2[times*Hz])
 
 	50,		//VP_LFO_FREQUENCY,		//	0 - ??? (*0.1[Hz])
-	100,		//VP_LFO_DELAY_TIME,		//	0 - ??? (*10ms)
+	50,		//VP_LFO_DELAY_TIME,		//	0 - ??? (*10ms)
 	50,		//VP_LFO_FADEIN_TIME,		//	0 - ??? (*10mc)
-	5,		//VP_LFO_PMD,				//	0 - 100 %
+	0,		//VP_LFO_PMD,				//	0 - 100 %
+	50,		//VP_LFO_AMD,				//	0 - 100 %
+	0,		//VP_LFO_CMD,				//	0 - 100 %
 	
 }
 };

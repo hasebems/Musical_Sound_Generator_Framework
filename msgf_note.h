@@ -20,7 +20,7 @@ class TgAudioBuffer;
 class Instrument;
 class VoiceContext;
 class Oscillator;
-	class Filter;
+class Filter;
 class Amplitude;
 //---------------------------------------------------------
 class Note {

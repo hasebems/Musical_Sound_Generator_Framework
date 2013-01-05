@@ -62,16 +62,29 @@ void Lfo::process( int sampleNum, double* buf )
 			_phase += _deltaPhase;
 			if ( _phase >= 1.0 ) _phase -= 1.0;
 
+			//	Limit
 			if ( value > 1.0 )
 				value = 1.0;
 			if ( value < -1.0 )
 				value = -1.0;
 
 			//	Fadein, Delay
-			if ( _dacCounter < _fadeInDacCount ) value = 0;
+			double lvl = 1, ofs = 0;
+			if ( _dacCounter < _fadeInDacCount ) lvl = 0;
 			else if ( _dacCounter < _fadeInDacCount+_delayDacCount ){
-				value = value*(_dacCounter-_fadeInDacCount)/_delayDacCount;
+				lvl = (_dacCounter-_fadeInDacCount)/_delayDacCount;
 			}
+
+			//	Direction
+			if ( _direction == LFO_UPPER ){
+				lvl /= 2;
+				ofs = lvl/2;
+			}
+			else if ( _direction == LFO_LOWER ){
+				lvl /= 2;
+				ofs = -lvl/2;
+			}
+			value = value*lvl + ofs;
 			
 			buf[i] = value;
 			_dacCounter++;

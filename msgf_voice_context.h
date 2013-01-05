@@ -52,6 +52,8 @@ typedef enum {
 	VP_LFO_DELAY_TIME,		//	0 - ??? (*10ms)
 	VP_LFO_FADEIN_TIME,		//	0 - ??? (*10mc)
 	VP_LFO_PMD,				//	0 - 100 % 
+	VP_LFO_AMD,				//	0 - 100 %
+	VP_LFO_CMD,				//	0 - 100 %
 	
 	VP_MAX_ID
 

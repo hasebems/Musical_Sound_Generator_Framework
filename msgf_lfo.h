@@ -15,9 +15,9 @@
 namespace msgf {
 	//---------------------------------------------------------
 	typedef enum {
-		BOTH,
-		UPPER,
-		LOWER,
+		LFO_BOTH,
+		LFO_UPPER,
+		LFO_LOWER,
 		LFO_DIRECTION_MAX
 	} LFO_DIRECTION;
 	//---------------------------------------------------------
@@ -35,7 +35,7 @@ namespace msgf {
 		Lfo( void ):
 			_depth(0),
 			_wave(LFO_TRI),
-			_direction(BOTH),
+			_direction(LFO_BOTH),
 			_x1(0),_x2(0),_y(0),_z(0),
 			_dacCounter(-1) {}
 		void			start( void );
@@ -50,7 +50,7 @@ namespace msgf {
 
 		void			setDepth( double dpt ){ _depth = dpt; }
 		void			setWave( LFO_WAVE wv ){ _wave = wv; }
-		void			setDerection( LFO_DIRECTION dir ){ _direction = dir; }
+		void			setDirection( LFO_DIRECTION dir ){ _direction = dir; }
 		
 	private:
 		//	Common Variables

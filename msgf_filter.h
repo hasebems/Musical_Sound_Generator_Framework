@@ -12,6 +12,7 @@
 #include <iostream>
 #include "msgf_type.h"
 #include "msgf_signal_process_core.h"
+#include "msgf_note.h"
 
 namespace msgf {
 //---------------------------------------------------------
@@ -25,13 +26,11 @@ struct Coef {
 	double	_b2;
 };
 //---------------------------------------------------------
-class Note;
-//---------------------------------------------------------
 class Filter : public SignalProcessCore {
 
 public:
 	Filter( Note* parent );
-	~Filter( void ){}
+	~Filter( void );
 
 	void	setCoef( double freq, double qValue );
 	void	setOneCoef( double fc, double qValue, Coef& cf );
@@ -51,6 +50,9 @@ private:
 	void	toRelease( void );
 	Coef*	getFegCoef( void );
 
+	//	Original
+	int		getVoicePrm( VoiceParameterId id ){ return _parentNote->getVoiceContext()->getParameter( id ); }
+	
 	//	FEG
 	Coef	_center;
 	Coef	_upper[FEG_MAX];

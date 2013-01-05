@@ -13,20 +13,22 @@
 #include <iostream>
 #include "msgf_type.h"
 #include "msgf_signal_process_core.h"
+#include "msgf_note.h"
+#include "msgf_lfo.h"
+#include "msgf_voice_context.h"
 
 namespace msgf {
 //---------------------------------------------------------
 class TgAudioBuffer;
-class Note;
 //---------------------------------------------------------
 class Amplitude : public SignalProcessCore {
 	
 public:
 	Amplitude( Note* parent ):
 		SignalProcessCore(parent) {}
-	~Amplitude( void ){}
+	~Amplitude( void );
 	
-	void	init( void ){}
+	void	init( void );
 	void	checkEvent( void );
 	void	checkSegmentEnd( void );
 	void	process( TgAudioBuffer& buf );
@@ -43,9 +45,14 @@ private:
 	double	getAegLevel( long crntDac, long targetDac, int startLvl, int targetLvl );
 	double	calcVolume( double amp );
 
+	int		getVoicePrm( VoiceParameterId id ){ return _parentNote->getVoiceContext()->getParameter( id ); }
+	
 	int		_startLvl;
 	int		_targetLvl;
 
+	//	LFO
+	Lfo*	_am;
+	double	_amd;
 };
 }
 #endif /* defined(__msgf_amplitude__) */

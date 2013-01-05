@@ -20,6 +20,27 @@ using namespace msgf;
 #define EG_LEVEL_MIN	0
 
 //---------------------------------------------------------
+//		Initialize
+//---------------------------------------------------------
+void Amplitude::init( void )
+{
+	//	LFO Settings as delegation who intend to use LFO
+	_am = new Lfo();
+	
+	//	LFO Settings only for Pitch
+	_am->setWave(LFO_TRI);
+	_am->setDirection(LFO_LOWER);
+	_am->setCoef();
+	_am->start();
+	_amd = static_cast<double>(getVoicePrm(VP_LFO_AMD))/100;
+}
+//---------------------------------------------------------
+Amplitude::~Amplitude( void )
+{
+	delete _am;
+}
+
+//---------------------------------------------------------
 //		Move to next segment
 //---------------------------------------------------------
 void Amplitude::toAttack( void )
@@ -28,7 +49,7 @@ void Amplitude::toAttack( void )
 	_state = ATTACK;
 	_egStartDac = _dacCounter = 0;
 	_egTargetDac = _egStartDac
-		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_AEG_ATTACK_TIME));
+		+ getTotalDacCount(getVoicePrm(VP_AEG_ATTACK_TIME));
 
 	//	level
 	_startLvl = EG_LEVEL_MIN;
@@ -41,11 +62,11 @@ void Amplitude::toDecay1( void )
 	_state = DECAY1;
 	_egStartDac = _dacCounter;
 	_egTargetDac = _egStartDac +
-		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_AEG_DECAY1_TIME));
+		+ getTotalDacCount(getVoicePrm(VP_AEG_DECAY1_TIME));
 	
 	//	level
 	_startLvl = EG_LEVEL_MAX;
-	_targetLvl = _parentNote->getVoiceContext()->getParameter(VP_AEG_DECAY1_LEVEL);
+	_targetLvl = getVoicePrm(VP_AEG_DECAY1_LEVEL);
 }
 //---------------------------------------------------------
 void Amplitude::toDecay2( void )
@@ -54,11 +75,11 @@ void Amplitude::toDecay2( void )
 	_state = DECAY2;
 	_egStartDac = _dacCounter;
 	_egTargetDac = _egStartDac +
-		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_AEG_DECAY2_TIME));
+		+ getTotalDacCount(getVoicePrm(VP_AEG_DECAY2_TIME));
 	
 	//	level
 	_startLvl = _targetLvl;
-	_targetLvl = _parentNote->getVoiceContext()->getParameter(VP_AEG_DECAY2_LEVEL);
+	_targetLvl = getVoicePrm(VP_AEG_DECAY2_LEVEL);
 }
 //---------------------------------------------------------
 void Amplitude::toDecay2Steady( void )
@@ -79,7 +100,7 @@ void Amplitude::toRelease( void )
 	//	time
 	_egStartDac = _dacCounter;
 	_egTargetDac = _egStartDac
-		+ getTotalDacCount(_parentNote->getVoiceContext()->getParameter(VP_AEG_RELEASE_TIME));
+		+ getTotalDacCount(getVoicePrm(VP_AEG_RELEASE_TIME));
 
 	_targetLvl = EG_LEVEL_MIN;
 }
@@ -98,7 +119,7 @@ double Amplitude::getAegLevel( long crntDac, long targetDac, int startLvl, int t
 //---------------------------------------------------------
 double Amplitude::calcVolume( double amp )
 {
-	double	vol = _parentNote->getVoiceContext()->getParameter(VP_VOLUME);
+	double	vol = getVoicePrm(VP_VOLUME);
 	amp *= (vol/EG_LEVEL_MAX);
 
 	Uint8 midiVal = _parentNote->getInstrument()->getPart()->getCc7();
@@ -161,7 +182,11 @@ void Amplitude::process( TgAudioBuffer& buf )
 {
 	//	check Event
 	checkEvent();
-	
+
+	//	get LFO pattern
+	double*	lfoBuf = new double[buf.bufferSize()];
+	_am->process( buf.bufferSize(), lfoBuf );
+
 	//	write Buffer
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 
@@ -171,6 +196,9 @@ void Amplitude::process( TgAudioBuffer& buf )
 		//	calc real amplitude
 		double aeg = getAegLevel( _dacCounter-_egStartDac, _egTargetDac-_egStartDac, _startLvl, _targetLvl );
 		aeg /= EG_LEVEL_MAX;
+
+		//	LFO
+		aeg *= (_amd*lfoBuf[i]+1)*aeg;
 
 		//	calculate Volume
 		double vol = calcVolume( aeg );

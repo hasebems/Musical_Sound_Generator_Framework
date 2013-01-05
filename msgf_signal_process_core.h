@@ -12,6 +12,7 @@
 #include <iostream>
 #include "msgf_type.h"
 #include "msgf_audio_buffer.h"
+#include "msgf_voice_context.h"
 
 namespace msgf {
 	//---------------------------------------------------------
