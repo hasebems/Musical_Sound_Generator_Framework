@@ -13,41 +13,15 @@
 #include "msgf_note.h"
 #include "msgf_event_info.h"
 #include "msgf_voice_context.h"
+#include "msgf_audio_buffer.h"
+
 using namespace msgf;
-
-//---------------------------------------------------------
-//		Constructor
-//---------------------------------------------------------
-Instrument::Instrument( Part* pt, int vid ) :
-	_parentPart(pt),
-	_voiceId(vid),
-	_topNote(0),
-	_endNote(0),
-	_vc(0),
-	_noteCounter(0)
-{
-	_vc = _parentPart->tgObj()->vc();
-}
-
-//---------------------------------------------------------
-//		Destructor
-//---------------------------------------------------------
-Instrument::~Instrument( void )
-{
-}
 
 //---------------------------------------------------------
 //		Key On
 //---------------------------------------------------------
-void Instrument::keyOn( Uint8 note, Uint8 velocity )
+void Instrument::appendNoteList( Note* nt )
 {
-	Note* nt = new Note(this);
-	EventInfo* ei = new EventInfo();
-
-	ei->setVelocity( velocity );
-	ei->setNote( note );
-	nt->keyOn( ei );
-
 	if ( _topNote == 0 ){
 		_topNote = nt;
 	}
@@ -109,15 +83,29 @@ void Instrument::process( TgAudioBuffer& buf )
 	Note* ntTmp = 0;
 	
 	while ( ntPr != 0 ){
-		if ( ntPr->process( buf ) == false ) ntTmp = ntPr;
+		TgAudioBuffer	nbuf;
+		nbuf.obtainAudioBuffer(buf.bufferSize());
+
+		if ( ntPr->process( nbuf ) == false ) ntTmp = ntPr;
 		else ntTmp = 0;
+
+		//	Add to Buffer and Check no sound
+		bool noSound = buf.mixAndCheckNoSound(nbuf);
+		nbuf.releaseAudioBuffer();
+		
+		if (( noSound == true ) && ( ntPr->conditionKeyOn() == false )){
+			//	this will be released
+			ntTmp = ntPr;
+		}
+		else ntTmp = 0;
+		
 		ntPr = ntPr->getNextNote();
 		if ( ntTmp ) delete ntTmp;
 	}
 }
 
 //---------------------------------------------------------
-//		Private
+//		Protected
 //---------------------------------------------------------
 Note* Instrument::searchNote( Uint8 note, CONDITION cd )
 {

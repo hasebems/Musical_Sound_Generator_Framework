@@ -35,13 +35,15 @@ Part::Part( Msgf* ptg ) :
 	_programNumber(0),
 	_pitchBendValue(0)
 {
-	int voiceId = ptg->vc()->getVoiceId( 0, 0, 0 );
-	_inst = new Instrument( this, voiceId );
+	_instFactory = new InstrumentFactory();
+	int voiceId = getInstrumentId( 0, 0, 0 );
+	_inst = _instFactory->getInstrument( this, voiceId );
 }
 //---------------------------------------------------------
 Part::~Part( void )
 {
 	if ( _inst != 0 ) delete _inst;
+	delete _instFactory;
 }
 
 //---------------------------------------------------------
@@ -93,8 +95,8 @@ void Part::programChange( int number )
 	
 	_inst->allSoundOff();
 	if ( _inst != 0 ) delete _inst;
-	int voiceId = _tg->vc()->getVoiceId( _cc0_msb, _cc32_lsb, number );
-	_inst = new Instrument( this, voiceId );
+	int voiceId = getInstrumentId( _cc0_msb, _cc32_lsb, number );
+	_inst = _instFactory->getInstrument( this, voiceId );
 }
 
 //---------------------------------------------------------

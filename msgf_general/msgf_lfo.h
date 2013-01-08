@@ -13,6 +13,7 @@
 #include "msgf_type.h"
 
 namespace msgf {
+
 	//---------------------------------------------------------
 	typedef enum {
 		LFO_BOTH,

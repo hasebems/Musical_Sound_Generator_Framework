@@ -21,10 +21,15 @@ bool TgAudioBuffer::mixAndCheckNoSound( TgAudioBuffer &srcBuf )
 	for ( int i=0; i<_bufSize; i++ ){
 		double val = srcBuf.getAudioBuffer(i);
 		addAudioBuffer( i, val );
-		if ( val < DAMP_LIMIT_DEPTH ) cnt++;
+		if ( val < DAMP_LIMIT_DEPTH ){
+			cnt++;
+		}
 	}
 
-	if ( cnt >= _bufSize ) return true;
-
-	return false;
+	if ( cnt >= _bufSize ){
+		return true;
+	}
+	else {
+		return false;
+	}
 }

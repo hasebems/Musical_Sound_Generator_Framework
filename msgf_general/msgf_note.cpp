@@ -11,9 +11,6 @@
 #include "msgf_instrument.h"
 #include "msgf_event_info.h"
 #include "msgf_voice_context.h"
-#include "msgf_oscillator.h"
-#include "msgf_filter.h"
-#include "msgf_amplitude.h"
 #include "msgf_audio_buffer.h"
 using namespace msgf;
 
@@ -25,27 +22,15 @@ Note::Note( Instrument* inst ) :
 	_nextNote(0),
 	_prevNote(0),
 	_cndKeyOn(false),
-	_cndSustainPedal(false),
-	_audioCounter(0)
+	_cndSustainPedal(false)
 {
 	_vc = _parentInst->getVoiceContext();
-	_osc = new Oscillator(this);
-	_flt = new Filter(this);
-	_amp = new Amplitude(this);
-}
-//---------------------------------------------------------
-Note::~Note( void )
-{
-	releaseMe();
-	delete _amp;
-	delete _flt;
-	delete _osc;
 }
 
 //---------------------------------------------------------
 //		Key On
 //---------------------------------------------------------
-void Note::keyOn( EventInfo* ei )
+bool Note::keyOn( EventInfo* ei )
 {
 	//	Set Variables
 	_cndKeyOn = true;
@@ -58,10 +43,7 @@ void Note::keyOn( EventInfo* ei )
 	_prevNote = lastKeyOnNote;
 	_nextNote = 0;
 
-	//	Init
-	_osc->init();
-	_flt->init();
-	_amp->init();
+	return true;
 }
 
 //---------------------------------------------------------
@@ -109,36 +91,4 @@ void Note::releaseMe( void )
 	if ( _nextNote != 0 ) _nextNote->setPrevNote( _prevNote );
 	_prevNote = _nextNote = 0;
 	_parentInst = 0;
-}
-
-//---------------------------------------------------------
-//		Process Function
-//---------------------------------------------------------
-bool Note::process( TgAudioBuffer& buf )
-{
-	TgAudioBuffer	nbuf;
-	nbuf.obtainAudioBuffer(buf.bufferSize());
-	
-	//	Oscillator
-	_osc->process(nbuf);
-	
-	//	Filter
-	_flt->process(nbuf);
-	
-	//	Amplitude
-	_amp->process(nbuf);
-	
-	//	Effect
-
-	
-	//	Add to Buffer and Check no sound
-	bool noSound = buf.mixAndCheckNoSound(nbuf);
-	nbuf.releaseAudioBuffer();
-		
-	if (( noSound == true ) && ( _cndKeyOn == false )){
-		//	this will be released
-		return false;
-	}
-
-	return true;
 }

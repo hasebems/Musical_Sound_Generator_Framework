@@ -11,9 +11,9 @@
 #define __msgf_part__
 
 #include <iostream>
-
 #include "msgf_type.h"
 #include "msgf_instrument.h"
+#include "msgf_configration.h"
 
 namespace msgf {
 //---------------------------------------------------------
@@ -23,15 +23,19 @@ class TgAudioBuffer;
 class Part {
 
 public:
+	//	Constructor/Destructor
 	Part( Msgf* ptg );
 	~Part( void );
 
+	//	IF Function
 	void	keyOn( int velocity, int note );
 	void	keyOff( int velocity, int note );
 	void	controlChange( int controller, int value );
 	void	programChange( int number );
 	void	pitchBend( int valule );
+	int		getInstrumentId( Uint8 msb, Uint8 lsb, Uint8 pcNum ){ return 0;}
 
+	//	Realtime Audio
 	void	process( TgAudioBuffer& buf ){ _inst->process( buf ); }
 
 	//	Accessor
@@ -61,6 +65,7 @@ private:
 	int		_pitchBendValue;
 
 	//	Composite Object
+	InstrumentFactory* _instFactory;
 	Instrument*	_inst;
 
 	//	Association

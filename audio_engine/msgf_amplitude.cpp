@@ -24,10 +24,10 @@ using namespace msgf;
 //---------------------------------------------------------
 void Amplitude::init( void )
 {
-	//	LFO Settings as delegation who intend to use LFO
+	//	LFO Construct
 	_am = new Lfo();
 	
-	//	LFO Settings only for Pitch
+	//	LFO Settings only for Amplitude
 	_am->setWave(LFO_TRI);
 	_am->setDirection(LFO_LOWER);
 	_am->setCoef();

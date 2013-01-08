@@ -16,8 +16,6 @@ using namespace msgf;
 //---------------------------------------------------------
 Msgf::Msgf( void )
 {
-	_vc = new VoiceContext();
-
 	for ( int i=0; i<MAX_PART_NUM; i++ ){
 		_pt[i] = new Part(this);
 	}
@@ -28,8 +26,6 @@ Msgf::~Msgf()
 	for ( int i=0; i<MAX_PART_NUM; i++ ){
 		delete _pt[i];
 	}
-
-	delete _vc;
 }
 
 //---------------------------------------------------------
