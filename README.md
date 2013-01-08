@@ -4,7 +4,7 @@
 MSGF is being developed to provide as a software framework of musical synthesizer and an audio engine that works with it.
 
 ## Environment
-If you make Xcode project file and add these files to it, it will work as a MIDI based software synthesizer as an iOS app.
+If you make Xcode project and add these files to it, it will work as a MIDI based software synthesizer as an iOS app.
 
 ## How to use
 1. Include "AudioOutput.h", create an instance of AudioOutput class.
@@ -12,7 +12,7 @@ If you make Xcode project file and add these files to it, it will work as a MIDI
 3. Send MIDI data to receiveMidi(). And then you can get sound.
 
 ## Future Plan
-I will try to work this framework on a general ARM-Linux board like Raspberry pie.
+I will try to make this framework work on a general ARM-Linux board like Raspberry pie.
 Finally I want to make an original electric music keyboard.
 
 
