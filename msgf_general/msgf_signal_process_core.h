@@ -16,59 +16,24 @@
 
 namespace msgf {
 	//---------------------------------------------------------
-	typedef enum {
-		
-		EG_NOT_YET,
-		ATTACK,
-		DECAY1,
-		DECAY2,
-		KEY_ON_STEADY,
-		RELEASE,
-		KEY_OFF_STEADY,
-		STATE_MAX
-		
-	} EG_STATE;
-
-	//---------------------------------------------------------
-	class Note;
-	//---------------------------------------------------------
 	class SignalProcessCore {
 		
 	public:
-		SignalProcessCore( Note* parent ):
-			_parentNote(parent),
-			_dacCounter(-1),
-			_egStartDac(0),
-			_egTargetDac(0),
-			_state(EG_NOT_YET) {}
+		SignalProcessCore( void ):
+			_dacCounter(-1) {}
 		virtual ~SignalProcessCore( void ){}
 
 		virtual void	init( void ) = 0;
 		virtual void	process( TgAudioBuffer& buf ) = 0;
 		
 	protected:
-		//	Move to next EG Segment
-		virtual void	toAttack( void ){}			//	EG_NOT_YET -> ATTACK
-		virtual void	toDecay1( void ){}			//	ATTACK -> DECAY1
-		virtual void	toDecay2( void ){}			//	DECAY1 -> DECAY2
-		virtual void	toKeyOnSteady( void ){}		//	keep DECAY2
-		virtual void	toRelease( void ){}			//	any Segment -> RELEASE
-		virtual void	toKeyOffSteady( void ){}	//	keep RELEASE
-
 		//	Judge Segment change
 		virtual	void	checkEvent( void ){}
-		virtual void	checkSegmentEnd( void ){}
 		
 		int		getTotalDacCount( const int time ){return time*(SMPL_FREQUENCY/100);}
 		
 		//	Basic Variables
-		Note*	_parentNote;
 		long	_dacCounter;		//	should be incremented by buffer size in process
-
-		//	EG Manage
-		long	_egStartDac;
-		long	_egTargetDac;
-		EG_STATE	_state;
 	};
 }
 #endif

@@ -22,6 +22,15 @@ using namespace msgf;
 //---------------------------------------------------------
 //		Initialize
 //---------------------------------------------------------
+Amplitude::Amplitude( Note* parent ):
+	SignalProcessWithEG(parent),
+	_crntAeg(0){}
+//---------------------------------------------------------
+Amplitude::~Amplitude( void )
+{
+	delete _am;
+}
+//---------------------------------------------------------
 void Amplitude::init( void )
 {
 	//	LFO Construct
@@ -34,11 +43,6 @@ void Amplitude::init( void )
 	_am->start();
 	_amd = static_cast<double>(getVoicePrm(VP_LFO_AMD))/100;
 }
-//---------------------------------------------------------
-Amplitude::~Amplitude( void )
-{
-	delete _am;
-}
 
 //---------------------------------------------------------
 //		Move to next segment
@@ -46,63 +50,50 @@ Amplitude::~Amplitude( void )
 void Amplitude::toAttack( void )
 {
 	//	time
-	_state = ATTACK;
-	_egStartDac = _dacCounter = 0;
-	_egTargetDac = _egStartDac
-		+ getTotalDacCount(getVoicePrm(VP_AEG_ATTACK_TIME));
+	SignalProcessWithEG::toAttack();
 
 	//	level
-	_startLvl = EG_LEVEL_MIN;
-	_targetLvl = EG_LEVEL_MAX;
+	_aegStartLevel = EG_LEVEL_MIN;
+	_aegTargetLevel = EG_LEVEL_MAX;
 }
 //---------------------------------------------------------
 void Amplitude::toDecay1( void )
 {
 	//	time
-	_state = DECAY1;
-	_egStartDac = _dacCounter;
-	_egTargetDac = _egStartDac +
-		+ getTotalDacCount(getVoicePrm(VP_AEG_DECAY1_TIME));
+	SignalProcessWithEG::toDecay1();
 	
 	//	level
-	_startLvl = EG_LEVEL_MAX;
-	_targetLvl = getVoicePrm(VP_AEG_DECAY1_LEVEL);
+	_aegStartLevel = EG_LEVEL_MAX;
+	_aegTargetLevel = getVoicePrm(VP_AEG_DECAY1_LEVEL);
 }
 //---------------------------------------------------------
 void Amplitude::toDecay2( void )
 {
 	//	time
-	_state = DECAY2;
-	_egStartDac = _dacCounter;
-	_egTargetDac = _egStartDac +
-		+ getTotalDacCount(getVoicePrm(VP_AEG_DECAY2_TIME));
+	SignalProcessWithEG::toDecay2();
 	
 	//	level
-	_startLvl = _targetLvl;
-	_targetLvl = getVoicePrm(VP_AEG_DECAY2_LEVEL);
+	_aegStartLevel = _aegTargetLevel;
+	_aegTargetLevel = getVoicePrm(VP_AEG_DECAY2_LEVEL);
 }
 //---------------------------------------------------------
-void Amplitude::toDecay2Steady( void )
+void Amplitude::toKeyOnSteady( void )
 {
 	//	time
-	_state = KEY_ON_STEADY;
-	_egStartDac = _dacCounter;
+	SignalProcessWithEG::toKeyOnSteady();
 
 	//	level
-	_startLvl = _targetLvl;
+	_aegStartLevel = _aegTargetLevel;
 }
 //---------------------------------------------------------
 void Amplitude::toRelease( void )
 {
-	_state = RELEASE;
-	_startLvl = static_cast<int>(getAegLevel( _dacCounter-_egStartDac, _egTargetDac-_egStartDac, _startLvl, _targetLvl ));
-
 	//	time
-	_egStartDac = _dacCounter;
-	_egTargetDac = _egStartDac
-		+ getTotalDacCount(getVoicePrm(VP_AEG_RELEASE_TIME));
+	SignalProcessWithEG::toRelease();
 
-	_targetLvl = EG_LEVEL_MIN;
+	//	level
+	_aegStartLevel = static_cast<int>(_crntAeg);
+	_aegTargetLevel = EG_LEVEL_MIN;
 }
 
 //---------------------------------------------------------
@@ -133,51 +124,6 @@ double Amplitude::calcVolume( double amp )
 //---------------------------------------------------------
 //		Process Function
 //---------------------------------------------------------
-void Amplitude::checkEvent( void )
-{
-	switch (_state){
-		case EG_NOT_YET:{
-			if ( _parentNote->conditionKeyOn() == true ){
-				//	Start key On
-				toAttack();
-			}
-			break;
-		}
-		case ATTACK:
-		case DECAY1:
-		case DECAY2:
-		case KEY_ON_STEADY:{
-			if ( _parentNote->conditionKeyOn() == false ){
-				//	Key Off
-				toRelease();
-			}
-			break;
-		}
-		default: break;
-	}
-}
-//---------------------------------------------------------
-void Amplitude::checkSegmentEnd( void )
-{
-	if ( _dacCounter < _egTargetDac ) return;
-
-	switch (_state){
-		case ATTACK:
-			toDecay1();
-			break;
-		case DECAY1:
-			toDecay2();
-			break;
-		case DECAY2:{
-			if ( _targetLvl != EG_LEVEL_MIN ){
-			}
-			break;
-		}
-		case RELEASE:
-		default: break;
-	}
-}
-//---------------------------------------------------------
 void Amplitude::process( TgAudioBuffer& buf )
 {
 	//	check Event
@@ -194,7 +140,8 @@ void Amplitude::process( TgAudioBuffer& buf )
 		checkSegmentEnd();
 
 		//	calc real amplitude
-		double aeg = getAegLevel( _dacCounter-_egStartDac, _egTargetDac-_egStartDac, _startLvl, _targetLvl );
+		double aeg = getAegLevel( _dacCounter-_egStartDac, _egTargetDac-_egStartDac, _aegStartLevel, _aegTargetLevel );
+		_crntAeg = aeg;
 		aeg /= EG_LEVEL_MAX;
 
 		//	LFO

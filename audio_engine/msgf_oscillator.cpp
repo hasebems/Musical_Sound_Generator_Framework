@@ -103,21 +103,16 @@ void Oscillator::calcPegPitch( double pch )
 void Oscillator::toAttack( void )
 {
 	//	time
-	_state = ATTACK;
-	_egStartDac = _dacCounter = 0;
-	_egTargetDac = _egStartDac
-		+ getTotalDacCount(getVoicePrm(VP_PEG_ATTACK_TIME));
+	SignalProcessWithEG::toAttack();
 
 	//	level
 	_pegLevel = _pegStartLevel = getVoicePrm(VP_PEG_ATTACK_LEVEL);
 }
 //---------------------------------------------------------
-void Oscillator::toSteady( void )
+void Oscillator::toKeyOnSteady( void )
 {
 	//	time
-	_state = KEY_ON_STEADY;
-	_egStartDac = _dacCounter;
-	_egTargetDac = _egStartDac;
+	SignalProcessWithEG::toKeyOnSteady();
 
 	//	level
 	_pegLevel = 0;
@@ -126,10 +121,7 @@ void Oscillator::toSteady( void )
 void Oscillator::toRelease( void )
 {
 	//	time
-	_state = RELEASE;
-	_egStartDac = _dacCounter;
-	_egTargetDac = _egStartDac
-		+ getTotalDacCount(getVoicePrm(VP_PEG_RELEASE_TIME));
+	SignalProcessWithEG::toRelease();
 
 	//	level
 	_pegLevel = getVoicePrm(VP_PEG_RELEASE_LEVEL);
@@ -162,40 +154,6 @@ double Oscillator::getPegCurrentPitch( void )
 //---------------------------------------------------------
 //		Process Function
 //---------------------------------------------------------
-void Oscillator::checkEvent( void )
-{
-	switch (_state){
-		case EG_NOT_YET:{
-			if ( _parentNote->conditionKeyOn() == true ){
-				//	Start key On
-				toAttack();
-			}
-			break;
-		}
-		case ATTACK:
-		case DECAY1:
-		case DECAY2:
-		case KEY_ON_STEADY:{
-			if ( _parentNote->conditionKeyOn() == false ){
-				//	Key Off
-				toRelease();
-			}
-			break;
-		}
-		default: break;
-	}
-}
-//---------------------------------------------------------
-void Oscillator::checkSegmentEnd( void )
-{
-	if ( _dacCounter < _egTargetDac ) return;
-
-	switch (_state){
-		case ATTACK: toSteady(); break;
-		default: break;
-	}
-}
-//---------------------------------------------------------
 void Oscillator::process( TgAudioBuffer& buf )
 {
 	//	check Event
@@ -204,7 +162,7 @@ void Oscillator::process( TgAudioBuffer& buf )
 	if ( _state != EG_NOT_YET ){
 
 		//	Check AEG Segment
-		checkSegmentEnd();
+		checkSegmentEnd2seg();
 
 		double	pch = getPegCurrentPitch();
 		double	diff = (2 * M_PI * pch )/ SMPL_FREQUENCY;
@@ -261,7 +219,7 @@ void Oscillator::generateTriangle( TgAudioBuffer& buf, double* lfobuf, double di
 //---------------------------------------------------------
 void Oscillator::generateSaw( TgAudioBuffer& buf, double* lfobuf, double diff )
 {
-	int maxOverTone = 20000/_pitch;
+	int maxOverTone = 16000/_pitch;
 
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 		//	write Saw wave
@@ -276,7 +234,7 @@ void Oscillator::generateSaw( TgAudioBuffer& buf, double* lfobuf, double diff )
 //---------------------------------------------------------
 void Oscillator::generateSquare( TgAudioBuffer& buf, double* lfobuf, double diff )
 {
-	int maxOverTone = 20000/_pitch;
+	int maxOverTone = 16000/_pitch;
 
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 		//	write Square wave

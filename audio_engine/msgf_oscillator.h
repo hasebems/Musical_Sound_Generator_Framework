@@ -12,7 +12,7 @@
 
 #include <iostream>
 #include "msgf_type.h"
-#include "msgf_signal_process_core.h"
+#include "msgf_signal_process_with_eg.h"
 #include "msgf_voice_context.h"
 #include "msgf_note.h"
 #include "msgf_lfo.h"
@@ -55,16 +55,14 @@ namespace msgf {
 	//---------------------------------------------------------
 	class TgAudioBuffer;
 	//---------------------------------------------------------
-	class Oscillator : public SignalProcessCore {
+	class Oscillator : public SignalProcessWithEG {
 		
 	public:
 		Oscillator( Note* parent ):
-		SignalProcessCore(parent) {}
+		SignalProcessWithEG(parent) {}
 		~Oscillator( void );
 		
 		void	init( void );
-		void	checkEvent( void );
-		void	checkSegmentEnd( void );
 		void	process( TgAudioBuffer& buf );
 		
 		//	Accessor
@@ -76,7 +74,7 @@ namespace msgf {
 	private:
 		//	override
 		void	toAttack( void );
-		void	toSteady( void );
+		void	toKeyOnSteady( void );
 		void	toRelease( void );
 		
 		double	calcPitch( const Uint8 note );
@@ -91,7 +89,9 @@ namespace msgf {
 		void	generatePulse( TgAudioBuffer& buf, double* lfobuf, double diff );
 		
 		int		getVoicePrm( int id ){ return _parentNote->getVoiceContext()->getParameter( VP_OSCILLATOR_ID, id ); }
-		
+		int		getAttackDacCount( void ){ return getTotalDacCount(getVoicePrm(VP_PEG_ATTACK_TIME)); }
+		int		getReleaseDacCount( void ){ return getTotalDacCount(getVoicePrm(VP_PEG_RELEASE_TIME)); }
+
 		static const double tPitchOfA[11];
 		
 		//	PEG

@@ -11,7 +11,7 @@
 
 #include <iostream>
 #include "msgf_type.h"
-#include "msgf_signal_process_core.h"
+#include "msgf_signal_process_with_eg.h"
 #include "msgf_note.h"
 
 namespace msgf {
@@ -25,9 +25,9 @@ namespace msgf {
 		VP_FILTER_RESO,			//	1 - 100 ?
 		
 		VP_FEG_ATTACK_TIME,		//	0 - 1000 (*10ms)
-		VP_FEG_ATTACK_LEVEL,	//	-32 - 0 - +32 (1/2 - 2[times*Hz])
+		VP_FEG_ATTACK_LEVEL,	//	-100 - 0 - +100 (1/4 - 4[times*Hz])
 		VP_FEG_RELEASE_TIME,	//	0 - 1000 (*10ms)
-		VP_FEG_RELEASE_LEVEL,	//	-32 - 0 - +32 (1/2 - 2[times*Hz])
+		VP_FEG_RELEASE_LEVEL,	//	-100 - 0 - +100 (1/4 - 4[times*Hz])
 		
 		VP_FILTER_MAX
 		
@@ -43,41 +43,44 @@ namespace msgf {
 		double	_b2;
 	};
 	//---------------------------------------------------------
-	class Filter : public SignalProcessCore {
+	class Filter : public SignalProcessWithEG {
 		
 	public:
 		Filter( Note* parent );
 		~Filter( void );
 		
-		void	setCoef( double freq, double qValue );
-		void	setOneCoef( double fc, double qValue, Coef& cf );
-		
 		void	init( void );
-		void	checkEvent( void );
-		void	checkSegmentEnd( void );
 		void	process( TgAudioBuffer& buf );
 		
-		static const int FEG_MAX = 32;
+		static const int FEG_MAX = 100;
 		static const int FEG_DEPTH_MAX = 16; // *Fc[Hz]
 		
 	private:
 		//	override
 		void	toAttack( void );
-		void	toSteady( void );
+		void	toKeyOnSteady( void );
 		void	toRelease( void );
-		Coef*	getFegCoef( void );
-		
+		void	getFegCoef( Coef& cf );
+
 		//	Original
 		int		getVoicePrm( int id ){ return _parentNote->getVoiceContext()->getParameter( VP_FILTER_ID, id ); }
-		
+		int		getAttackDacCount( void ){ return getTotalDacCount(getVoicePrm(VP_FEG_ATTACK_TIME)); }
+		int		getReleaseDacCount( void ){ return getTotalDacCount(getVoicePrm(VP_FEG_RELEASE_TIME)); }
+
+		double	calcFreq( double fc, int prm );
+		void	setOneCoef( double fc, double qValue, Coef& cf );
+
 		//	FEG
 		Coef	_center;
-		Coef	_upper[FEG_MAX];
-		Coef	_lower[FEG_MAX];
 		int		_fegStartLevel;
 		int		_fegCrntLevel;
-		int		_fegLevel;
+		int		_fegTargetLevel;
 		
+		//	Basic Value
+		double	_frqRatio;
+		double	_baseFc;
+		double	_baseQ;
+
 		double	_x_m2;
 		double	_x_m1;
 		double	_y_m2;

@@ -12,7 +12,7 @@
 
 #include <iostream>
 #include "msgf_type.h"
-#include "msgf_signal_process_core.h"
+#include "msgf_signal_process_with_eg.h"
 #include "msgf_note.h"
 #include "msgf_lfo.h"
 #include "msgf_voice_context.h"
@@ -40,16 +40,13 @@ namespace msgf {
 	//---------------------------------------------------------
 	class TgAudioBuffer;
 	//---------------------------------------------------------
-	class Amplitude : public SignalProcessCore {
+	class Amplitude : public SignalProcessWithEG {
 		
 	public:
-		Amplitude( Note* parent ):
-		SignalProcessCore(parent) {}
+		Amplitude( Note* parent );
 		~Amplitude( void );
 		
 		void	init( void );
-		void	checkEvent( void );
-		void	checkSegmentEnd( void );
 		void	process( TgAudioBuffer& buf );
 		
 	private:
@@ -57,18 +54,25 @@ namespace msgf {
 		void	toAttack( void );
 		void	toDecay1( void );
 		void	toDecay2( void );
-		void	toDecay2Steady( void );
+		void	toKeyOnSteady( void );
 		void	toRelease( void );
 		
 		//	original
 		double	getAegLevel( long crntDac, long targetDac, int startLvl, int targetLvl );
 		double	calcVolume( double amp );
 		
+		//	Get Segment Parameter
 		int		getVoicePrm( int id ){ return _parentNote->getVoiceContext()->getParameter( VP_AMPLITUDE_ID, id ); }
-		
-		int		_startLvl;
-		int		_targetLvl;
-		
+		int		getAttackDacCount( void ){ return getTotalDacCount(getVoicePrm(VP_AEG_ATTACK_TIME)); }
+		int		getDecay1DacCount( void ){ return getTotalDacCount(getVoicePrm(VP_AEG_DECAY1_TIME)); }
+		int		getDecay2DacCount( void ){ return getTotalDacCount(getVoicePrm(VP_AEG_DECAY2_TIME)); }
+		int		getReleaseDacCount( void ){ return getTotalDacCount(getVoicePrm(VP_AEG_RELEASE_TIME)); }
+
+		//	EG Level
+		int		_aegStartLevel;
+		int		_aegTargetLevel;
+		double	_crntAeg;
+
 		//	LFO
 		Lfo*	_am;
 		double	_amd;
