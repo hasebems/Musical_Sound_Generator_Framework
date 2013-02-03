@@ -6,10 +6,6 @@
 //  Copyright (c) 2013年 長谷部 雅彦. All rights reserved.
 //
 
-#include "msgf_oscillator.h"
-#include "msgf_amplitude.h"
-#include "msgf_filter.h"
-
 #include "vas_note.h"
 
 using namespace msgf;
@@ -20,9 +16,9 @@ using namespace msgf;
 VasNote::VasNote( Instrument* inst ) :
 Note(inst)
 {
-	_osc = new Oscillator(this);
-	_flt = new Filter(this);
-	_amp = new Amplitude(this);
+	_osc = new Oscillator(*this);
+	_flt = new IirFilter(*this);
+	_amp = new Amplitude(*this);
 }
 //---------------------------------------------------------
 VasNote::~VasNote( void )

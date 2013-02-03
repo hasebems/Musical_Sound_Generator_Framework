@@ -11,21 +11,31 @@
 #include "msgf_oscillator.h"
 #include "msgf_audio_buffer.h"
 #include "msgf_note.h"
+
 using namespace msgf;
 
 //---------------------------------------------------------
 //		Initialize
 //---------------------------------------------------------
+Oscillator::Oscillator( Note& parent ):
+_parentNote(parent)
+{
+	_cbInst = new PegCallBack( this );
+	_eg = new Eg2segment( *_cbInst, parent );
+}
+//---------------------------------------------------------
+Oscillator::~Oscillator( void )
+{
+	delete _pm;
+	delete _cbInst;
+	delete _eg;
+}
+//---------------------------------------------------------
 void Oscillator::init( void )
 {
 	_waveform = getVoicePrm( VP_WAVEFORM );
-	_pitch = calcPitch( _parentNote->getNote() );
-	calcPegPitch( _pitch );
-
+	_pitch = calcPitch( _parentNote.getNote() );
 	_crntPhase = 0;
-	_pegStartLevel = 0;
-	_pegCrntLevel = 0;
-	_pegLevel = 0;
 
 	//	LFO Settings as delegation who intend to use LFO
 	_pm = new Lfo();
@@ -38,11 +48,6 @@ void Oscillator::init( void )
 	_pm->setCoef();
 	_pm->start();
 	_pmd = static_cast<double>(getVoicePrm(VP_LFO_PMD))/100;
-}
-//---------------------------------------------------------
-Oscillator::~Oscillator( void )
-{
-	delete _pm;
 }
 
 //---------------------------------------------------------
@@ -76,79 +81,28 @@ double Oscillator::calcPitch( const Uint8 note )
 	return ap;
 }
 //---------------------------------------------------------
-void Oscillator::calcPegPitch( double pch )
+double Oscillator::getPegPitch( int depth )
 {
-	double pttmp, ratio = log(PEG_DEPTH_MAX)/PEG_MAX;
-	int	i;
-
-	ratio = exp(ratio);
-	pttmp = pch;
-	for ( i=0; i<PEG_MAX; i++ ){
-		pttmp = pttmp*ratio;
-		_upper[i] = pttmp;
-	}
+	if ( depth == 0 ) return _pitch;
 	
-	ratio = -log(PEG_DEPTH_MAX)/PEG_MAX;
-	ratio = exp(ratio);
-	pttmp = pch;
-	for ( i=0; i<PEG_MAX; i++ ){
-		pttmp = pttmp*ratio;
-		_lower[i] = pttmp;
+	double pttmp = _pitch;
+	if ( depth > 0 ){
+		double ratio = log(PEG_DEPTH_MAX)/PEG_MAX;
+		ratio = exp(ratio);
+		for ( int i=0; i<depth; i++ ){
+			pttmp = pttmp*ratio;
+		}
 	}
-}
-
-//---------------------------------------------------------
-//		Move to next segment
-//---------------------------------------------------------
-void Oscillator::toAttack( void )
-{
-	//	time
-	SignalProcessWithEG::toAttack();
-
-	//	level
-	_pegLevel = _pegStartLevel = getVoicePrm(VP_PEG_ATTACK_LEVEL);
-}
-//---------------------------------------------------------
-void Oscillator::toKeyOnSteady( void )
-{
-	//	time
-	SignalProcessWithEG::toKeyOnSteady();
-
-	//	level
-	_pegLevel = 0;
-}
-//---------------------------------------------------------
-void Oscillator::toRelease( void )
-{
-	//	time
-	SignalProcessWithEG::toRelease();
-
-	//	level
-	_pegLevel = getVoicePrm(VP_PEG_RELEASE_LEVEL);
-	_pegStartLevel = _pegCrntLevel;
-}
-
-//---------------------------------------------------------
-//		Get PEG Current Pitch
-//---------------------------------------------------------
-double Oscillator::getPegCurrentPitch( void )
-{
-	long time = _dacCounter-_egStartDac;
-	long targetTime = _egTargetDac-_egStartDac;
-	
-	if ( targetTime == 0 ) return _pitch;
-	if ( time >= targetTime ) time = targetTime-1;
-	
-	if ( _state == ATTACK ){
-		_pegCrntLevel = (targetTime-1-time)*_pegLevel/targetTime;
+	else {
+		depth = 0-depth;
+		double ratio = -log(PEG_DEPTH_MAX)/PEG_MAX;
+		ratio = exp(ratio);
+		for ( int i=0; i<depth; i++ ){
+			pttmp = pttmp*ratio;
+		}
 	}
-	else if ( _state == RELEASE ){
-		_pegCrntLevel = time*(_pegLevel-_pegStartLevel)/targetTime + _pegStartLevel;
-	}
-	
-	if ( _pegCrntLevel > 0 ) return _upper[_pegCrntLevel];
-	else if ( _pegCrntLevel < 0 ) return _lower[-_pegCrntLevel];
-	return _pitch;
+
+	return pttmp;
 }
 
 //---------------------------------------------------------
@@ -157,14 +111,18 @@ double Oscillator::getPegCurrentPitch( void )
 void Oscillator::process( TgAudioBuffer& buf )
 {
 	//	check Event
-	checkEvent();
+	_eg->periodicOnceEveryProcesses();
 
-	if ( _state != EG_NOT_YET ){
+	if ( _eg->getEgState() != EG_NOT_YET ){
 
-		//	Check AEG Segment
-		checkSegmentEnd2seg();
+		//	Check EG Segment
+		_eg->periodicOnceEveryDac( _dacCounter );
 
-		double	pch = getPegCurrentPitch();
+		//	Get EG Level
+		int egLvl = static_cast<int>(_eg->calcEgLevel() * PEG_MAX);
+
+		//	Generate Phase diff
+		double	pch = getPegPitch(egLvl);
 		double	diff = (2 * M_PI * pch )/ SMPL_FREQUENCY;
 
 		//	get LFO pattern

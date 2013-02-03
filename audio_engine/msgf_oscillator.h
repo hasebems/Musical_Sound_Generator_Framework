@@ -12,9 +12,10 @@
 
 #include <iostream>
 #include "msgf_type.h"
-#include "msgf_signal_process_with_eg.h"
+#include "msgf_signal_process_core.h"
 #include "msgf_voice_context.h"
 #include "msgf_note.h"
+#include "msgf_eg2seg.h"
 #include "msgf_lfo.h"
 
 namespace msgf {
@@ -54,12 +55,14 @@ namespace msgf {
 
 	//---------------------------------------------------------
 	class TgAudioBuffer;
+	class PegCallBack;
 	//---------------------------------------------------------
-	class Oscillator : public SignalProcessWithEG {
+	class Oscillator : public SignalProcessCore {
+
+		friend class PegCallBack;
 		
 	public:
-		Oscillator( Note* parent ):
-		SignalProcessWithEG(parent) {}
+		Oscillator( Note& parent );
 		~Oscillator( void );
 		
 		void	init( void );
@@ -72,14 +75,9 @@ namespace msgf {
 		static const int PEG_DEPTH_MAX = 2; // /2 Octave
 		
 	private:
-		//	override
-		void	toAttack( void );
-		void	toKeyOnSteady( void );
-		void	toRelease( void );
 		
 		double	calcPitch( const Uint8 note );
-		void	calcPegPitch( double pch );
-		double	getPegCurrentPitch( void );
+		double	getPegPitch( int depth );
 		
 		double	calcDeltaLFO( double lfoDpt, double diff );
 		void	generateSine( TgAudioBuffer& buf, double* lfobuf, double diff );
@@ -88,19 +86,19 @@ namespace msgf {
 		void	generateSquare( TgAudioBuffer& buf, double* lfobuf, double diff );
 		void	generatePulse( TgAudioBuffer& buf, double* lfobuf, double diff );
 		
-		int		getVoicePrm( int id ){ return _parentNote->getVoiceContext()->getParameter( VP_OSCILLATOR_ID, id ); }
+		int		getVoicePrm( int id ){ return _parentNote.getVoiceContext()->getParameter( VP_OSCILLATOR_ID, id ); }
 		int		getAttackDacCount( void ){ return getTotalDacCount(getVoicePrm(VP_PEG_ATTACK_TIME)); }
 		int		getReleaseDacCount( void ){ return getTotalDacCount(getVoicePrm(VP_PEG_RELEASE_TIME)); }
 
 		static const double tPitchOfA[11];
-		
+
+		//	Basic Reference
+		Note&	_parentNote;
+
 		//	PEG
-		double	_upper[PEG_MAX];
-		double	_lower[PEG_MAX];
-		int		_pegStartLevel;
-		int		_pegCrntLevel;
-		int		_pegLevel;
-		
+		PegCallBack*	_cbInst;
+		Eg2segment*		_eg;
+
 		//	generate waveform
 		int		_waveform;
 		double	_pitch;
@@ -109,6 +107,31 @@ namespace msgf {
 		//	LFO
 		Lfo*	_pm;
 		double	_pmd;
+	};
+	//---------------------------------------------------------
+	class PegCallBack : public CallBack {
+		
+	public:
+		PegCallBack( Oscillator* osc ):
+		_osc(osc){}
+		virtual double	getEgLvl( EG_STATE prm )
+		{
+			switch (prm){
+				case EG_ATTACK:	 return static_cast<double>(_osc->getVoicePrm( VP_PEG_ATTACK_LEVEL ))/100;
+				case EG_RELEASE: return static_cast<double>(_osc->getVoicePrm( VP_PEG_RELEASE_LEVEL ))/100;
+				default: return 0;
+			}
+		}
+		virtual int		getEgTime( EG_STATE prm )
+		{
+			switch (prm){
+				case EG_ATTACK:	 return _osc->getAttackDacCount();
+				case EG_RELEASE: return _osc->getReleaseDacCount();
+				default: return 0;
+			}
+		}
+	private:
+		Oscillator*	_osc;
 	};
 }
 #endif /* defined(__msgf_oscillator__) */

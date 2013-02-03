@@ -11,7 +11,7 @@
 
 #include <iostream>
 #include "msgf_voice_context.h"
-#include "msgf_filter.h"
+#include "msgf_iirfilter.h"
 #include "msgf_amplitude.h"
 #include "msgf_oscillator.h"
 

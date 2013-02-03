@@ -11,13 +11,13 @@
 
 #include <iostream>
 #include "msgf_note.h"
+#include "msgf_iirfilter.h"
+#include "msgf_oscillator.h"
+#include "msgf_amplitude.h"
 
 //---------------------------------------------------------
 class msgf::TgAudioBuffer;
 class msgf::EventInfo;
-class msgf::Oscillator;
-class msgf::Filter;
-class msgf::Amplitude;
 //---------------------------------------------------------
 class VasNote : public msgf::Note {
 	
@@ -33,7 +33,7 @@ public:
 private:
 	//	Audio Engines
 	msgf::Oscillator*		_osc;
-	msgf::Filter*			_flt;
+	msgf::IirFilter*		_flt;
 	msgf::Amplitude*		_amp;
 };
 #endif /* defined(__ToneGenerator__vas_note__) */

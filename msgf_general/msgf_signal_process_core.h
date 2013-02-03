@@ -20,7 +20,7 @@ namespace msgf {
 		
 	public:
 		SignalProcessCore( void ):
-			_dacCounter(-1) {}
+			_dacCounter(0) {}
 		virtual ~SignalProcessCore( void ){}
 
 		virtual void	init( void ) = 0;
