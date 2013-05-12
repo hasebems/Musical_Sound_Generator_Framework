@@ -17,40 +17,40 @@
 #include "msgf_voice_context.h"
 
 namespace msgf {
-//---------------------------------------------------------
-const int MAX_PART_NUM = 2;
-const Uint8	DONT_CARE = 0xff;
+	//---------------------------------------------------------
+	const int MAX_PART_NUM = 2;
+	const Uint8	DONT_CARE = 0xff;
 
+	//---------------------------------------------------------
+	class TgAudioBuffer;
+	//---------------------------------------------------------
+	class Msgf {
 
-//---------------------------------------------------------
-class TgAudioBuffer;
-//---------------------------------------------------------
-class Msgf {
-
-public:
-	Msgf();
-	~Msgf();
+	public:
+		Msgf();
+		~Msgf();
 	
-	void	sendMessage( int maxMessage, Uint8* message );
-	void	makeChMessage( Uint8 byteData );
-	void	analyzePartOfChMessage( Uint8 dt1, Uint8 dt2, Uint8 dt3 );
+		void	sendMessage( int maxMessage, Uint8* message );
+		void	makeChMessage( Uint8 byteData );
+		void	analyzePartOfChMessage( Uint8 dt1, Uint8 dt2, Uint8 dt3 );
 
-	void	process( TgAudioBuffer& inputBuf );
+		//	process thread
+		void	process( TgAudioBuffer& inputBuf );
 
-	//	Accessor
-	Part*	part( int number ){ return _pt[number]; }
-	VoiceContext*	vc( void ){ return _vc; }
+		//	Accessor
+		Part*	part( int number ){ return _pt[number]; }
+		VoiceContext*	vc( void ){ return _vc; }
 
-private:
-	//	Composite Object
-	Part*	_pt[MAX_PART_NUM];
+	private:
+		//	Composite Object
+		Part*	_pt[MAX_PART_NUM];
 
-	//	Member Variables
-	Uint8	_tempFirstByte;
-	Uint8	_tempSecondByte;
-	int		_tempCounter;
+		//	Member Variables
+		Uint8	_tempFirstByte;
+		Uint8	_tempSecondByte;
+		int		_tempCounter;
 
-	VoiceContext*	_vc;
-};
+		VoiceContext*	_vc;
+	};
 }
 #endif /* defined(__msgf_if__) */

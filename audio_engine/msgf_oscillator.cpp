@@ -111,7 +111,7 @@ double Oscillator::getPegPitch( int depth )
 void Oscillator::process( TgAudioBuffer& buf )
 {
 	//	check Event
-	_eg->periodicOnceEveryProcesses();
+	_eg->periodicOnceEveryProcess();
 
 	if ( _eg->getEgState() != EG_NOT_YET ){
 

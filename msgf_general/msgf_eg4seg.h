@@ -32,9 +32,9 @@ namespace msgf {
 		virtual ~Eg4segment( void ){}
 		
 		//	Judge Segment change
-		virtual void	periodicOnceEveryProcesses( void );
-		virtual void	periodicOnceEveryDac( long dacCnt );
-		virtual double	calcEgLevel( void );
+		virtual void	periodicOnceEveryProcess( void );		//	PT
+		virtual void	periodicOnceEveryDac( long dacCnt );	//	PT
+		virtual double	calcEgLevel( void );					//	PT
 		
 	private:
 		//	Move to next EG Segment

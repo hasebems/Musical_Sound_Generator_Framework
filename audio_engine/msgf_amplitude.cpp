@@ -66,7 +66,7 @@ double Amplitude::calcVolume( double amp )
 void Amplitude::process( TgAudioBuffer& buf )
 {
 	//	check Event
-	_eg->periodicOnceEveryProcesses();
+	_eg->periodicOnceEveryProcess();
 
 	//	get LFO pattern
 	double*	lfoBuf = new double[buf.bufferSize()];

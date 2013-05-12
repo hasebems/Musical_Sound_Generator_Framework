@@ -8,6 +8,7 @@
 
 #include "msgf_configration.h"
 
+//	append particular Instrument
 #include "vas_instrument.h"
 
 using namespace msgf;

@@ -44,6 +44,8 @@ namespace msgf {
 		virtual void	keyOff( Uint8 note, Uint8 velocity );
 		virtual void	sustain( Uint8 value );
 		virtual void	allSoundOff( void );
+
+		//	process thread
 		virtual void	process( TgAudioBuffer& buf );
 
 		void	releaseNote( Note* nt );

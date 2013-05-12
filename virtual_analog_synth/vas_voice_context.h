@@ -6,8 +6,8 @@
 //  Copyright (c) 2013年 長谷部 雅彦. All rights reserved.
 //
 
-#ifndef __ToneGenerator__vas_voice_context__
-#define __ToneGenerator__vas_voice_context__
+#ifndef __vas_voice_context__
+#define __vas_voice_context__
 
 #include <iostream>
 #include "msgf_voice_context.h"
@@ -42,4 +42,4 @@ private:
 	static const VasVoiceParameter	tVasVoiceParameter;
 
 };
-#endif /* defined(__ToneGenerator__vas_voice_context__) */
+#endif /* defined(__vas_voice_context__) */

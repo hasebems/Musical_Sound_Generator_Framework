@@ -6,8 +6,8 @@
 //  Copyright (c) 2013年 長谷部 雅彦. All rights reserved.
 //
 
-#ifndef __ToneGenerator__vas_note__
-#define __ToneGenerator__vas_note__
+#ifndef __vas_note__
+#define __vas_note__
 
 #include <iostream>
 #include "msgf_note.h"
@@ -36,4 +36,4 @@ private:
 	msgf::IirFilter*		_flt;
 	msgf::Amplitude*		_amp;
 };
-#endif /* defined(__ToneGenerator__vas_note__) */
+#endif /* defined(__vas_note__) */

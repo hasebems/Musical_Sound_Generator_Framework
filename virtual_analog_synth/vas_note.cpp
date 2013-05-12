@@ -23,7 +23,6 @@ Note(inst)
 //---------------------------------------------------------
 VasNote::~VasNote( void )
 {
-	releaseMe();
 	delete _amp;
 	delete _flt;
 	delete _osc;

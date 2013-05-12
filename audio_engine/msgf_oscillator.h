@@ -66,6 +66,8 @@ namespace msgf {
 		~Oscillator( void );
 		
 		void	init( void );
+
+		//	process thread
 		void	process( TgAudioBuffer& buf );
 		
 		//	Accessor
@@ -77,14 +79,14 @@ namespace msgf {
 	private:
 		
 		double	calcPitch( const Uint8 note );
-		double	getPegPitch( int depth );
+		double	getPegPitch( int depth );			//	PT
 		
-		double	calcDeltaLFO( double lfoDpt, double diff );
-		void	generateSine( TgAudioBuffer& buf, double* lfobuf, double diff );
-		void	generateTriangle( TgAudioBuffer& buf, double* lfobuf, double diff );
-		void	generateSaw( TgAudioBuffer& buf, double* lfobuf, double diff );
-		void	generateSquare( TgAudioBuffer& buf, double* lfobuf, double diff );
-		void	generatePulse( TgAudioBuffer& buf, double* lfobuf, double diff );
+		double	calcDeltaLFO( double lfoDpt, double diff );			//	PT
+		void	generateSine( TgAudioBuffer& buf, double* lfobuf, double diff );		//	PT
+		void	generateTriangle( TgAudioBuffer& buf, double* lfobuf, double diff );	//	PT
+		void	generateSaw( TgAudioBuffer& buf, double* lfobuf, double diff );			//	PT
+		void	generateSquare( TgAudioBuffer& buf, double* lfobuf, double diff );		//	PT
+		void	generatePulse( TgAudioBuffer& buf, double* lfobuf, double diff );		//	PT
 		
 		int		getVoicePrm( int id ){ return _parentNote.getVoiceContext()->getParameter( VP_OSCILLATOR_ID, id ); }
 		int		getAttackDacCount( void ){ return getTotalDacCount(getVoicePrm(VP_PEG_ATTACK_TIME)); }

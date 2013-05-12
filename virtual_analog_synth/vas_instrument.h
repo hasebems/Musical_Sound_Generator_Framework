@@ -6,8 +6,8 @@
 //  Copyright (c) 2013年 長谷部 雅彦. All rights reserved.
 //
 
-#ifndef __ToneGenerator__vas_instrument__
-#define __ToneGenerator__vas_instrument__
+#ifndef __vas_instrument__
+#define __vas_instrument__
 
 #include <iostream>
 #include "msgf_instrument.h"
@@ -21,4 +21,4 @@ public:
 
 	void	keyOn( msgf::Uint8 note, msgf::Uint8 velocity );
 };
-#endif /* defined(__ToneGenerator__vas_instrument__) */
+#endif /* defined(__vas_instrument__) */

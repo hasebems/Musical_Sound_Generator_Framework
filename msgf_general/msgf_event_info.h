@@ -14,27 +14,26 @@
 #include "msgf_type.h"
 
 namespace msgf {
-//---------------------------------------------------------
-class VoiceContext;
-class LayerContext;
-//---------------------------------------------------------
-class EventInfo {
-	
-public:
-	EventInfo( void ):
-		_velocity(127), _note(60) {}
+	//---------------------------------------------------------
+	class VoiceContext;
+	class LayerContext;
+	//---------------------------------------------------------
+	class EventInfo {
 
-	//	Accessor
-	void	setVelocity( Uint8 vel ){ _velocity = vel;}
-	void	setNote( Uint8 nt ){ _note = nt; }
+	public:
+		EventInfo( void ):
+			_velocity(127), _note(60) {}
 
-	Uint8	getVelocity( void ){ return _velocity; }
-	Uint8	getNote( void ){ return _note; }
+		//	Accessor
+		void	setVelocity( Uint8 vel ){ _velocity = vel;}
+		void	setNote( Uint8 nt ){ _note = nt; }
 
-private:
-	Uint8			_velocity;
-	Uint8			_note;
-	
-};
+		Uint8	getVelocity( void ){ return _velocity; }
+		Uint8	getNote( void ){ return _note; }
+
+	private:
+		Uint8			_velocity;
+		Uint8			_note;
+	};
 }
 #endif /* defined(__msgf_event_info__) */

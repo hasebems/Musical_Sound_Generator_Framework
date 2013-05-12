@@ -86,7 +86,7 @@ void Eg4segment::toKeyOffSteady( void )
 //---------------------------------------------------------
 //		Called from Process Function
 //---------------------------------------------------------
-void Eg4segment::periodicOnceEveryProcesses( void )
+void Eg4segment::periodicOnceEveryProcess( void )
 {
 	switch (_egState){
 		case EG_NOT_YET:{

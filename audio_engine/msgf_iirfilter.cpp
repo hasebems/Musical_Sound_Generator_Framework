@@ -28,6 +28,12 @@ _y_m1(0)
 	_eg = new Eg2segment( *_cbInst, parent );
 }
 //---------------------------------------------------------
+IirFilter::~IirFilter( void )
+{
+	delete _cbInst;
+	delete _eg;
+}
+//---------------------------------------------------------
 void IirFilter::init( void )
 {
 	_baseFc = getVoicePrm( VP_FILTER_CUTOFF );
@@ -35,12 +41,6 @@ void IirFilter::init( void )
 	
 	double ratio = log(FEG_DEPTH_MAX)/FEG_MAX;
 	_frqRatio = exp(ratio);
-}
-//---------------------------------------------------------
-IirFilter::~IirFilter( void )
-{
-	delete _cbInst;
-	delete _eg;
 }
 
 //---------------------------------------------------------
@@ -70,7 +70,7 @@ void IirFilter::setOneCoef( double fc, double qValue, Coef& cf )
 void IirFilter::process( TgAudioBuffer& buf )
 {
 	//	check Event
-	_eg->periodicOnceEveryProcesses();
+	_eg->periodicOnceEveryProcess();
 	
 	//	Filter Calculate
 	for ( int i=0; i<buf.bufferSize(); i++ ){

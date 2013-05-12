@@ -24,19 +24,19 @@ namespace msgf {
 		
 	public:
 		Note( Instrument* inst );
-		virtual	~Note( void ){}
+		virtual	~Note( void );		//	PT
 		
 		//	Basic IF
 		virtual bool	keyOn( EventInfo* ei );
 		virtual void	sustain( Uint8 value );
 		virtual void	keyOff( void );
 		virtual void	damp( void );
+
+		//	process thread
 		virtual bool	process( TgAudioBuffer& buf ){return false;}
 		
-		void	releaseMe( void );
-		
 		//	accessor
-		Note*	getNextNote( void ){ return _nextNote; }
+		Note*	getNextNote( void ){ return _nextNote; }		//	PT
 		Note*	getPrevNote( void ){ return _prevNote; }
 		void	setNextNote( Note* nt ){ _nextNote = nt; }
 		void	setPrevNote( Note* nt ){ _prevNote = nt; }
@@ -47,7 +47,7 @@ namespace msgf {
 		Uint8	getNote( void ){ return _noteNumber; }
 		Uint8	getVelocity( void ){ return _velocity; }
 		
-		bool	conditionKeyOn( void ){ return _cndKeyOn; }
+		bool	conditionKeyOn( void ){ return _cndKeyOn; }		//	PT
 		bool	conditionSustainPedal( void ){ return _cndSustainPedal; }
 		
 	private:

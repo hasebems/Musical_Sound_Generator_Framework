@@ -26,6 +26,17 @@ Note::Note( Instrument* inst ) :
 {
 	_vc = _parentInst->getVoiceContext();
 }
+//---------------------------------------------------------
+Note::~Note( void )
+{
+	//	Release from List
+	_parentInst->releaseNote( this );
+	
+	if ( _prevNote != 0 ) _prevNote->setNextNote( _nextNote );
+	if ( _nextNote != 0 ) _nextNote->setPrevNote( _prevNote );
+	_prevNote = _nextNote = 0;
+	_parentInst = 0;
+}
 
 //---------------------------------------------------------
 //		Key On
@@ -77,18 +88,4 @@ void Note::damp( void )
 	//	Damp Sound
 
 	
-}
-
-//---------------------------------------------------------
-//		Release Me
-//---------------------------------------------------------
-void Note::releaseMe( void )
-{
-	//	Release from List
-	_parentInst->releaseNote( this );
-	
-	if ( _prevNote != 0 ) _prevNote->setNextNote( _nextNote );
-	if ( _nextNote != 0 ) _nextNote->setPrevNote( _prevNote );
-	_prevNote = _nextNote = 0;
-	_parentInst = 0;
 }

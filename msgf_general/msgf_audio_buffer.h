@@ -13,32 +13,32 @@
 #include <iostream>
 
 namespace msgf {
-//---------------------------------------------------------
-#define		SMPL_FREQUENCY		44100
-//---------------------------------------------------------
-class TgAudioBuffer {
+	//---------------------------------------------------------
+	#define		SMPL_FREQUENCY		44100
+	//---------------------------------------------------------
+	class TgAudioBuffer {
 
-public:
-	void	obtainAudioBuffer( int bsz )
-	{
-		_bufSize = bsz;
-		_abuf = new double[bsz];
-		for ( int i=0; i<bsz; i++ ){ *(_abuf + i ) = 0; }
-	}
-	void	releaseAudioBuffer( void ){ delete[] _abuf; }
-	
-	void	setAudioBuffer( int index, double value ){ _abuf[index] = value; }
-	void	addAudioBuffer( int index, double value ){ _abuf[index] += value; }
-	void	mulAudioBuffer( int index, double value ){ _abuf[index] *= value; }
-	double	getAudioBuffer( int index ){ return _abuf[index]; }
-	
-	int		bufferSize( void ){ return _bufSize; }
+	public:
+		//	process thread(PT)
+		void	obtainAudioBuffer( int bsz )
+		{
+			_bufSize = bsz;
+			_abuf = new double[bsz];
+			for ( int i=0; i<bsz; i++ ){ *(_abuf + i ) = 0; }
+		}
+		void	releaseAudioBuffer( void ){ delete[] _abuf; }	//	PT
 
-	bool	mixAndCheckNoSound( TgAudioBuffer &srcBuf );
+		void	setAudioBuffer( int index, double value ){ _abuf[index] = value; }	//	PT
+		void	addAudioBuffer( int index, double value ){ _abuf[index] += value; }	//	PT
+		void	mulAudioBuffer( int index, double value ){ _abuf[index] *= value; }	//	PT
+		double	getAudioBuffer( int index ){ return _abuf[index]; }
+
+		int		bufferSize( void ){ return _bufSize; }			//	PT
+		bool	mixAndCheckNoSound( TgAudioBuffer &srcBuf );	//	PT
 	
-private:
-	int			_bufSize;
-	double*		_abuf;		//	-1 -- 0 -- 1
-};
+	private:
+		int			_bufSize;
+		double*		_abuf;		//	-1 -- 0 -- 1
+	};
 }
 #endif /* defined(__msgf_audio_buffer__) */

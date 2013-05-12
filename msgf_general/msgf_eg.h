@@ -38,7 +38,7 @@ namespace msgf {
 		virtual ~Eg(){}
 		
 		//	Judge Segment change
-		virtual void	periodicOnceEveryProcesses( void ) = 0;
+		virtual void	periodicOnceEveryProcess( void ) = 0;
 		virtual void	periodicOnceEveryDac( long dacCnt ) = 0;
 		virtual double	calcEgLevel( void ) = 0;					//	return: -1 - 0 - +1
 	};

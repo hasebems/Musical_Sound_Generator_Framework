@@ -51,13 +51,15 @@ namespace msgf {
 		~Amplitude( void );
 		
 		void	init( void );
+
+		//	process thread
 		void	process( TgAudioBuffer& buf );
 
 		static const int AMP_PRM_MAX = 100;
 		
 	private:		
 		//	original
-		double	calcVolume( double amp );
+		double	calcVolume( double amp );	//	PT
 		
 		//	Get Segment Parameter
 		int		getVoicePrm( int id ){ return _parentNote.getVoiceContext()->getParameter( VP_AMPLITUDE_ID, id ); }

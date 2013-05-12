@@ -6,8 +6,8 @@
 //  Copyright (c) 2013年 長谷部 雅彦. All rights reserved.
 //
 
-#ifndef __ToneGenerator__msgf_iirfilter__
-#define __ToneGenerator__msgf_iirfilter__
+#ifndef __msgf_iirfilter__
+#define __msgf_iirfilter__
 
 #include <iostream>
 #include "msgf_type.h"
@@ -55,21 +55,23 @@ namespace msgf {
 		~IirFilter( void );
 		
 		void	init( void );
+
+		//	process thread
 		void	process( TgAudioBuffer& buf );
 		
 		static const int FEG_MAX = 100;
 		static const int FEG_DEPTH_MAX = 16; // *Fc[Hz]
 		
 	private:
+		double	calcFreq( double fc, int prm );		//					PT
+		void	setOneCoef( double fc, double qValue, Coef& cf );	//	PT
+
 		//	Original
 		int		getVoicePrm( int id ){ return _parentNote.getVoiceContext()->getParameter( VP_FILTER_ID, id ); }
 		int		getAttackDacCount( void ){ return getTotalDacCount(getVoicePrm(VP_FEG_ATTACK_TIME)); }
 		int		getReleaseDacCount( void ){ return getTotalDacCount(getVoicePrm(VP_FEG_RELEASE_TIME)); }
 		
 		void	getFegCoef( Coef& cf );
-
-		double	calcFreq( double fc, int prm );
-		void	setOneCoef( double fc, double qValue, Coef& cf );
 		
 		//	Basic Reference
 		Note&	_parentNote;
@@ -114,4 +116,4 @@ namespace msgf {
 		IirFilter*	_ifltr;
 	};
 }
-#endif /* defined(__ToneGenerator__msgf_iirfilter__) */
+#endif /* defined(__msgf_iirfilter__) */
