@@ -7,6 +7,7 @@
 //
 
 #include "msgf_configration.h"
+#include "msgf_instrument_for_check.h"
 
 //	append particular Instrument
 #include "vas_instrument.h"
@@ -21,7 +22,9 @@ Instrument* InstrumentFactory::getInstrument( Part* pt, int instId )
 	Instrument*	pinst = 0;
 	
 	switch (instId){
+		//	instId = (16384 * Bank MSB) + (128 * Bank LSB) + Program Change Number
 		case 0:	pinst = new VasInstrument(pt,instId); break;
+		case 127: pinst = new InstrumentForCheck(pt,0); break;
 		default: break;
 	}
 

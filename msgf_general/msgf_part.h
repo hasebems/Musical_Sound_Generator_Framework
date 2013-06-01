@@ -33,7 +33,7 @@ namespace msgf {
 		void	controlChange( int controller, int value );
 		void	programChange( int number );
 		void	pitchBend( int valule );
-		int		getInstrumentId( Uint8 msb, Uint8 lsb, Uint8 pcNum ){ return 0;}
+		int		getInstrumentId( Uint8 msb, Uint8 lsb, Uint8 pcNum ){ return 16384*msb + 128*lsb + pcNum;}
 
 		//	process thread
 		void	process( TgAudioBuffer& buf ){ _inst->process( buf ); }

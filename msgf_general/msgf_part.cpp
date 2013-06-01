@@ -13,8 +13,6 @@
 
 using namespace msgf;
 
-extern int voiceContext_getVoiceId( Uint8 msb, Uint8 lsb, Uint8 pcNum );
-
 //---------------------------------------------------------
 //		Part Constructor/Destructor
 //---------------------------------------------------------
