@@ -89,10 +89,10 @@ void Msgf::analyzePartOfChMessage( Uint8 dt1, Uint8 dt2, Uint8 dt3 )
 			else _pt[part]->keyOn( dt2, dt3 );
 			break;
 		case 0xb0:
-			_pt[part]->controlChange( dt1, dt2 );
+			_pt[part]->controlChange( dt2, dt3 );
 			break;
 		case 0xc0:
-			_pt[part]->programChange( dt1 );
+			_pt[part]->programChange( dt2 );
 			break;
 		case 0xe0:{
 			int bendValue = dt3;
