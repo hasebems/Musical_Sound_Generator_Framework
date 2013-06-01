@@ -49,7 +49,7 @@ Part::~Part( void )
 //---------------------------------------------------------
 void Part::keyOn( int note, int velocity )
 {
-	_inst->keyOn( note, velocity );
+	if ( _inst ) _inst->keyOn( note, velocity );
 }
 
 //---------------------------------------------------------
@@ -57,7 +57,7 @@ void Part::keyOn( int note, int velocity )
 //---------------------------------------------------------
 void Part::keyOff( int note, int velocity )
 {
-	_inst->keyOff( note, velocity );
+	if ( _inst ) _inst->keyOff( note, velocity );
 }
 
 //---------------------------------------------------------
@@ -75,7 +75,7 @@ void Part::controlChange( int controller, int value )
 		case 5:		_cc5_portamentoTime = value; break;
 		case 64:{
 			_cc64_sustain = value;
-			_inst->sustain( value );
+			if ( _inst ) _inst->sustain( value );
 			break;
 		}
 		case 65:	_cc65_portamento = value; break;
@@ -91,8 +91,10 @@ void Part::programChange( int number )
 {
 	_programNumber = number;
 	
-	_inst->allSoundOff();
-	if ( _inst != 0 ) delete _inst;
+	if ( _inst ){
+		_inst->allSoundOff();
+	 	delete _inst;
+	}
 	int voiceId = getInstrumentId( _cc0_msb, _cc32_lsb, number );
 	_inst = _instFactory->getInstrument( this, voiceId );
 }
