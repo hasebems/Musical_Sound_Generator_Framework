@@ -13,13 +13,12 @@
 #include <iostream>
 #include "msgf_type.h"
 #include "msgf_audio_buffer.h"
+#include "msgf_event_info.h"
 
 namespace msgf {
 
 	const int DAMP_RATE = 400;		// * dac time(22.68usec)
 	//---------------------------------------------------------
-	class EventInfo;
-	class TgAudioBuffer;
 	class Instrument;
 	class VoiceContext;
 	class LevelCheck;

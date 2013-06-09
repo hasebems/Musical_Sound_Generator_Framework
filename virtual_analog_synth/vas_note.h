@@ -16,7 +16,6 @@
 #include "msgf_amplitude.h"
 
 //---------------------------------------------------------
-class msgf::TgAudioBuffer;
 class msgf::EventInfo;
 //---------------------------------------------------------
 class VasNote : public msgf::Note {
