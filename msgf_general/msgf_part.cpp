@@ -80,6 +80,12 @@ void Part::controlChange( int controller, int value )
 		}
 		case 65:	_cc65_portamento = value; break;
 		case 66:	_cc66_sostenuto = value; break;
+		case 120:{
+			if ( value == 0 ){
+				if ( _inst ) _inst->allSoundOff();
+			}
+			break;
+		}
 		default: break;
 	}
 }

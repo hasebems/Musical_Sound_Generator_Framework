@@ -16,7 +16,8 @@
 #include "msgf_note.h"
 
 namespace msgf {
-	
+
+	//	to be defined every Audio Engine that wants an original parameter set
 	const int VP_FILTER_ID = 100;
 	//---------------------------------------------------------
 	typedef enum {

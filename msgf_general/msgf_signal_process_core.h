@@ -30,7 +30,7 @@ namespace msgf {
 		//	Judge Segment change
 		virtual	void	checkEvent( void ){}
 		
-		int		getTotalDacCount( const int time ){return time*(SMPL_FREQUENCY/100);}
+		int		getTotalDacCount( const int time ){return time*(SAMPLING_FREQUENCY/100);}
 		
 		//	Basic Variables
 		long	_dacCounter;		//	should be incremented by buffer size in process

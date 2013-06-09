@@ -53,7 +53,7 @@ double IirFilter::calcFreq( double fc, int prm )
 //---------------------------------------------------------
 void IirFilter::setOneCoef( double fc, double qValue, Coef& cf )
 {
-	double freq = tan(M_PI*fc/SMPL_FREQUENCY)/(2.0*M_PI);
+	double freq = tan(M_PI*fc/SAMPLING_FREQUENCY)/(2.0*M_PI);
 	double fc2 = freq*freq;
 	double tmp = 1.0 + (2.0*M_PI*freq)/qValue + (4.0*M_PI*M_PI*fc2);
 	

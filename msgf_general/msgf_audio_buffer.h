@@ -11,10 +11,11 @@
 #define __msgf_audio_buffer__
 
 #include <iostream>
+#include "msgf_type.h"
 
 namespace msgf {
 	//---------------------------------------------------------
-	#define		SMPL_FREQUENCY		44100
+//	#define		SMPL_FREQUENCY		44100
 	//---------------------------------------------------------
 	class TgAudioBuffer {
 
@@ -31,10 +32,11 @@ namespace msgf {
 		void	setAudioBuffer( int index, double value ){ _abuf[index] = value; }	//	PT
 		void	addAudioBuffer( int index, double value ){ _abuf[index] += value; }	//	PT
 		void	mulAudioBuffer( int index, double value ){ _abuf[index] *= value; }	//	PT
-		double	getAudioBuffer( int index ){ return _abuf[index]; }
+		double	getAudioBuffer( int index ) const { return _abuf[index]; }
 
 		int		bufferSize( void ){ return _bufSize; }			//	PT
 		bool	mixAndCheckNoSound( TgAudioBuffer &srcBuf );	//	PT
+		double	getSoundLevel( void );	//	PT
 	
 	private:
 		int			_bufSize;

@@ -20,5 +20,7 @@ namespace msgf {
 	typedef	int8_t		Sint8;
 	typedef	int16_t		Sint16;
 	typedef	int32_t		Sint32;
+
+	const int	SAMPLING_FREQUENCY = 44100;
 }
 #endif

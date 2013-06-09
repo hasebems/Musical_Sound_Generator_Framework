@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <AudioToolbox/AudioToolbox.h>
+//#import	<AudioComponent.h>
 
 @interface AudioOutput : NSObject {
 

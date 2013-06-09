@@ -21,7 +21,7 @@ const VasVoiceParameter VasVoiceContext::tVasVoiceParameter =
 		100,	//VP_AEG_DECAY1_TIME,	//	0 - 1000 (10ms)
 		70,		//VP_AEG_DECAY2_LEVEL,	//	0 - 100
 		200,	//VP_AEG_DECAY2_TIME,	//	0 - 1000 (10ms)
-		10,		//VP_AEG_RELEASE_TIME,	//	0 - 1000 (10ms)
+		100,	//VP_AEG_RELEASE_TIME,	//	0 - 1000 (10ms)
 
 		0,		//VP_LFO_AMD,				//	0 - 100 %
 	},
@@ -42,11 +42,11 @@ const VasVoiceParameter VasVoiceContext::tVasVoiceParameter =
 	},
 	{
 		0,		//VP_FILTER_TYPE,		//	0:LPF,
-		4000,	//VP_FILTER_CUTOFF,		//	[Hz]
-		5,		//VP_FILTER_RESO,		//	1 - 100 ?
+		2000,	//VP_FILTER_CUTOFF,		//	[Hz]
+		1,		//VP_FILTER_RESO,		//	1 - 100 ?
 		
 		100,	//VP_FEG_ATTACK_TIME,		//	0 - 1000 (*10ms)
-		50,		//VP_FEG_ATTACK_LEVEL,	//	-100 - 0 - +100 (1/4 - 4[times*Hz])
+		70,		//VP_FEG_ATTACK_LEVEL,	//	-100 - 0 - +100 (1/4 - 4[times*Hz])
 		0,		//VP_FEG_RELEASE_TIME,	//	0 - 1000 (*10ms)
 		0,		//VP_FEG_RELEASE_LEVEL,	//	-100 - 0 - +100 (1/4 - 4[times*Hz])
 	}

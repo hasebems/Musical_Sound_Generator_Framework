@@ -33,7 +33,7 @@ VasNote::~VasNote( void )
 //---------------------------------------------------------
 bool VasNote::keyOn( EventInfo* ei )
 {
-	bool ret = Note::keyOn(ei);
+	bool ret = Note::keyOn(ei);		//	required
 	
 	//	Init
 	_osc->init();
@@ -64,6 +64,9 @@ bool VasNote::process( TgAudioBuffer& buf )
 	
 	//	Amplitude
 	_amp->process(buf);
+
+	//	Level Check	(required)
+	manageNoteLevel(buf);
 
 	return true;
 }

@@ -33,3 +33,18 @@ bool TgAudioBuffer::mixAndCheckNoSound( TgAudioBuffer &srcBuf )
 		return false;
 	}
 }
+
+//---------------------------------------------------------
+//		Get Sound Level (MAX Level every buffer)
+//---------------------------------------------------------
+double TgAudioBuffer::getSoundLevel( void )
+{
+	double lvl = 0;
+	for ( int i=0; i<_bufSize; i++ ){
+		double newlvl = getAudioBuffer(i);
+		if ( lvl < newlvl ){
+			lvl = newlvl;
+		}
+	}
+	return lvl;
+}

@@ -33,15 +33,16 @@ namespace msgf {
 		void	controlChange( int controller, int value );
 		void	programChange( int number );
 		void	pitchBend( int valule );
-		int		getInstrumentId( Uint8 msb, Uint8 lsb, Uint8 pcNum ){ return 16384*msb + 128*lsb + pcNum;}
+		int		getInstrumentId( Uint8 msb, Uint8 lsb, Uint8 pcNum ) const { return 16384*msb + 128*lsb + pcNum;}
 
 		//	process thread
 		void	process( TgAudioBuffer& buf ){ _inst->process( buf ); }
 
 		//	Accessor
-		Msgf*	tgObj( void ){ return _tg; }
-		Uint8	getCc7( void ){ return _cc7_volume; }
-		Uint8	getCc11( void ){ return _cc11_expression; }
+		Msgf*	tgObj( void ) const { return _tg; }
+		Uint8	getCc7( void ) const { return _cc7_volume; }
+		Uint8	getCc11( void ) const { return _cc11_expression; }
+		Instrument*	getInstrument( void ) const { return _inst; }
 
 	private:
 		//	Part Latest Parameter Value

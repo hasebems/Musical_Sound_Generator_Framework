@@ -123,7 +123,7 @@ void Oscillator::process( TgAudioBuffer& buf )
 
 		//	Generate Phase diff
 		double	pch = getPegPitch(egLvl);
-		double	diff = (2 * M_PI * pch )/ SMPL_FREQUENCY;
+		double	diff = (2 * M_PI * pch )/ SAMPLING_FREQUENCY;
 
 		//	get LFO pattern
 		double*	lfoBuf = new double[buf.bufferSize()];
@@ -154,6 +154,8 @@ double Oscillator::calcDeltaLFO( double lfoDpt, double diff )
 //---------------------------------------------------------
 //		Generate Wave
 //---------------------------------------------------------
+#define 	ABORT_FREQUENCY			12000
+//---------------------------------------------------------
 void Oscillator::generateSine( TgAudioBuffer& buf, double* lfobuf, double diff )
 {
 	for ( int i=0; i<buf.bufferSize(); i++ ){
@@ -177,7 +179,7 @@ void Oscillator::generateTriangle( TgAudioBuffer& buf, double* lfobuf, double di
 //---------------------------------------------------------
 void Oscillator::generateSaw( TgAudioBuffer& buf, double* lfobuf, double diff )
 {
-	int maxOverTone = 16000/_pitch;
+	int maxOverTone = ABORT_FREQUENCY/_pitch;
 
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 		//	write Saw wave
@@ -192,7 +194,7 @@ void Oscillator::generateSaw( TgAudioBuffer& buf, double* lfobuf, double diff )
 //---------------------------------------------------------
 void Oscillator::generateSquare( TgAudioBuffer& buf, double* lfobuf, double diff )
 {
-	int maxOverTone = 16000/_pitch;
+	int maxOverTone = ABORT_FREQUENCY/_pitch;
 
 	for ( int i=0; i<buf.bufferSize(); i++ ){
 		//	write Square wave

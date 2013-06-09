@@ -8,6 +8,7 @@
 //
 
 #include "msgf_if.h"
+#include "msgf_note.h"
 
 using namespace msgf;
 
@@ -104,6 +105,26 @@ void Msgf::analyzePartOfChMessage( Uint8 dt1, Uint8 dt2, Uint8 dt3 )
 		default:
 			break;
 	}
+}
+
+//---------------------------------------------------------
+//		Analyze & Call Part
+//---------------------------------------------------------
+void Msgf::reduceResource( void )
+{
+	double	lvl = 1;
+	Note*	ntRsc = 0;
+
+	for ( int i=0; i<MAX_PART_NUM; i++ ){
+		Note *ntPtr = 0;
+		double ptLvl = _pt[i]->getInstrument()->searchMinimumLevelNote( &ntPtr );
+		if ( ntPtr && ( ptLvl < lvl )){
+			lvl = ptLvl;
+			ntRsc = ntPtr;
+		}
+	}
+
+	if ( ntRsc ) ntRsc->damp();
 }
 
 //---------------------------------------------------------

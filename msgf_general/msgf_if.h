@@ -33,6 +33,7 @@ namespace msgf {
 		void	sendMessage( int maxMessage, Uint8* message );
 		void	makeChMessage( Uint8 byteData );
 		void	analyzePartOfChMessage( Uint8 dt1, Uint8 dt2, Uint8 dt3 );
+		void	reduceResource( void );
 
 		//	process thread
 		void	process( TgAudioBuffer& inputBuf );

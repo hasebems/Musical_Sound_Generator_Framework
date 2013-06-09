@@ -48,14 +48,15 @@ namespace msgf {
 		//	process thread
 		virtual void	process( TgAudioBuffer& buf );
 
-		void	releaseNote( Note* nt );
+		void	releaseNote( const Note* nt );
+		double	searchMinimumLevelNote( Note** nt );
 		
 		//	Accessor
-		int		getVoiceId( void ){ return _voiceId; }
-		VoiceContext*	getVoiceContext( void ){ return _vc; }
-		Part*	getPart( void ){ return _parentPart; }
-		Note*	getTopNote( void ){ return _topNote; }
-		Note*	getEndNote( void ){ return _endNote; }
+		int		getVoiceId( void ) const { return _voiceId; }
+		VoiceContext*	getVoiceContext( void ) const { return _vc; }
+		Part*	getPart( void ) const { return _parentPart; }
+		Note*	getTopNote( void ) const { return _topNote; }
+		Note*	getEndNote( void ) const { return _endNote; }
 		
 	protected:
 		void	appendNoteList( Note* nt );

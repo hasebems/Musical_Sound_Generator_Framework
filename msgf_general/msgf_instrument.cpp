@@ -14,6 +14,7 @@
 #include "msgf_event_info.h"
 #include "msgf_voice_context.h"
 #include "msgf_audio_buffer.h"
+#include "msgf_level_check.h"
 
 using namespace msgf;
 
@@ -35,7 +36,7 @@ void Instrument::appendNoteList( Note* nt )
 void Instrument::keyOff( Uint8 note, Uint8 velocity )
 {
 	Note* kfNote = searchNote( note, DURING_KON );
-	kfNote->keyOff();
+	if ( kfNote ) kfNote->keyOff();
 }
 
 //---------------------------------------------------------
@@ -66,12 +67,57 @@ void Instrument::allSoundOff( void )
 //---------------------------------------------------------
 //		Release Note
 //---------------------------------------------------------
-void Instrument::releaseNote( Note* nt )
+void Instrument::releaseNote( const Note* nt )
 {
 	if ( nt == _topNote ) _topNote = nt->getNextNote();
 	if ( nt == _endNote ) _endNote = nt->getPrevNote();
 
 	_noteCounter--;
+}
+
+//---------------------------------------------------------
+//		Search Minimum Level Note except during Damp
+//---------------------------------------------------------
+double Instrument::searchMinimumLevelNote( Note** nt )
+{
+#if 0
+	//	return an Note Object which is the minimum level.
+	Note* ntPr = _topNote;
+	double	minLvl = 1;
+	
+	while ( ntPr != 0 ){
+		LevelCheck* lc = ntPr->getLvlChk();
+		if ( lc ){
+			double lvl = lc->getMaxLevel();
+			if ( minLvl > lvl ){
+				minLvl = lvl;
+				*nt = ntPr;
+			}
+		}
+		ntPr = ntPr->getNextNote();
+	}
+	return minLvl;
+#endif
+	//	return top Note Object as released note.
+	Note* ntPr = _topNote;
+	
+	while ( ntPr != 0 ){
+		if ( ntPr->conditionKeyOn() == false ){
+			*nt = ntPr;
+			goto CHK_LVL;
+		}
+		ntPr = ntPr->getNextNote();
+	}	
+	*nt = _topNote;
+
+CHK_LVL:
+	if ( *nt ){
+		LevelCheck* lc = (*nt)->getLvlChk();
+		if ( lc ){
+			return lc->getMaxLevel();
+		}
+	}
+	return 1;
 }
 
 //---------------------------------------------------------

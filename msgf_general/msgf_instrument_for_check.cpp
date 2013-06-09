@@ -18,7 +18,7 @@ using namespace msgf;
 void InstrumentForCheck::keyOn( Uint8 note, Uint8 velocity )
 {
 	_crntPhase = 0;
-	_diff = (2 * M_PI * 880 )/ SMPL_FREQUENCY;
+	_diff = (2 * M_PI * 880 )/ SAMPLING_FREQUENCY;
 	_soundOn = true;
 }
 

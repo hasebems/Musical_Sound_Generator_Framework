@@ -6,6 +6,7 @@
 //  Copyright (c) 2012年 長谷部 雅彦. All rights reserved.
 //
 
+#import <sys/time.h>
 #import "AudioOutput.h"
 #import	"msgf_audio_buffer.h"
 #import "msgf_if.h"
@@ -134,6 +135,8 @@ static OSStatus OutputCallback(void *inRefCon,
 //--------------------------------------------------------
 //		Audio Process
 //--------------------------------------------------------
+#define		BEGIN_TRUNCATE			50	//	percent
+//--------------------------------------------------------
 - (OSStatus) process: (AudioUnitRenderActionFlags*) ioActionFlags
 		   timestamp: (const AudioTimeStamp*) inTimeStamp
 			  busnum: (UInt32) inBusNumber
@@ -142,6 +145,11 @@ static OSStatus OutputCallback(void *inRefCon,
 {
     OSStatus err = noErr;
 
+	struct timeval ts;
+	struct timeval te;
+	long	startTime, endTime, execTime;
+	gettimeofday(&ts, NULL);
+	
 	msgf::TgAudioBuffer	abuf;						//	MSGF IF
 	msgf::Msgf*	tg = static_cast<msgf::Msgf*>(_tg);
 	abuf.obtainAudioBuffer(inNumberFrames);			//	MSGF IF
@@ -161,6 +169,18 @@ static OSStatus OutputCallback(void *inRefCon,
     }
 
 	abuf.releaseAudioBuffer();						//	MSGF IF
+
+	//	Time Measurement
+	gettimeofday(&te, NULL);
+	startTime = ts.tv_sec * 1000 + ts.tv_usec/1000;
+	endTime = te.tv_sec * 1000 + te.tv_usec/1000;
+	execTime = endTime - startTime;
+
+	//	Reduce Resource
+	if ( (inNumberFrames*BEGIN_TRUNCATE*1000)/(SMPL_RATE*100) < execTime  ){
+		tg->reduceResource();
+	}
+	
 	return err;
 }
 
