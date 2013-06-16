@@ -23,7 +23,14 @@ Instrument* InstrumentFactory::getInstrument( Part* pt, int instId )
 	
 	switch (instId){
 		//	instId = (16384 * Bank MSB) + (128 * Bank LSB) + Program Change Number
-		case 0:	pinst = new VasInstrument(pt,instId); break;
+
+		//	VAS (virtual analog Synth)
+		case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+		case 8: case 9: case 10: case 11: case 12: case 13: case 14: case 15:{
+			pinst = new VasInstrument(pt,instId);
+			break;
+		}
+
 		case 127: pinst = new InstrumentForCheck(pt,0); break;
 		default: break;
 	}

@@ -136,6 +136,8 @@ static OSStatus OutputCallback(void *inRefCon,
 //		Audio Process
 //--------------------------------------------------------
 #define		BEGIN_TRUNCATE			50	//	percent
+#define 	TIME_LIMIT				((inNumberFrames*BEGIN_TRUNCATE*1000)/(SMPL_RATE*100))
+#define 	REAL_TIME_LIMIT			((inNumberFrames*1000)/SMPL_RATE)
 //--------------------------------------------------------
 - (OSStatus) process: (AudioUnitRenderActionFlags*) ioActionFlags
 		   timestamp: (const AudioTimeStamp*) inTimeStamp
@@ -177,8 +179,12 @@ static OSStatus OutputCallback(void *inRefCon,
 	execTime = endTime - startTime;
 
 	//	Reduce Resource
-	if ( (inNumberFrames*BEGIN_TRUNCATE*1000)/(SMPL_RATE*100) < execTime  ){
+	if ( REAL_TIME_LIMIT < execTime ){
+		NSLog(@"[warning!]processing time = %u", (unsigned int)execTime );
+	}
+	else if ( TIME_LIMIT < execTime ){
 		tg->reduceResource();
+		NSLog(@"processing time = %u", (unsigned int)execTime );
 	}
 	
 	return err;

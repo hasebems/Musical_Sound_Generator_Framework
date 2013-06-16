@@ -26,20 +26,26 @@ struct VasVoiceParameter {
 class VasVoiceContext : public msgf::VoiceContext {
 	
 public:
+	VasVoiceContext( int voiceNumber ):
+		_vNum(voiceNumber){}
+
 	int		getParameter( int tid, int pid )
 	{
 		int	value = 0;
 		switch (tid){
-			case msgf::VP_AMPLITUDE_ID: value = tVasVoiceParameter.amp[pid]; break;
-			case msgf::VP_FILTER_ID:	value = tVasVoiceParameter.flt[pid]; break;
-			case msgf::VP_OSCILLATOR_ID:value = tVasVoiceParameter.osc[pid]; break;
+			case msgf::VP_AMPLITUDE_ID: value = tVasVoiceParameter[_vNum].amp[pid]; break;
+			case msgf::VP_FILTER_ID:	value = tVasVoiceParameter[_vNum].flt[pid]; break;
+			case msgf::VP_OSCILLATOR_ID:value = tVasVoiceParameter[_vNum].osc[pid]; break;
 			default: break;
 		}
 		return value;
 	}
 
+	static const int MAX_VAS_VOICE_NUMBER = 16;
+	
 private:
-	static const VasVoiceParameter	tVasVoiceParameter;
-
+	static const VasVoiceParameter	tVasVoiceParameter[MAX_VAS_VOICE_NUMBER];
+	int		_vNum;
+	
 };
 #endif /* defined(__vas_voice_context__) */

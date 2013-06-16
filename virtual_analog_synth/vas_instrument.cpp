@@ -20,7 +20,7 @@ using namespace msgf;
 VasInstrument::VasInstrument( Part* pt, int vid ):
 Instrument(pt,vid)
 {
-	_vc = new VasVoiceContext();
+	_vc = new VasVoiceContext( vid );
 }
 //---------------------------------------------------------
 VasInstrument::~VasInstrument( void )
