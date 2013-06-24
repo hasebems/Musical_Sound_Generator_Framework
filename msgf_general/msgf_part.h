@@ -59,7 +59,7 @@ namespace msgf {
 		Uint8	_cc126_mono;
 		Uint8	_programNumber;
 		int		_pitchBendValue;
-
+		
 		//	Composite Object
 		InstrumentFactory* _instFactory;
 		Instrument*	_inst;

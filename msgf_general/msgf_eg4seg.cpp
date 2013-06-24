@@ -143,6 +143,7 @@ double Eg4segment::calcEgLevel( void )
 	//	Just in case
 	if ( time >= targetTime ) time = targetTime-1;
 
+	time = (time/4)<<2;		//	thin out for performance
 	_egCrntLevel = diffLvl*time/targetTime + _egStartLevel;
 	
 	return _egCrntLevel;

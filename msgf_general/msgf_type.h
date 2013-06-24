@@ -13,6 +13,7 @@
 
 namespace msgf {
 
+	//	define type
 	typedef	uint8_t		Uint8;
 	typedef	uint16_t	Uint16;
 	typedef	uint32_t	Uint32;
@@ -21,6 +22,8 @@ namespace msgf {
 	typedef	int16_t		Sint16;
 	typedef	int32_t		Sint32;
 
+	//	define const value
 	const int	SAMPLING_FREQUENCY = 44100;
+
 }
 #endif

@@ -111,6 +111,7 @@ double Eg2segment::calcEgLevel( void )
 	
 	if ( time >= targetTime ) time = targetTime-1;
 	
+	time = (time/4)<<2;		//	thin out for performance
 	if ( _egState == EG_ATTACK ){
 		_egCrntLevel = (targetTime-1-time)*_egStartLevel/targetTime;
 	}

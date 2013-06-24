@@ -27,7 +27,7 @@ public:
 //	void	sustain( msgf::Uint8 value );
 	void	keyOff( void );
 //	void	damp( void );
-	bool	process( msgf::TgAudioBuffer& buf );
+	bool	noteSoundProcess( msgf::TgAudioBuffer& buf );
 	
 private:
 	//	Audio Engines

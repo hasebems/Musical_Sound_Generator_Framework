@@ -64,8 +64,8 @@ namespace msgf {
 		static const int FEG_DEPTH_MAX = 16; // *Fc[Hz]
 		
 	private:
-		double	calcFreq( double fc, int prm );		//					PT
-		void	setOneCoef( double fc, double qValue, Coef& cf );	//	PT
+		double	calcFreq( double fc, int prm );
+		void	setOneCoef( double fc, double qValue );
 
 		//	Original
 		int		getVoicePrm( int id ){ return _parentNote.getVoiceContext()->getParameter( VP_FILTER_ID, id ); }
@@ -82,9 +82,13 @@ namespace msgf {
 		Eg2segment*		_eg;
 		
 		//	Basic Value
+		Coef	_crntCf;
+		
 		double	_frqRatio;
 		double	_baseFc;
 		double	_baseQ;
+		double	_fcOld;	//	to omit same result
+		double	_qOld;
 		
 		double	_x_m2;
 		double	_x_m1;

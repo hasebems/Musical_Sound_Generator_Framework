@@ -47,14 +47,12 @@ void Amplitude::init( void )
 //---------------------------------------------------------
 //		Calculate Volume
 //---------------------------------------------------------
-double Amplitude::calcVolume( double amp )
+double Amplitude::calcMidiVolume( double amp )
 {
-	double	vol = getVoicePrm(VP_VOLUME);
-	amp *= (vol/AMP_PRM_MAX);
-
-	Uint8 midiVal = _parentNote.getInstrument()->getPart()->getCc7();
+	Part*	pt = _parentNote.getInstrument()->getPart();
+	Uint8 midiVal = pt->getCc7();
 	amp = (amp*midiVal)/127;
-	midiVal = _parentNote.getInstrument()->getPart()->getCc11();
+	midiVal = pt->getCc11();
 	amp = (amp*midiVal)/127;
 
 	return amp;
@@ -67,7 +65,7 @@ void Amplitude::process( TgAudioBuffer& buf )
 {
 	//	check Event
 	_eg->periodicOnceEveryProcess();
-
+	
 	//	get LFO pattern
 	double*	lfoBuf = new double[buf.bufferSize()];
 	_am->process( buf.bufferSize(), lfoBuf );
@@ -85,7 +83,9 @@ void Amplitude::process( TgAudioBuffer& buf )
 		aeg *= (_amd*lfoBuf[i]+1)*aeg;
 
 		//	calculate Volume
-		double vol = calcVolume( aeg );
+		double	vol = getVoicePrm(VP_VOLUME);
+		vol = aeg * (vol/AMP_PRM_MAX);
+		vol = calcMidiVolume( vol );
 		
 		buf.mulAudioBuffer( i, vol*vol );
 		_dacCounter++;

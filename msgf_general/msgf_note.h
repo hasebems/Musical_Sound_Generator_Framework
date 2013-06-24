@@ -36,12 +36,14 @@ namespace msgf {
 		virtual void	damp( void );
 
 		//	process thread
+		virtual bool	noteSoundProcess( TgAudioBuffer& buf ){ return false; }
 		virtual bool	process( TgAudioBuffer& buf )
 		{
+			bool ret = noteSoundProcess( buf );
 			manageNoteLevel( buf );
-			return false;
+			return ret;
 		}
-		
+
 		//	accessor
 		Note*	getNextNote( void ) const { return _nextNote; }
 		Note*	getPrevNote( void ) const { return _prevNote; }

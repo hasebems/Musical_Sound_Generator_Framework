@@ -60,7 +60,7 @@ namespace msgf {
 		
 	private:		
 		//	original
-		double	calcVolume( double amp );	//	PT
+		double	calcMidiVolume( double amp );
 		
 		//	Get Segment Parameter
 		int		getVoicePrm( int id ){ return _parentNote.getVoiceContext()->getParameter( VP_AMPLITUDE_ID, id ); }

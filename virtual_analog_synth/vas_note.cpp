@@ -54,7 +54,7 @@ void VasNote::keyOff( void )
 //---------------------------------------------------------
 //		Process Function
 //---------------------------------------------------------
-bool VasNote::process( TgAudioBuffer& buf )
+bool VasNote::noteSoundProcess( TgAudioBuffer& buf )
 {
 	//	Oscillator
 	_osc->process(buf);
@@ -64,9 +64,6 @@ bool VasNote::process( TgAudioBuffer& buf )
 	
 	//	Amplitude
 	_amp->process(buf);
-
-	//	Level Check	(required)
-	manageNoteLevel(buf);
 
 	return true;
 }

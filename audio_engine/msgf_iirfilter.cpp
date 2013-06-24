@@ -38,7 +38,9 @@ void IirFilter::init( void )
 {
 	_baseFc = getVoicePrm( VP_FILTER_CUTOFF );
 	_baseQ = getVoicePrm( VP_FILTER_RESO );
-	
+	_fcOld = 0;
+	_qOld  = 0;
+
 	double ratio = log(FEG_DEPTH_MAX)/FEG_MAX;
 	_frqRatio = exp(ratio);
 }
@@ -51,17 +53,22 @@ double IirFilter::calcFreq( double fc, int prm )
 	return fc*pow( _frqRatio, prm );
 }
 //---------------------------------------------------------
-void IirFilter::setOneCoef( double fc, double qValue, Coef& cf )
+void IirFilter::setOneCoef( double fc, double qValue )
 {
+	//	Check whether same or not
+	if (( fc == _fcOld ) && ( qValue == _qOld )) return;
+	_fcOld = fc;
+	_qOld = qValue;
+	
 	double freq = tan(M_PI*fc/SAMPLING_FREQUENCY)/(2.0*M_PI);
 	double fc2 = freq*freq;
 	double tmp = 1.0 + (2.0*M_PI*freq)/qValue + (4.0*M_PI*M_PI*fc2);
 	
-	cf._b0 = (4.0*M_PI*M_PI*fc2)/tmp;
-	cf._b1 = (8.0*M_PI*M_PI*fc2)/tmp;
-	cf._b2 = cf._b0;
-	cf._a1 = (8.0*M_PI*M_PI*fc2 - 2.0)/tmp;
-	cf._a2 = (1.0 - 2.0*M_PI*freq/qValue + 4.0*M_PI*M_PI*fc2)/tmp;
+	_crntCf._b0 = (4.0*M_PI*M_PI*fc2)/tmp;
+	_crntCf._b1 = (8.0*M_PI*M_PI*fc2)/tmp;
+	_crntCf._b2 = _crntCf._b0;
+	_crntCf._a1 = (8.0*M_PI*M_PI*fc2 - 2.0)/tmp;
+	_crntCf._a2 = (1.0 - 2.0*M_PI*freq/qValue + 4.0*M_PI*M_PI*fc2)/tmp;
 }
 
 //---------------------------------------------------------
@@ -74,7 +81,6 @@ void IirFilter::process( TgAudioBuffer& buf )
 	
 	//	Filter Calculate
 	for ( int i=0; i<buf.bufferSize(); i++ ){
-		Coef crntCf;
 		
 		//	Check EG Segment
 		_eg->periodicOnceEveryDac( _dacCounter );
@@ -82,12 +88,12 @@ void IirFilter::process( TgAudioBuffer& buf )
 		//	Calculate Coef
 		int egLvl = static_cast<int>(_eg->calcEgLevel() * FEG_MAX);
 		double fc = calcFreq( _baseFc, egLvl );
-		setOneCoef( fc, _baseQ, crntCf );
+		setOneCoef( fc, _baseQ );
 
 		//	Calculate Audio
 		double input = buf.getAudioBuffer(i);
-		double output = crntCf._b0*input + crntCf._b1*_x_m1 + crntCf._b2*_x_m2;
-		output += -crntCf._a1*_y_m1 - crntCf._a2*_y_m2;
+		double output = _crntCf._b0*input + _crntCf._b1*_x_m1 + _crntCf._b2*_x_m2;
+		output += -_crntCf._a1*_y_m1 - _crntCf._a2*_y_m2;
 
 		//	Limmiter
 		if ( output > 1 ) output = 1;

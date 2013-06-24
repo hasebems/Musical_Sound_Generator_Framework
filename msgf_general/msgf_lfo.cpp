@@ -14,7 +14,7 @@ using namespace msgf;
 //---------------------------------------------------------
 //		Variables
 //---------------------------------------------------------
-int		Lfo::_samplingFrequency = 44100;
+int		Lfo::_samplingFrequency = SAMPLING_FREQUENCY;
 double	Lfo::_frequency = 0;
 int		Lfo::_delayDacCount = 0;		//	LFO Delay Dac Count
 int		Lfo::_fadeInDacCount = 0;		//	LFO Fade In Dac Count
