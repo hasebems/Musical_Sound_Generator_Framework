@@ -1,5 +1,5 @@
 //
-//  msgf_amplitude.h
+//  msgf_amp4seg.h
 //
 //	Musical Sound Generator Framework
 //
@@ -7,8 +7,8 @@
 //  Copyright (c) 2012年 長谷部 雅彦. All rights reserved.
 //
 
-#ifndef __msgf_amplitude__
-#define __msgf_amplitude__
+#ifndef __msgf_amp4seg__
+#define __msgf_amp4seg__
 
 #include <iostream>
 #include "msgf_type.h"
@@ -111,4 +111,4 @@ namespace msgf {
 		Amplitude*	_amp;
 	};
 }
-#endif /* defined(__msgf_amplitude__) */
+#endif /* defined(__msgf_amp4seg__) */

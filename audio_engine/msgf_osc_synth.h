@@ -1,5 +1,5 @@
 //
-//  msgf_oscillator.h
+//  msgf_osc_synth.h
 //
 //	Musical Sound Generator Framework
 //
@@ -7,8 +7,8 @@
 //  Copyright (c) 2012年 長谷部 雅彦. All rights reserved.
 //
 
-#ifndef __msgf_oscillator__
-#define __msgf_oscillator__
+#ifndef __msgf_osc_synth__
+#define __msgf_osc_synth__
 
 #include <iostream>
 #include "msgf_type.h"
@@ -80,14 +80,14 @@ namespace msgf {
 	private:
 		
 		double	calcPitch( const Uint8 note );
-		double	getPegPitch( int depth );			//	PT
+		double	getPegPitch( int depth );
 		
-		double	calcDeltaLFO( double lfoDpt, double diff );			//	PT
-		void	generateSine( TgAudioBuffer& buf, double* lfobuf, double diff );		//	PT
-		void	generateTriangle( TgAudioBuffer& buf, double* lfobuf, double diff );	//	PT
-		void	generateSaw( TgAudioBuffer& buf, double* lfobuf, double diff );			//	PT
-		void	generateSquare( TgAudioBuffer& buf, double* lfobuf, double diff );		//	PT
-		void	generatePulse( TgAudioBuffer& buf, double* lfobuf, double diff );		//	PT
+		double	calcDeltaLFO( double lfoDpt, double diff );
+		void	generateSine( TgAudioBuffer& buf, double* lfobuf, double diff );
+		void	generateTriangle( TgAudioBuffer& buf, double* lfobuf, double diff );
+		void	generateSaw( TgAudioBuffer& buf, double* lfobuf, double diff );
+		void	generateSquare( TgAudioBuffer& buf, double* lfobuf, double diff );
+		void	generatePulse( TgAudioBuffer& buf, double* lfobuf, double diff );
 		
 		int		getVoicePrm( int id ){ return _parentNote.getVoiceContext()->getParameter( VP_OSCILLATOR_ID, id ); }
 		int		getAttackDacCount( void ){ return getTotalDacCount(getVoicePrm(VP_PEG_ATTACK_TIME)); }

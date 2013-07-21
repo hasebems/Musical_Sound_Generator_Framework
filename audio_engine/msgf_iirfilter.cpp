@@ -25,7 +25,7 @@ _y_m2(0),
 _y_m1(0)
 {
 	_cbInst = new FegCallBack( this );
-	_eg = new Eg2segment( *_cbInst, parent );
+	_eg = new Eg2segment( *_cbInst, parent, true );
 }
 //---------------------------------------------------------
 IirFilter::~IirFilter( void )

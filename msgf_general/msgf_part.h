@@ -13,7 +13,7 @@
 #include <iostream>
 #include "msgf_type.h"
 #include "msgf_instrument.h"
-#include "msgf_configration.h"
+#include "msgf_configuration.h"
 
 namespace msgf {
 	//---------------------------------------------------------

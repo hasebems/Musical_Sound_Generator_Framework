@@ -34,6 +34,7 @@ namespace msgf {
 		virtual void	sustain( Uint8 value );
 		virtual void	keyOff( void );
 		virtual void	damp( void );
+		virtual void	changeNote( EventInfo* ei ){}
 
 		//	process thread
 		virtual bool	noteSoundProcess( TgAudioBuffer& buf ){ return false; }
@@ -63,6 +64,9 @@ namespace msgf {
 		
 	protected:
 		void	manageNoteLevel( TgAudioBuffer& buf );	//	called in process()
+
+		//	accessor for deprived class
+		void	setNote( Uint8 note ){ _noteNumber = note; }
 		
 	private:
 		//	relation

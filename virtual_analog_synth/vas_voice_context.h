@@ -12,8 +12,8 @@
 #include <iostream>
 #include "msgf_voice_context.h"
 #include "msgf_iirfilter.h"
-#include "msgf_amplitude.h"
-#include "msgf_oscillator.h"
+#include "msgf_amp4seg.h"
+#include "msgf_osc_synth.h"
 
 //---------------------------------------------------------
 struct VasVoiceParameter {

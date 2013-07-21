@@ -18,15 +18,13 @@ namespace msgf {
 	class Eg2segment : public Eg {
 		
 		//	2segments mean :
-		//		Attack	:	level: EG_ATTACK	->	0
-		//		Release	:	level: 0			->	EG_RELEASE
+		//		Attack	:	level: EG_ATTACK	->	0/1
+		//		Release	:	level: 0/1			->	EG_RELEASE
+		//			centerBased : true ->  Base Level 0
+		//						: false -> Base Level 1
 		
 	public:
-		Eg2segment( CallBack& cbObj, Note& parent ):
-		_cbFunc(cbObj),
-		_parentNote(parent),
-		_egState(EG_NOT_YET),
-		_dacCounter(0){}
+		Eg2segment( CallBack& cbObj, Note& parent, bool centerBased );
 		virtual ~Eg2segment( void ){}
 		
 		//	Judge Segment change
@@ -54,6 +52,7 @@ namespace msgf {
 		double		_egStartLevel;			//	-1-0-+1
 		double		_egTargetLevel;			//	-1-0-+1
 		double		_egCrntLevel;			//	-1-0-+1
+		double		_steadyLevel;			//	0/1
 		
 		//	EG Time Manage
 		long		_egStartDac;

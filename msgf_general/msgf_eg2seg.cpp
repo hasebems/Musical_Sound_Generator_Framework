@@ -11,6 +11,19 @@
 using namespace msgf;
 
 //---------------------------------------------------------
+//		Constructor
+//---------------------------------------------------------
+Eg2segment::Eg2segment( CallBack& cbObj, Note& parent, bool centerBased ):
+	_cbFunc(cbObj),
+	_parentNote(parent),
+	_egState(EG_NOT_YET),
+	_dacCounter(0)
+{
+	if ( centerBased == true ) _steadyLevel = 0;
+	else _steadyLevel = 1;
+}
+
+//---------------------------------------------------------
 //		Move to next segment
 //---------------------------------------------------------
 void Eg2segment::toAttack( void )
@@ -22,7 +35,7 @@ void Eg2segment::toAttack( void )
 
 	//	level
 	_egStartLevel = getAttackLevel();
-	
+	_egTargetLevel = _steadyLevel;
 }
 //---------------------------------------------------------
 void Eg2segment::toKeyOnSteady( void )
@@ -33,7 +46,7 @@ void Eg2segment::toKeyOnSteady( void )
 	_egTargetDac = _egStartDac;
 
 	//	level
-	_egCrntLevel = _egTargetLevel = 0;
+	_egCrntLevel = _egTargetLevel = _steadyLevel;
 }
 //---------------------------------------------------------
 void Eg2segment::toRelease( void )
@@ -45,7 +58,7 @@ void Eg2segment::toRelease( void )
 
 	//	level
 	_egTargetLevel = getReleaseLevel();
-	_egStartLevel = _egCrntLevel;
+	_egStartLevel = _steadyLevel;
 }
 //---------------------------------------------------------
 void Eg2segment::toKeyOffSteady( void )
@@ -112,13 +125,8 @@ double Eg2segment::calcEgLevel( void )
 	if ( time >= targetTime ) time = targetTime-1;
 	
 	time = (time/4)<<2;		//	thin out for performance
-	if ( _egState == EG_ATTACK ){
-		_egCrntLevel = (targetTime-1-time)*_egStartLevel/targetTime;
-	}
-	else if ( _egState == EG_RELEASE ){
-		_egCrntLevel = time*(_egTargetLevel-_egStartLevel)/targetTime + _egStartLevel;
-	}
-	
+	_egCrntLevel = _egStartLevel + time*(_egTargetLevel-_egStartLevel)/targetTime;
+
 	return _egCrntLevel;
 }
 
