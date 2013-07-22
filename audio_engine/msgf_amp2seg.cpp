@@ -21,6 +21,7 @@ _parentNote(parent)
 {
 	_cbInst = new Aeg2CallBack( this );
 	_eg = new Eg2segment( *_cbInst, parent, false );
+	_am = new Lfo();
 }
 //---------------------------------------------------------
 Amp2seg::~Amp2seg( void )
@@ -32,9 +33,6 @@ Amp2seg::~Amp2seg( void )
 //---------------------------------------------------------
 void Amp2seg::init( void )
 {
-	//	LFO Construct
-	_am = new Lfo();
-	
 	//	LFO Settings only for Amplitude
 	_am->setWave(LFO_TRI);
 	_am->setDirection(LFO_LOWER);

@@ -36,7 +36,7 @@ bool MfNote::keyOn( EventInfo* ei )
 	bool ret = Note::keyOn(ei);		//	required
 	
 	//	Init
-	_osc->init();
+	_osc->init(true);
 	_flt->init();
 	_amp->init();
 	
@@ -48,6 +48,21 @@ bool MfNote::keyOn( EventInfo* ei )
 void MfNote::keyOff( void )
 {
 	Note::keyOff();
+}
+//---------------------------------------------------------
+//		Alternate Key On
+//---------------------------------------------------------
+void MfNote::keyOnAlternate( EventInfo* ei )
+{
+	//	Set Variables
+	setConditionKeyOn();
+	setNote( ei->getNote() );
+	setVelocity( ei->getVelocity() );
+
+	//	Init
+	_osc->init(false);
+	_flt->init();
+	_amp->init();
 }
 //---------------------------------------------------------
 //		Change Note

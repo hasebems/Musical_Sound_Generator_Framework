@@ -22,6 +22,7 @@ _parentNote(parent)
 {
 	_cbInst = new AegCallBack( this );
 	_eg = new Eg4segment( *_cbInst, parent );
+	_am = new Lfo();	
 }
 //---------------------------------------------------------
 Amplitude::~Amplitude( void )
@@ -33,9 +34,6 @@ Amplitude::~Amplitude( void )
 //---------------------------------------------------------
 void Amplitude::init( void )
 {
-	//	LFO Construct
-	_am = new Lfo();
-	
 	//	LFO Settings only for Amplitude
 	_am->setWave(LFO_TRI);
 	_am->setDirection(LFO_LOWER);

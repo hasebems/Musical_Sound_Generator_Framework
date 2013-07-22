@@ -45,6 +45,7 @@ void MfInstrument::keyOn( Uint8 note, Uint8 velocity )
 		}
 		else {
 			//
+			_topNote->keyOnAlternate( ei );
 		}
 	}
 	else {

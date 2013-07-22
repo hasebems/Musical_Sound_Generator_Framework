@@ -21,6 +21,7 @@ _parentNote(parent)
 {
 	_cbInst = new PegCallBack( this );
 	_eg = new Eg2segment( *_cbInst, parent, true );
+	_pm = new Lfo();
 }
 //---------------------------------------------------------
 OscMono::~OscMono( void )
@@ -30,16 +31,15 @@ OscMono::~OscMono( void )
 	delete _eg;
 }
 //---------------------------------------------------------
-void OscMono::init( void )
+void OscMono::init( bool phaseReset )
 {
 	_waveform = getVoicePrm( VP_WAVEFORM );
 	_note = _parentNote.getNote();
 	_pitch = calcPitch( _note );
-	_crntPhase = 0;
+	if ( phaseReset == true ) _crntPhase = 0;
 	_cndDuringPortamento = false;
 	
 	//	LFO Settings as delegation who intend to use LFO
-	_pm = new Lfo();
 	_pm->setFrequency(static_cast<double>(getVoicePrm(VP_LFO_FREQUENCY))/10);
 	_pm->setDelay(getVoicePrm(VP_LFO_DELAY_TIME));
 	_pm->setFadeIn(getVoicePrm(VP_LFO_FADEIN_TIME));

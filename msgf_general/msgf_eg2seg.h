@@ -37,7 +37,7 @@ namespace msgf {
 		
 	private:
 		//	Move to next EG Segment
-		void	toAttack( void );			//	EG_NOT_YET -> ATTACK
+		void	toAttack( EG_STATE state );	//	EG_NOT_YET/KEY_OFF_STEADY -> ATTACK
 		void	toKeyOnSteady( void );		//	keep DECAY2
 		void	toRelease( void );			//	any Segment -> RELEASE
 		void	toKeyOffSteady( void );		//	keep RELEASE

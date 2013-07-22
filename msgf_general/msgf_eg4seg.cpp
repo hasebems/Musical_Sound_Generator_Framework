@@ -89,6 +89,7 @@ void Eg4segment::toKeyOffSteady( void )
 void Eg4segment::periodicOnceEveryProcess( void )
 {
 	switch (_egState){
+		case EG_KEY_OFF_STEADY:
 		case EG_NOT_YET:{
 			if ( _parentNote.conditionKeyOn() == true ){
 				//	Start key On

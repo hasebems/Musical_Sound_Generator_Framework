@@ -35,6 +35,7 @@ namespace msgf {
 		virtual void	keyOff( void );
 		virtual void	damp( void );
 		virtual void	changeNote( EventInfo* ei ){}
+		virtual void	keyOnAlternate( EventInfo* ei ){}	//	key on for the ch during release
 
 		//	process thread
 		virtual bool	noteSoundProcess( TgAudioBuffer& buf ){ return false; }
@@ -67,6 +68,9 @@ namespace msgf {
 
 		//	accessor for deprived class
 		void	setNote( Uint8 note ){ _noteNumber = note; }
+		void	setVelocity( Uint8 vel ){ _velocity = vel; }
+		void	setConditionKeyOn( void ){ _cndKeyOn = true; }
+		void	unsetConditionKeyOn( void ){ _cndKeyOn = false; }
 		
 	private:
 		//	relation

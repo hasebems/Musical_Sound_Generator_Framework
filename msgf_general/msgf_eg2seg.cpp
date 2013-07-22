@@ -26,7 +26,7 @@ Eg2segment::Eg2segment( CallBack& cbObj, Note& parent, bool centerBased ):
 //---------------------------------------------------------
 //		Move to next segment
 //---------------------------------------------------------
-void Eg2segment::toAttack( void )
+void Eg2segment::toAttack( EG_STATE state )
 {
 	//	time
 	_egState = EG_ATTACK;
@@ -34,7 +34,12 @@ void Eg2segment::toAttack( void )
 	_egTargetDac = _egStartDac + getAttackDacCount();
 
 	//	level
-	_egStartLevel = getAttackLevel();
+	if ( state == EG_NOT_YET ){
+		_egStartLevel = getAttackLevel();
+	}
+	else {
+		_egStartLevel = _egCrntLevel;
+	}
 	_egTargetLevel = _steadyLevel;
 }
 //---------------------------------------------------------
@@ -78,10 +83,11 @@ void Eg2segment::toKeyOffSteady( void )
 void Eg2segment::periodicOnceEveryProcess( void )
 {
 	switch (_egState){
+		case EG_KEY_OFF_STEADY:
 		case EG_NOT_YET:{
 			if ( _parentNote.conditionKeyOn() == true ){
 				//	Start key On
-				toAttack();
+				toAttack(_egState);
 			}
 			break;
 		}

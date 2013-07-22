@@ -26,6 +26,8 @@ public:
 	bool	keyOn( msgf::EventInfo* ei );
 	void	keyOff( void );
 	//	void	damp( void );
+
+	void	keyOnAlternate( msgf::EventInfo* ei );
 	void	changeNote( msgf::EventInfo* ei );
 	bool	noteSoundProcess( msgf::TgAudioBuffer& buf );
 	

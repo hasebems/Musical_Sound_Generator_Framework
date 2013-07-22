@@ -67,7 +67,7 @@ namespace msgf {
 		~Oscillator( void );
 		
 		void	init( void );
-
+		
 		//	process thread
 		void	process( TgAudioBuffer& buf );
 		

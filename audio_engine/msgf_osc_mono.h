@@ -66,7 +66,8 @@ namespace msgf {
 		OscMono( Note& parent );
 		~OscMono( void );
 		
-		void	init( void );
+		void	init( void ){ init(true);}
+		void	init( bool phaseReset );
 		void	changeNote( void );
 		
 		//	process thread
