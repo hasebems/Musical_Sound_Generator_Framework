@@ -48,6 +48,9 @@ bool MfNote::keyOn( EventInfo* ei )
 void MfNote::keyOff( void )
 {
 	Note::keyOff();
+	_osc->release();
+	_flt->release();
+	_amp->release();
 }
 //---------------------------------------------------------
 //		Alternate Key On

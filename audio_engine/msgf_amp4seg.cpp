@@ -34,6 +34,8 @@ Amplitude::~Amplitude( void )
 //---------------------------------------------------------
 void Amplitude::init( void )
 {
+	clearDacCounter();
+	
 	//	LFO Settings only for Amplitude
 	_am->setWave(LFO_TRI);
 	_am->setDirection(LFO_LOWER);

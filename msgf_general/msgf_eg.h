@@ -36,6 +36,7 @@ namespace msgf {
 	class Eg {
 	public:
 		virtual ~Eg(){}
+		virtual void	moveToRelease( void ) = 0;		//	Key Off
 		
 		//	Judge Segment change
 		virtual void	periodicOnceEveryProcess( void ) = 0;

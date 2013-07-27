@@ -69,6 +69,7 @@ namespace msgf {
 		void	init( void ){ init(true);}
 		void	init( bool phaseReset );
 		void	changeNote( void );
+		void	release( void ){ _eg->moveToRelease(); }
 		
 		//	process thread
 		void	process( TgAudioBuffer& buf );

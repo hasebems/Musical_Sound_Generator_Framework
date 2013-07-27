@@ -33,6 +33,8 @@ Oscillator::~Oscillator( void )
 //---------------------------------------------------------
 void Oscillator::init( void )
 {
+	clearDacCounter();
+	
 	_waveform = getVoicePrm( VP_WAVEFORM );
 	_pitch = calcPitch( _parentNote.getNote() );
 	_crntPhase = 0;

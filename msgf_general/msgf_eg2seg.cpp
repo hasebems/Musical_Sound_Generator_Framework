@@ -39,6 +39,7 @@ void Eg2segment::toAttack( EG_STATE state )
 	}
 	else {
 		_egStartLevel = _egCrntLevel;
+		_dacCounter = 0;
 	}
 	_egTargetLevel = _steadyLevel;
 }
@@ -83,6 +84,7 @@ void Eg2segment::toKeyOffSteady( void )
 void Eg2segment::periodicOnceEveryProcess( void )
 {
 	switch (_egState){
+		case EG_RELEASE:
 		case EG_KEY_OFF_STEADY:
 		case EG_NOT_YET:{
 			if ( _parentNote.conditionKeyOn() == true ){

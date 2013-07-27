@@ -33,6 +33,8 @@ Amp2seg::~Amp2seg( void )
 //---------------------------------------------------------
 void Amp2seg::init( void )
 {
+	clearDacCounter();
+	
 	//	LFO Settings only for Amplitude
 	_am->setWave(LFO_TRI);
 	_am->setDirection(LFO_LOWER);

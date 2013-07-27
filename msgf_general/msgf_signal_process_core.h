@@ -19,11 +19,11 @@ namespace msgf {
 	class SignalProcessCore {
 		
 	public:
-		SignalProcessCore( void ):
-			_dacCounter(0) {}
 		virtual ~SignalProcessCore( void ){}
 
 		virtual void	init( void ) = 0;
+		virtual void	release( void ) = 0;
+
 		virtual void	process( TgAudioBuffer& buf ) = 0;
 		
 	protected:
@@ -31,6 +31,7 @@ namespace msgf {
 		virtual	void	checkEvent( void ){}
 		
 		int		getTotalDacCount( const int time ){return time*(SAMPLING_FREQUENCY/100);}
+		void	clearDacCounter( void ){ _dacCounter = 0; }
 		
 		//	Basic Variables
 		long	_dacCounter;		//	should be incremented by buffer size in process

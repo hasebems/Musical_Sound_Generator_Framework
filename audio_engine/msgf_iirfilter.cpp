@@ -36,6 +36,8 @@ IirFilter::~IirFilter( void )
 //---------------------------------------------------------
 void IirFilter::init( void )
 {
+	clearDacCounter();
+	
 	_baseFc = getVoicePrm( VP_FILTER_CUTOFF );
 	_baseQ = getVoicePrm( VP_FILTER_RESO );
 	_fcOld = 0;

@@ -30,6 +30,7 @@ namespace msgf {
 		_egState(EG_NOT_YET),
 		_dacCounter(0){}
 		virtual ~Eg4segment( void ){}
+		virtual void	moveToRelease( void ){ toRelease(); }
 		
 		//	Judge Segment change
 		virtual void	periodicOnceEveryProcess( void );		//	PT

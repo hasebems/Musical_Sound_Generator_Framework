@@ -47,6 +47,7 @@ namespace msgf {
 		~Amp2seg( void );
 		
 		void	init( void );
+		void	release( void ){ _eg->moveToRelease(); }
 		
 		//	process thread
 		void	process( TgAudioBuffer& buf );

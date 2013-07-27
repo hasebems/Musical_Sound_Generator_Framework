@@ -26,6 +26,7 @@ namespace msgf {
 	public:
 		Eg2segment( CallBack& cbObj, Note& parent, bool centerBased );
 		virtual ~Eg2segment( void ){}
+		virtual void	moveToRelease( void ){ toRelease(); }
 		
 		//	Judge Segment change
 		virtual void	periodicOnceEveryProcess( void );

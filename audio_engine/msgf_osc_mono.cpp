@@ -33,6 +33,8 @@ OscMono::~OscMono( void )
 //---------------------------------------------------------
 void OscMono::init( bool phaseReset )
 {
+	clearDacCounter();
+	
 	_waveform = getVoicePrm( VP_WAVEFORM );
 	_note = _parentNote.getNote();
 	_pitch = calcPitch( _note );
