@@ -64,7 +64,7 @@ void Eg2segment::toRelease( void )
 
 	//	level
 	_egTargetLevel = getReleaseLevel();
-	_egStartLevel = _steadyLevel;
+	_egStartLevel = _egCrntLevel;
 }
 //---------------------------------------------------------
 void Eg2segment::toKeyOffSteady( void )
