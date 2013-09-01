@@ -40,8 +40,8 @@ void IirFilter::init( void )
 	
 	_baseFc = getVoicePrm( VP_FILTER_CUTOFF );
 	_baseQ = getVoicePrm( VP_FILTER_RESO );
-	_fcOld = 0;
-	_qOld  = 0;
+	_fcOld = _baseFc*0.99;
+	_qOld  = _baseQ*0.99;
 
 	double ratio = log(FEG_DEPTH_MAX)/FEG_MAX;
 	_frqRatio = exp(ratio);
@@ -59,6 +59,31 @@ void IirFilter::setOneCoef( double fc, double qValue )
 {
 	//	Check whether same or not
 	if (( fc == _fcOld ) && ( qValue == _qOld )) return;
+
+	//	Fc interporate
+	if ( _fcOld > fc ){
+		if ( _fcOld*0.5 > fc ){
+			fc = _fcOld*0.5;
+		}
+	}
+	else {
+		if ( _fcOld*2 < fc ){
+			fc = _fcOld*2;
+		}
+	}
+
+	//	Q interporate
+	if ( _qOld > qValue ){
+		if ( _qOld*0.5 > qValue ){
+			qValue = _qOld*0.5;
+		}
+	}
+	else {
+		if ( _qOld*2 < qValue ){
+			qValue = _qOld*2;
+		}
+	}
+	
 	_fcOld = fc;
 	_qOld = qValue;
 	

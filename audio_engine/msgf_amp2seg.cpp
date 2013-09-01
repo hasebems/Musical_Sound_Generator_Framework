@@ -17,7 +17,8 @@ using namespace msgf;
 //		Initialize
 //---------------------------------------------------------
 Amp2seg::Amp2seg( Note& parent ):
-_parentNote(parent)
+_parentNote(parent),
+_oldVol(0)
 {
 	_cbInst = new Aeg2CallBack( this );
 	_eg = new Eg2segment( *_cbInst, parent, false );
@@ -85,6 +86,14 @@ void Amp2seg::process( TgAudioBuffer& buf )
 		double	vol = getVoicePrm(VP_VOLUME);
 		vol = aeg * (vol/AMP_PRM_MAX);
 		vol = calcMidiVolume( vol );
+
+		//	volume interporate
+		if (( _oldVol != 0 ) && ( _oldVol < vol )){
+			if ( _oldVol*4 < vol ){
+				vol = _oldVol*4;
+			}
+		}
+		_oldVol = vol;
 		
 		buf.mulAudioBuffer( i, vol*vol );
 		_dacCounter++;
