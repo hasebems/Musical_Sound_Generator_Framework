@@ -14,9 +14,8 @@
 #include "msgf_iirfilter.h"
 #include "msgf_osc_mono.h"
 #include "msgf_amp2seg.h"
+#include "msgf_event_info.h"
 
-//---------------------------------------------------------
-class msgf::EventInfo;
 //---------------------------------------------------------
 class MfNote : public msgf::Note {
 	
