@@ -69,7 +69,8 @@ namespace msgf {
 		//	EG Level
 		Aeg2CallBack*	_cbInst;
 		Eg2segment*		_eg;
-		double			_oldVol;
+		double			_realVol;
+		double			_targetVol;
 		
 		//	LFO
 		Lfo*	_am;

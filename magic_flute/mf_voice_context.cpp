@@ -21,7 +21,7 @@ const MfVoiceParameter MfVoiceContext::tMfVoiceParameter[MAX_MF_VOICE_NUMBER] = 
 		{
 			0,		//VP_TUNING,			//	-100 - 100(cent)
 			0,		//VP_TRANSPOSE,			//	-24 - 24(seminote)
-			1,		//VP_WAVE_TYPE,			//	0:sine, 1:tri, 2:saw, 3:square, 4:pulse
+			1,		//VP_WAVE_TYPE,			//	0:sine, 1:tri
 
 			1,		//VP_PORTAMENTO_MODE,	//	0:rate constant, 1:time constant
 			1,		//VP_PORTAMENTO_CURVE,	//	0:cent linear, 1:freqency linear
@@ -39,7 +39,7 @@ const MfVoiceParameter MfVoiceContext::tMfVoiceParameter[MAX_MF_VOICE_NUMBER] = 
 		},
 		{
 			0,		//VP_FILTER_TYPE,		//	0:LPF,
-			2000,	//VP_FILTER_CUTOFF,		//	[Hz]
+			8000,	//VP_FILTER_CUTOFF,		//	[Hz]
 			1,		//VP_FILTER_RESO,		//	1 - 100 ?
 			
 			0,		//VP_FEG_ATTACK_TIME,	//	0 - 1000 (*10ms)
@@ -59,7 +59,7 @@ const MfVoiceParameter MfVoiceContext::tMfVoiceParameter[MAX_MF_VOICE_NUMBER] = 
 		{
 			0,		//VP_TUNING,			//	-100 - 100(cent)
 			0,		//VP_TRANSPOSE,			//	-24 - 24(seminote)
-			1,		//VP_WAVE_TYPE,			//	0:sine, 1:tri, 2:saw, 3:square, 4:pulse
+			2,		//VP_WAVE_TYPE,			//	0:sine, 1:tri
 
 			0,		//VP_PORTAMENTO_MODE,	//	0:rate constant, 1:time constant
 			0,		//VP_PORTAMENTO_CURVE,	//	0:cent linear, 1:freqency linear
@@ -77,7 +77,7 @@ const MfVoiceParameter MfVoiceContext::tMfVoiceParameter[MAX_MF_VOICE_NUMBER] = 
 		},
 		{
 			0,		//VP_FILTER_TYPE,		//	0:LPF,
-			2000,	//VP_FILTER_CUTOFF,		//	[Hz]
+			8000,	//VP_FILTER_CUTOFF,		//	[Hz]
 			1,		//VP_FILTER_RESO,		//	1 - 100 ?
 			
 			100,	//VP_FEG_ATTACK_TIME,	//	0 - 1000 (*10ms)
