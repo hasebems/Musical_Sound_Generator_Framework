@@ -39,7 +39,7 @@ const MfVoiceParameter MfVoiceContext::tMfVoiceParameter[MAX_MF_VOICE_NUMBER] = 
 		},
 		{
 			0,		//VP_FILTER_TYPE,		//	0:LPF,
-			8000,	//VP_FILTER_CUTOFF,		//	[Hz]
+			2000,	//VP_FILTER_CUTOFF,		//	[Hz]
 			1,		//VP_FILTER_RESO,		//	1 - 100 ?
 			
 			0,		//VP_FEG_ATTACK_TIME,	//	0 - 1000 (*10ms)
