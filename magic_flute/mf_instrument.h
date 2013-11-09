@@ -21,6 +21,11 @@ public:
 	
 	void	keyOn( msgf::Uint8 note, msgf::Uint8 velocity );
 	void	keyOff( msgf::Uint8 note, msgf::Uint8 velocity );
+	void	expression( msgf::Uint8 value );
+
+private:
+	msgf::Uint8		lastNote;
+
 };
 
 #endif /* defined(__mf_instrument__) */

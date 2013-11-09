@@ -42,6 +42,7 @@ namespace msgf {
 		//	Basic IF
 		virtual void	keyOn( Uint8 note, Uint8 velocity ) = 0;
 		virtual void	keyOff( Uint8 note, Uint8 velocity );
+		virtual void	expression( Uint8 value ){}
 		virtual void	sustain( Uint8 value );
 		virtual void	allSoundOff( void );
 

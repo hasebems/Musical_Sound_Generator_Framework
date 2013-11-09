@@ -70,7 +70,11 @@ void Part::controlChange( int controller, int value )
 		case 1:		_cc1_modulationWheel = value; break;
 		case 7:		_cc7_volume = value; break;
 		case 10:	_cc10_pan = value; break;
-		case 11:	_cc11_expression = value; break;
+		case 11:{
+			_cc11_expression = value;
+			if ( _inst ) _inst->expression( value );
+			break;
+		}
 		case 32:	_cc32_lsb = value; break;
 		case 5:		_cc5_portamentoTime = value; break;
 		case 64:{

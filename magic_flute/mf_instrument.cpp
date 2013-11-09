@@ -18,7 +18,8 @@ using namespace msgf;
 //		Constructor
 //---------------------------------------------------------
 MfInstrument::MfInstrument( Part* pt, int vid ):
-Instrument(pt,vid)
+Instrument(pt,vid),
+lastNote(0x3c)
 {
 	_vc = new MfVoiceContext( vid );
 }
@@ -55,6 +56,8 @@ void MfInstrument::keyOn( Uint8 note, Uint8 velocity )
 			appendNoteList( nt );
 		}
 	}
+
+	lastNote = note;
 }
 
 //---------------------------------------------------------
@@ -64,4 +67,24 @@ void MfInstrument::keyOff( Uint8 note, Uint8 velocity )
 {
 	Note* kfNote = searchNote( note, DURING_KON );
 	if ( kfNote ) kfNote->keyOff();
+}
+
+//---------------------------------------------------------
+//		Expression
+//---------------------------------------------------------
+void MfInstrument::expression( Uint8 value )
+{
+	if ( value ){
+		if ( _topNote == 0 ) keyOn( lastNote, 0x7f );
+		// else : normal amplitude processing
+	}
+	else {
+		//	All Key Off
+		Note* kfNote = _topNote;
+		while ( kfNote != 0 ){
+			Note* ntNxt = kfNote->getNextNote();
+			kfNote->keyOff();
+			kfNote = ntNxt;
+		}
+	}
 }
