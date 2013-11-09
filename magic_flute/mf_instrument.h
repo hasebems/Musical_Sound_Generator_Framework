@@ -24,7 +24,7 @@ public:
 	void	expression( msgf::Uint8 value );
 
 private:
-	msgf::Uint8		lastNote;
+	msgf::Uint8		_lastNote;
 
 };
 

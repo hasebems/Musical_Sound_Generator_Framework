@@ -19,7 +19,7 @@ using namespace msgf;
 //---------------------------------------------------------
 MfInstrument::MfInstrument( Part* pt, int vid ):
 Instrument(pt,vid),
-lastNote(0x3c)
+_lastNote(0x3c)
 {
 	_vc = new MfVoiceContext( vid );
 }
@@ -57,7 +57,7 @@ void MfInstrument::keyOn( Uint8 note, Uint8 velocity )
 		}
 	}
 
-	lastNote = note;
+	_lastNote = note;
 }
 
 //---------------------------------------------------------
@@ -75,7 +75,7 @@ void MfInstrument::keyOff( Uint8 note, Uint8 velocity )
 void MfInstrument::expression( Uint8 value )
 {
 	if ( value ){
-		if ( _topNote == 0 ) keyOn( lastNote, 0x7f );
+		if ( _topNote == 0 ) keyOn( _lastNote, 0x7f );
 		// else : normal amplitude processing
 	}
 	else {
