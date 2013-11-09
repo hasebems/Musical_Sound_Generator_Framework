@@ -14,7 +14,7 @@ const MfVoiceParameter MfVoiceContext::tMfVoiceParameter[MAX_MF_VOICE_NUMBER] = 
 		{
 			50,		//VP_VOLUME,			//	0 - 100
 			15,		//VP_AEG_ATTACK_TIME,	//	0 - 1000 (10ms)
-			15,		//VP_AEG_RELEASE_TIME,	//	0 - 1000 (10ms)
+			30,		//VP_AEG_RELEASE_TIME,	//	0 - 1000 (10ms)
 			
 			0,		//VP_LFO_AMD,			//	0 - 100 %
 		},
@@ -25,7 +25,7 @@ const MfVoiceParameter MfVoiceContext::tMfVoiceParameter[MAX_MF_VOICE_NUMBER] = 
 
 			1,		//VP_PORTAMENTO_MODE,	//	0:rate constant, 1:time constant
 			1,		//VP_PORTAMENTO_CURVE,	//	0:cent linear, 1:freqency linear
-			10,		//VP_PORTAMENTO,		//	0 - ??? (rate: *10ms/100cent, time: *10ms)
+			0,		//VP_PORTAMENTO,		//	0 - ??? (rate: *10ms/100cent, time: *10ms)
 			
 			0,		//VP_PEG_ATTACK_TIME,	//	0 - 1000 (*10ms)
 			0,		//VP_PEG_ATTACK_LEVEL,	//	-60 - 0 - +60 (1/2 - 2[times*Hz])
