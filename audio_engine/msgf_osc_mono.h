@@ -10,6 +10,7 @@
 #define __msgf_osc_mono__
 
 #include <iostream>
+#include <math.h>
 #include "msgf_type.h"
 #include "msgf_signal_process_core.h"
 #include "msgf_voice_context.h"
@@ -86,9 +87,9 @@ namespace msgf {
 		double	getPegPitch( int depth );
 		
 		double	calcDeltaLFO( double lfoDpt, double diff );
-		void	calcPortamento( int dacCnt );
-		void	generateSine( TgAudioBuffer& buf, double* lfobuf, double diff );
-		void	generateTriangle( TgAudioBuffer& buf, double* lfobuf, double diff );
+		void	calcPortamento( void );
+		double	generateSine( double phase ){ return sin(phase);}
+		double	generateTriangle( double phase );
 		
 		int		getVoicePrm( int id ){ return _parentNote.getVoiceContext()->getParameter( VP_OSC_MONO_ID, id ); }
 		int		getAttackDacCount( void ){ return getTotalDacCount(getVoicePrm(VP_PEG_ATTACK_TIME)); }

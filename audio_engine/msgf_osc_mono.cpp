@@ -150,25 +150,34 @@ void OscMono::process( TgAudioBuffer& buf )
 		//	Check EG Segment
 		_eg->periodicOnceEveryDac( _dacCounter );
 		
-		//	Get EG Level
+		//	Get EG Level & Pitch
 		int egLvl = static_cast<int>(_eg->calcEgLevel() * PEG_MAX);
-		
-		//	calcurate Portamento
-		if ( _cndDuringPortamento ) calcPortamento( buf.bufferSize() );
-		
-		//	Generate Phase diff
-		double	pch = getPegPitch(egLvl);
-		double	diff = (2 * M_PI * pch )/ SAMPLING_FREQUENCY;
-		
+		_pitch = getPegPitch(egLvl);
+
 		//	get LFO pattern
 		double*	lfoBuf = new double[buf.bufferSize()];
 		_pm->process( buf.bufferSize(), lfoBuf );
-		
-		switch ( _waveform ){
-			default:
-			case SINE		: generateSine(buf,lfoBuf,diff); break;
-			case TRIANGLE	: generateTriangle(buf,lfoBuf,diff); break;
+
+		//	Generate each samples
+		for ( int i=0; i<buf.bufferSize(); i++ ){
+			double	waveAmp;
+			switch ( _waveform ){
+				default:
+				case SINE		: waveAmp = generateSine(_crntPhase); break;
+				case TRIANGLE	: waveAmp = generateTriangle(_crntPhase); break;
+			}
+			
+			//	Write Audio Buffer
+			buf.setAudioBuffer( i, waveAmp );
+
+			//	calcurate Portamento
+			if ( _cndDuringPortamento ) calcPortamento();
+
+			//	Calculate next _crntPhase from Pitch
+			double	diff = (2 * M_PI * _pitch )/ SAMPLING_FREQUENCY;
+			_crntPhase += calcDeltaLFO( lfoBuf[i], diff );
 		}
+
 		_dacCounter += buf.bufferSize();
 		
 		delete[] lfoBuf;
@@ -186,7 +195,7 @@ double OscMono::calcDeltaLFO( double lfoDpt, double diff )
 //---------------------------------------------------------
 //		Calcrate Portamento
 //---------------------------------------------------------
-void OscMono::calcPortamento( int dacCnt )
+void OscMono::calcPortamento( void )
 {
 	if ( _targetCent == 0 ){
 		_pitch = _pitchOrg + ((_pitchTarget - _pitchOrg)*_portamentoCounter)/_maxPortamentoCounter;
@@ -196,7 +205,7 @@ void OscMono::calcPortamento( int dacCnt )
 		_pitch = exp(_crntCent*log(2)/1200)*_pitchOrg;
 	}
 
-	_portamentoCounter += dacCnt;
+	_portamentoCounter++;
 	if ( _portamentoCounter > _maxPortamentoCounter ){
 		_cndDuringPortamento = false;
 		_pitch = _pitchTarget;
@@ -206,24 +215,13 @@ void OscMono::calcPortamento( int dacCnt )
 //---------------------------------------------------------
 //		Generate Wave
 //---------------------------------------------------------
-void OscMono::generateSine( TgAudioBuffer& buf, double* lfobuf, double diff )
+double OscMono::generateTriangle( double phase )
 {
-	for ( int i=0; i<buf.bufferSize(); i++ ){
-		//	write Sine wave
-		buf.setAudioBuffer( i, sin(_crntPhase) );
-		_crntPhase += calcDeltaLFO( lfobuf[i], diff );
-	}
-}
-//---------------------------------------------------------
-void OscMono::generateTriangle( TgAudioBuffer& buf, double* lfobuf, double diff )
-{
-	for ( int i=0; i<buf.bufferSize(); i++ ){
-		//	write Triangle wave
-		double amp, ps = fmod(_crntPhase,(2*M_PI))/(2*M_PI);
-		if ( ps < 0.5 ) amp = 2*ps - 0.5;
-		else amp = 2 - 2*ps;
-		buf.setAudioBuffer( i, amp );
-		_crntPhase += calcDeltaLFO( lfobuf[i], diff );
-	}
+	//	write Triangle wave
+	double amp, ps = fmod(phase,(2*M_PI))/(2*M_PI);
+	if ( ps < 0.5 ) amp = 2*ps - 0.5;
+	else amp = 2 - 2*ps;
+
+	return amp;
 }
 
