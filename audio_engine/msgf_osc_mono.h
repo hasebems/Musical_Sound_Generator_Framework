@@ -30,6 +30,7 @@ namespace msgf {
 		VP_WAVEFORM,			//	0:sine, 1:tri
 
 		VP_PORTAMENTO_MODE,		//	0:rate constant, 1:time constant
+		VP_PORTAMENTO_DIFF,		//	0:full, 1: Max100cent, 2: Max200cent ...
 		VP_PORTAMENTO_CURVE,	//	0:cent linear, 1:freqency linear
 		VP_PORTAMENTO,			//	0 - ??? (rate: *10ms/100cent, time: *10ms)
 		

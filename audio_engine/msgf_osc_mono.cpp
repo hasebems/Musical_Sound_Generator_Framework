@@ -59,7 +59,28 @@ void OscMono::changeNote( void )
 	
 	oldNote = _note;
 	newNote = _note = _parentNote.getNote();
-	_pitchOrg = _pitch;
+	
+	//	Analyze Portamento Difference
+	int diff = getVoicePrm(VP_PORTAMENTO_DIFF);
+	if ( diff == 0 ) _pitchOrg = _pitch;
+	else {
+		if ( newNote > oldNote ){
+			if ( newNote - oldNote > diff ){
+				oldNote = newNote - diff;
+				_pitchOrg = calcPitch(oldNote);
+			}
+			else _pitchOrg = _pitch;
+		}
+		else {
+			if ( oldNote - newNote > diff ){
+				oldNote = newNote + diff;
+				_pitchOrg = calcPitch(oldNote);
+			}
+			else _pitchOrg = _pitch;
+		}
+	}
+	
+	//	Set Variables
 	_pitchTarget = calcPitch( newNote );
 	_cndDuringPortamento = true;
 	_portamentoCounter = 0;
