@@ -13,7 +13,7 @@
 #include "msgf_voice_context.h"
 #include "msgf_iirfilter.h"
 #include "msgf_amp2seg.h"
-#include "msgf_osc_mono.h"
+#include "msgf_osc_pipe.h"
 
 //---------------------------------------------------------
 struct MfVoiceParameter {
@@ -35,7 +35,7 @@ public:
 		switch (tid){
 			case msgf::VP_AMP_2SEG_ID:	value = tMfVoiceParameter[_vNum].amp[pid]; break;
 			case msgf::VP_FILTER_ID:	value = tMfVoiceParameter[_vNum].flt[pid]; break;
-			case msgf::VP_OSC_MONO_ID:	value = tMfVoiceParameter[_vNum].osc[pid]; break;
+			case msgf::VP_OSC_PIPE_ID:	value = tMfVoiceParameter[_vNum].osc[pid]; break;
 			default: break;
 		}
 		return value;

@@ -24,14 +24,8 @@ const MfVoiceParameter MfVoiceContext::tMfVoiceParameter[MAX_MF_VOICE_NUMBER] = 
 			0,		//VP_WAVE_TYPE,			//	0:sine, 1:tri
 
 			1,		//VP_PORTAMENTO_MODE,	//	0:rate constant, 1:time constant
-			2,		//VP_PORTAMENTO_DIFF,	//	0:full, 1: Max100cent, 2: Max200cent ...
 			0,		//VP_PORTAMENTO_CURVE,	//	0:cent linear, 1:freqency linear
-			7,		//VP_PORTAMENTO,		//	0 - ??? (rate: *10ms/100cent, time: *10ms)
-			
-			0,		//VP_PEG_ATTACK_TIME,	//	0 - 1000 (*10ms)
-			0,		//VP_PEG_ATTACK_LEVEL,	//	-60 - 0 - +60 (1/2 - 2[times*Hz])
-			0,		//VP_PEG_RELEASE_TIME,	//	0 - 1000 (*10ms)
-			0,		//VP_PEG_RELEASE_LEVEL,	//	-60 - 0 - +60 (1/2 - 2[times*Hz])
+			10,		//VP_PORTAMENTO,		//	0 - ??? (rate: *10ms/100cent, time: *10ms)
 			
 			40,		//VP_LFO_FREQUENCY,		//	0 - ??? (*0.1[Hz])
 			50,		//VP_LFO_DELAY_TIME,	//	0 - ??? (*10ms)
@@ -63,14 +57,8 @@ const MfVoiceParameter MfVoiceContext::tMfVoiceParameter[MAX_MF_VOICE_NUMBER] = 
 			2,		//VP_WAVE_TYPE,			//	0:sine, 1:tri
 
 			0,		//VP_PORTAMENTO_MODE,	//	0:rate constant, 1:time constant
-			0,		//VP_PORTAMENTO_DIFF,	//	0:full, 1: Max100cent, 2: Max200cent ...
 			0,		//VP_PORTAMENTO_CURVE,	//	0:cent linear, 1:freqency linear
 			0,		//VP_PORTAMENTO,		//	0 - ??? (rate: *10ms/100cent, time: *10ms)
-			
-			0,		//VP_PEG_ATTACK_TIME,	//	0 - 1000 (*10ms)
-			0,		//VP_PEG_ATTACK_LEVEL,	//	-60 - 0 - +60 (1/2 - 2[times*Hz])
-			0,		//VP_PEG_RELEASE_TIME,	//	0 - 1000 (*10ms)
-			0,		//VP_PEG_RELEASE_LEVEL,	//	-60 - 0 - +60 (1/2 - 2[times*Hz])
 			
 			40,		//VP_LFO_FREQUENCY,		//	0 - ??? (*0.1[Hz])
 			50,		//VP_LFO_DELAY_TIME,	//	0 - ??? (*10ms)

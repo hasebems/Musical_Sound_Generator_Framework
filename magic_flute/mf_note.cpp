@@ -16,7 +16,7 @@ using namespace msgf;
 MfNote::MfNote( Instrument* inst ) :
 Note(inst)
 {
-	_osc = new OscMono(*this);
+	_osc = new OscPipe(*this);
 	_flt = new IirFilter(*this);
 	_amp = new Amp2seg(*this);
 }

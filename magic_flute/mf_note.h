@@ -12,7 +12,7 @@
 #include <iostream>
 #include "msgf_note.h"
 #include "msgf_iirfilter.h"
-#include "msgf_osc_mono.h"
+#include "msgf_osc_pipe.h"
 #include "msgf_amp2seg.h"
 #include "msgf_event_info.h"
 
@@ -32,7 +32,7 @@ public:
 	
 private:
 	//	Audio Engines
-	msgf::OscMono*			_osc;
+	msgf::OscPipe*			_osc;
 	msgf::IirFilter*		_flt;
 	msgf::Amp2seg*			_amp;
 };
