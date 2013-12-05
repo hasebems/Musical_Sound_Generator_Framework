@@ -54,36 +54,36 @@ void OscPipe::changeNote( void )
 	Uint8	newNote;
 	double	tgtCent;
 
-	_srcNote = _note;
+	_sourceNote = _note;
 	newNote = _note = _parentNote.getNote();
 	tgtCent = 1200*log(calcPitch(newNote)/_pitch)/log(2);
 	
 	if (( tgtCent < -50 ) || ( tgtCent > 50 )){
 
-		_pitchOrg = _pitch;
+		_sourcePitch = _pitch;
 		_portamentoCounter = 0;
 		
 		//	Analyze Portamento Difference
 		if ( tgtCent > PRTM_SLOW_DIFF*100 ){
 			//	Move Upper & Far
 			_prtmState = WAITING_PRTM;
-			_pitchTarget = _pitch;
+			_targetPitch = _pitch;
 		}
 		else if ( tgtCent > 0 ){
 			_prtmState = SLOW_MOVE;
-			_pitchTarget = calcPitch( newNote );
-			_tgtNote = newNote;
+			_targetPitch = calcPitch( newNote );
+			_targetNote = newNote;
 			setPortamentoCounter();
 		}
 		else if ( tgtCent < -PRTM_SLOW_DIFF*100 ){
 			//	Move Down & Far
 			_prtmState = WAITING_PRTM;
-			_pitchTarget = _pitch;
+			_targetPitch = _pitch;
 		}
 		else {
 			_prtmState = SLOW_MOVE;
-			_pitchTarget = calcPitch( newNote );
-			_tgtNote = newNote;
+			_targetPitch = calcPitch( newNote );
+			_targetNote = newNote;
 			setPortamentoCounter();
 		}
 	}
@@ -193,15 +193,15 @@ void OscPipe::managePortamentoState( void )
 			if ( PRTM_WAITING_TIME <= _portamentoCounter ){
 				_prtmState = FAST_MOVE;
 				tmpPitch = calcPitch(_note);
-				if ( _pitchOrg > tmpPitch ){	//	Move Down
-					_tgtNote = _note + PRTM_SLOW_DIFF;
+				if ( _sourcePitch > tmpPitch ){	//	Move Down
+					_targetNote = _note + PRTM_SLOW_DIFF;
 				}
 				else {	//	Move Upper
-					_tgtNote = _note - PRTM_SLOW_DIFF;
+					_targetNote = _note - PRTM_SLOW_DIFF;
 				}
 				_portamentoCounter = 0;
-				_pitchOrg = _pitch;
-				_pitchTarget = calcPitch( _tgtNote );
+				_sourcePitch = _pitch;
+				_targetPitch = calcPitch( _targetNote );
 			}
 			break;
 		}
@@ -210,14 +210,14 @@ void OscPipe::managePortamentoState( void )
 			if ( PRTM_FAST_MOVE_TIME <= _portamentoCounter ){
 				_prtmState = SLOW_MOVE;
 				_portamentoCounter = 0;
-				_srcNote = _tgtNote;
-				_tgtNote = _note;
-				_pitchOrg = _pitch;
-				_pitchTarget = calcPitch( _tgtNote );
+				_sourceNote = _targetNote;
+				_targetNote = _note;
+				_sourcePitch = _pitch;
+				_targetPitch = calcPitch( _targetNote );
 				setPortamentoCounter();
 			}
 			else{
-				_pitch = _pitchOrg + ((_pitchTarget - _pitchOrg)*_portamentoCounter)/PRTM_FAST_MOVE_TIME;
+				_pitch = _sourcePitch + ((_targetPitch - _sourcePitch)*_portamentoCounter)/PRTM_FAST_MOVE_TIME;
 			}
 			break;
 		}
@@ -225,15 +225,17 @@ void OscPipe::managePortamentoState( void )
 		case SLOW_MOVE:{
 			if ( _portamentoCounter > _maxPortamentoCounter ){
 				_prtmState = NO_MOVE;
-				_pitch = _pitchTarget;
+				_pitch = _targetPitch;
 			}
 			else {
 				if ( _targetCent == 0 ){
-					_pitch = _pitchOrg + ((_pitchTarget - _pitchOrg)*_portamentoCounter)/_maxPortamentoCounter;
+					//	freq. linear
+					_pitch = _sourcePitch + ((_targetPitch - _sourcePitch)*_portamentoCounter)/_maxPortamentoCounter;
 				}
 				else {
+					//	cent linear
 					double _crntCent = _targetCent*_portamentoCounter/_maxPortamentoCounter;
-					_pitch = exp(_crntCent*log(2)/1200)*_pitchOrg;
+					_pitch = exp(_crntCent*log(2)/1200)*_sourcePitch;
 				}
 			}
 			break;
@@ -256,13 +258,14 @@ void OscPipe::setPortamentoCounter( void )
 	else {
 		//	rate constant
 		Uint8	noteDiff;
-		if ( _tgtNote > _srcNote ) noteDiff = _tgtNote - _srcNote;
-		else noteDiff = _srcNote - _tgtNote;
+		if ( _targetNote > _sourceNote ) noteDiff = _targetNote - _sourceNote;
+		else noteDiff = _sourceNote - _targetNote;
 		_maxPortamentoCounter = (noteDiff*getVoicePrm(VP_PORTAMENTO)*SAMPLING_FREQUENCY)/100;
 	}
 	
 	if ( getVoicePrm(VP_PORTAMENTO_CURVE) == 0 ){
-		_targetCent = 1200*log(_pitchTarget/_pitchOrg)/log(2);
+		//	cent linear
+		_targetCent = 1200*log(_targetPitch/_sourcePitch)/log(2);
 	}
 	else _targetCent = 0;
 }
@@ -278,17 +281,4 @@ double OscPipe::generateWave( double phase )
 	}
 	
 	return wave;
-
-//	switch ( _waveform ){
-//		default:
-//		case SINE		: waveAmp = generateSine(_crntPhase); break;
-//		case TRIANGLE	: waveAmp = generateTriangle(_crntPhase); break;
-//	}
-	
-	//	write Triangle wave
-//	double amp, ps = fmod(phase,(2*M_PI))/(2*M_PI);
-//	if ( ps < 0.5 ) amp = 2*ps - 0.5;
-//	else amp = 2 - 2*ps;
-	
-//	return amp;
 }

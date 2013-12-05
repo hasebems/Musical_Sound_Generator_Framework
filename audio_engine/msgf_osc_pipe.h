@@ -106,22 +106,22 @@ namespace msgf {
 		const int PRTM_FAST_MOVE_TIME = 500;	//	*dac count
 
 		//	Basic Reference
-		Note&	_parentNote;
+		Note&		_parentNote;
 		
 		//	generate waveform
-		int		_waveform;
-		Uint8	_note;
-		double	_pitch;
-		double	_crntPhase;
+		int			_waveform;
+		Uint8		_note;
+		double		_pitch;
+		double		_crntPhase;
 		
 		//	portamento
-		int		_portamentoCounter;
-		int		_maxPortamentoCounter;
-		double	_pitchOrg;
-		double	_pitchTarget;
-		double	_targetCent;
-		Uint8	_srcNote;
-		Uint8	_tgtNote;
+		int			_portamentoCounter;
+		int			_maxPortamentoCounter;
+		double		_sourcePitch;
+		double		_targetPitch;
+		double		_targetCent;
+		Uint8		_sourceNote;
+		Uint8		_targetNote;
 		PRTM_STATE	_prtmState;
 		
 		//	LFO
