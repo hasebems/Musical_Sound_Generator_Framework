@@ -13,6 +13,11 @@
 
 using namespace msgf;
 
+const int OscPipe::PRTM_SLOW_DIFF = 2;
+const int OscPipe::PRTM_WAITING_TIME = 2000;		//	*dac count
+const int OscPipe::PRTM_FAST_MOVE_TIME = 500;	//	*dac count
+
+
 //---------------------------------------------------------
 //		Initialize
 //---------------------------------------------------------

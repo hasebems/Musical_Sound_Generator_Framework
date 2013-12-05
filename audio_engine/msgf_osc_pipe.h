@@ -101,9 +101,9 @@ namespace msgf {
 		
 		static const double tPitchOfA[11];
 
-		const int PRTM_SLOW_DIFF = 2;
-		const int PRTM_WAITING_TIME = 2000;		//	*dac count
-		const int PRTM_FAST_MOVE_TIME = 500;	//	*dac count
+		const static int PRTM_SLOW_DIFF;
+		const static int PRTM_WAITING_TIME;		//	*dac count
+		const static int PRTM_FAST_MOVE_TIME;	//	*dac count
 
 		//	Basic Reference
 		Note&		_parentNote;
