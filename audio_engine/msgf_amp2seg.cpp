@@ -109,4 +109,6 @@ void Amp2seg::process( TgAudioBuffer& buf )
 		buf.mulAudioBuffer( i, _realVol*_realVol );
 		_dacCounter++;
 	}
+
+	delete[] lfoBuf;
 }

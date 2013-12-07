@@ -90,4 +90,6 @@ void Amplitude::process( TgAudioBuffer& buf )
 		buf.mulAudioBuffer( i, vol*vol );
 		_dacCounter++;
 	}
+
+	delete[] lfoBuf;
 }

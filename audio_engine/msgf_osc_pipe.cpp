@@ -61,6 +61,7 @@ void OscPipe::changeNote( void )
 
 	newNote = _note = _parentNote.getNote();
 	tgtCent = 1200*log(calcPitch(newNote)/_pitch)/log(2);
+	_sourcePitch = _pitch;
 
 	if ( tgtCent > PRTM_SLOW_DIFF*100 ){
 		//	Move Upper & Far
