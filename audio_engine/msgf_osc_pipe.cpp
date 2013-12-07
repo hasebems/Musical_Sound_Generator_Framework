@@ -59,9 +59,9 @@ void OscPipe::changeNote( void )
 	Uint8	newNote;
 	double	tgtCent;
 
+	tgtCent = 1200*log(calcPitch(_targetNote)/_pitch)/log(2);
 	_sourceNote = _note;
 	newNote = _note = _parentNote.getNote();
-	tgtCent = 1200*log(calcPitch(newNote)/_pitch)/log(2);
 	
 	if (( tgtCent < -50 ) || ( tgtCent > 50 )){
 
