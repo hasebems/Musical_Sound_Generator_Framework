@@ -59,38 +59,53 @@ void OscPipe::changeNote( void )
 	Uint8	newNote;
 	double	tgtCent;
 
-	tgtCent = 1200*log(calcPitch(_targetNote)/_pitch)/log(2);
-	_sourceNote = _note;
 	newNote = _note = _parentNote.getNote();
-	
-	if (( tgtCent < -50 ) || ( tgtCent > 50 )){
+	tgtCent = 1200*log(calcPitch(newNote)/_pitch)/log(2);
 
-		_sourcePitch = _pitch;
-		_portamentoCounter = 0;
-		
-		//	Analyze Portamento Difference
-		if ( tgtCent > PRTM_SLOW_DIFF*100 ){
-			//	Move Upper & Far
+	if ( tgtCent > PRTM_SLOW_DIFF*100 ){
+		//	Move Upper & Far
+		if (( _prtmState == NO_MOVE ) || ( _prtmState == WAITING_PRTM )){
 			_prtmState = WAITING_PRTM;
 			_targetPitch = _pitch;
-		}
-		else if ( tgtCent > 0 ){
-			_prtmState = SLOW_MOVE;
-			_targetPitch = calcPitch( newNote );
-			_targetNote = newNote;
-			setPortamentoCounter();
-		}
-		else if ( tgtCent < -PRTM_SLOW_DIFF*100 ){
-			//	Move Down & Far
-			_prtmState = WAITING_PRTM;
-			_targetPitch = _pitch;
+			if ( _prtmState == NO_MOVE ){
+				_portamentoCounter = 0;
+			}
 		}
 		else {
-			_prtmState = SLOW_MOVE;
-			_targetPitch = calcPitch( newNote );
-			_targetNote = newNote;
-			setPortamentoCounter();
+			_prtmState = FAST_MOVE;
+			_targetPitch = calcPitch( _note - PRTM_SLOW_DIFF );
 		}
+	}
+
+	else if ( tgtCent > 0 ){
+		//	Move Upper & Slow
+		_portamentoCounter = 0;
+		_prtmState = SLOW_MOVE;
+		_targetPitch = calcPitch( newNote );
+		setPortamentoCounter(tgtCent);
+	}
+
+	else if ( tgtCent < -PRTM_SLOW_DIFF*100 ){
+		//	Move Down & Far
+		if (( _prtmState == NO_MOVE ) || ( _prtmState == WAITING_PRTM )){
+			_prtmState = WAITING_PRTM;
+			_targetPitch = _pitch;
+			if ( _prtmState == NO_MOVE ){
+				_portamentoCounter = 0;
+			}
+		}
+		else {
+			_prtmState = FAST_MOVE;
+			_targetPitch = calcPitch( _note - PRTM_SLOW_DIFF );
+		}
+	}
+
+	else {
+		//	Move Down & Slow
+		_portamentoCounter = 0;
+		_prtmState = SLOW_MOVE;
+		_targetPitch = calcPitch( newNote );
+		setPortamentoCounter(-tgtCent);
 	}
 }
 
@@ -192,6 +207,7 @@ double OscPipe::calcDeltaLFO( double lfoDpt, double diff )
 void OscPipe::managePortamentoState( void )
 {
 	double	tmpPitch;
+	Uint8	tgtNt;
 	
 	switch ( _prtmState ){
 		case WAITING_PRTM:{
@@ -199,14 +215,14 @@ void OscPipe::managePortamentoState( void )
 				_prtmState = FAST_MOVE;
 				tmpPitch = calcPitch(_note);
 				if ( _sourcePitch > tmpPitch ){	//	Move Down
-					_targetNote = _note + PRTM_SLOW_DIFF;
+					tgtNt = _note + PRTM_SLOW_DIFF;
 				}
 				else {	//	Move Upper
-					_targetNote = _note - PRTM_SLOW_DIFF;
+					tgtNt = _note - PRTM_SLOW_DIFF;
 				}
 				_portamentoCounter = 0;
 				_sourcePitch = _pitch;
-				_targetPitch = calcPitch( _targetNote );
+				_targetPitch = calcPitch( tgtNt );
 			}
 			break;
 		}
@@ -215,11 +231,9 @@ void OscPipe::managePortamentoState( void )
 			if ( PRTM_FAST_MOVE_TIME <= _portamentoCounter ){
 				_prtmState = SLOW_MOVE;
 				_portamentoCounter = 0;
-				_sourceNote = _targetNote;
-				_targetNote = _note;
 				_sourcePitch = _pitch;
-				_targetPitch = calcPitch( _targetNote );
-				setPortamentoCounter();
+				_targetPitch = calcPitch( _note );
+				setPortamentoCounter(PRTM_SLOW_DIFF*100);
 			}
 			else{
 				_pitch = _sourcePitch + ((_targetPitch - _sourcePitch)*_portamentoCounter)/PRTM_FAST_MOVE_TIME;
@@ -254,7 +268,7 @@ void OscPipe::managePortamentoState( void )
 //---------------------------------------------------------
 //		Set Portamento Counter / _targetCent
 //---------------------------------------------------------
-void OscPipe::setPortamentoCounter( void )
+void OscPipe::setPortamentoCounter( double centDiff )
 {
 	if ( getVoicePrm(VP_PORTAMENTO_MODE) ){
 		//	time constant
@@ -262,10 +276,7 @@ void OscPipe::setPortamentoCounter( void )
 	}
 	else {
 		//	rate constant
-		Uint8	noteDiff;
-		if ( _targetNote > _sourceNote ) noteDiff = _targetNote - _sourceNote;
-		else noteDiff = _sourceNote - _targetNote;
-		_maxPortamentoCounter = (noteDiff*getVoicePrm(VP_PORTAMENTO)*SAMPLING_FREQUENCY)/100;
+		_maxPortamentoCounter = (centDiff*getVoicePrm(VP_PORTAMENTO)*SAMPLING_FREQUENCY)/(100*100);
 	}
 	
 	if ( getVoicePrm(VP_PORTAMENTO_CURVE) == 0 ){

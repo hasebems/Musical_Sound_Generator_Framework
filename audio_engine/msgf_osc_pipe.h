@@ -94,7 +94,7 @@ namespace msgf {
 		
 		double	calcDeltaLFO( double lfoDpt, double diff );
 		void	managePortamentoState( void );
-		void	setPortamentoCounter( void );
+		void	setPortamentoCounter( double centDiff );
 		double	generateWave( double phase );
 		
 		int		getVoicePrm( int id ){ return _parentNote.getVoiceContext()->getParameter( VP_OSC_PIPE_ID, id ); }
@@ -120,8 +120,6 @@ namespace msgf {
 		double		_sourcePitch;
 		double		_targetPitch;
 		double		_targetCent;
-		Uint8		_sourceNote;
-		Uint8		_targetNote;
 		PRTM_STATE	_prtmState;
 		
 		//	LFO
