@@ -18,7 +18,7 @@ Note(inst)
 {
 	_osc = new OscPipe(*this);
 	_flt = new IirFilter(*this);
-	_amp = new Amp2seg(*this);
+	_amp = new AmpPipe(*this);
 }
 //---------------------------------------------------------
 MfNote::~MfNote( void )

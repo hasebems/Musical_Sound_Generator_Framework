@@ -57,56 +57,41 @@ void OscPipe::init( bool phaseReset )
 void OscPipe::changeNote( void )
 {
 	Uint8	newNote;
-	double	tgtCent;
+	double	tgtCent, tgtPitch;
 
 	newNote = _note = _parentNote.getNote();
-	tgtCent = 1200*log(calcPitch(newNote)/_pitch)/log(2);
+	tgtPitch = calcPitch(newNote);
+	tgtCent = 1200*log(tgtPitch/_pitch)/log(2);
 	_sourcePitch = _pitch;
 
-	if ( tgtCent > PRTM_SLOW_DIFF*100 ){
-		//	Move Upper & Far
-		if (( _prtmState == NO_MOVE ) || ( _prtmState == WAITING_PRTM )){
-			_prtmState = WAITING_PRTM;
-			_targetPitch = _pitch;
-			if ( _prtmState == NO_MOVE ){
-				_portamentoCounter = 0;
+	if (( tgtCent > PRTM_SLOW_DIFF*100 ) || ( tgtCent < -PRTM_SLOW_DIFF*100 )){
+		//	Move Far
+		switch ( _prtmState ){
+			case NO_MOVE: _portamentoCounter = 0;	// go below
+			case WAITING_PRTM:{
+				_prtmState = WAITING_PRTM;
+				_targetPitch = _pitch;
+				break;
 			}
-		}
-		else {
-			_prtmState = FAST_MOVE;
-			_targetPitch = calcPitch( _note - PRTM_SLOW_DIFF );
-		}
-	}
-
-	else if ( tgtCent > 0 ){
-		//	Move Upper & Slow
-		_portamentoCounter = 0;
-		_prtmState = SLOW_MOVE;
-		_targetPitch = calcPitch( newNote );
-		setPortamentoCounter(tgtCent);
-	}
-
-	else if ( tgtCent < -PRTM_SLOW_DIFF*100 ){
-		//	Move Down & Far
-		if (( _prtmState == NO_MOVE ) || ( _prtmState == WAITING_PRTM )){
-			_prtmState = WAITING_PRTM;
-			_targetPitch = _pitch;
-			if ( _prtmState == NO_MOVE ){
-				_portamentoCounter = 0;
+			default:{
+				_prtmState = FAST_MOVE;
+				_targetPitch = calcPitch( _note - PRTM_SLOW_DIFF );
+				break;
 			}
-		}
-		else {
-			_prtmState = FAST_MOVE;
-			_targetPitch = calcPitch( _note - PRTM_SLOW_DIFF );
 		}
 	}
 
 	else {
-		//	Move Down & Slow
+		//	Move Slow
 		_portamentoCounter = 0;
 		_prtmState = SLOW_MOVE;
 		_targetPitch = calcPitch( newNote );
-		setPortamentoCounter(-tgtCent);
+		if ( tgtCent > 0 ){	//	Upper
+			setPortamentoCounter(tgtCent);
+		}
+		else {	//	Lower
+			setPortamentoCounter(-tgtCent);
+		}
 	}
 }
 
@@ -207,23 +192,22 @@ double OscPipe::calcDeltaLFO( double lfoDpt, double diff )
 //---------------------------------------------------------
 void OscPipe::managePortamentoState( void )
 {
-	double	tmpPitch;
 	Uint8	tgtNt;
 	
 	switch ( _prtmState ){
 		case WAITING_PRTM:{
 			if ( PRTM_WAITING_TIME <= _portamentoCounter ){
-				_prtmState = FAST_MOVE;
-				tmpPitch = calcPitch(_note);
+				double tmpPitch = calcPitch(_note);
 				if ( _sourcePitch > tmpPitch ){	//	Move Down
 					tgtNt = _note + PRTM_SLOW_DIFF;
 				}
-				else {	//	Move Upper
+				else {	//	Move Up
 					tgtNt = _note - PRTM_SLOW_DIFF;
 				}
+				_targetPitch = calcPitch( tgtNt );
 				_portamentoCounter = 0;
 				_sourcePitch = _pitch;
-				_targetPitch = calcPitch( tgtNt );
+				_prtmState = FAST_MOVE;
 			}
 			break;
 		}

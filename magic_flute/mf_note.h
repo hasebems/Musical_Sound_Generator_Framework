@@ -13,7 +13,7 @@
 #include "msgf_note.h"
 #include "msgf_iirfilter.h"
 #include "msgf_osc_pipe.h"
-#include "msgf_amp2seg.h"
+#include "msgf_amp_pipe.h"
 #include "msgf_event_info.h"
 
 //---------------------------------------------------------
@@ -34,7 +34,7 @@ private:
 	//	Audio Engines
 	msgf::OscPipe*			_osc;
 	msgf::IirFilter*		_flt;
-	msgf::Amp2seg*			_amp;
+	msgf::AmpPipe*			_amp;
 };
 
 #endif /* defined(__mf_note__) */
