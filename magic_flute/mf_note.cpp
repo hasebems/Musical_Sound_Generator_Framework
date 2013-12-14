@@ -17,14 +17,14 @@ MfNote::MfNote( Instrument* inst ) :
 Note(inst)
 {
 	_osc = new OscPipe(*this);
-	_flt = new IirFilter(*this);
+//	_flt = new IirFilter(*this);
 	_amp = new AmpPipe(*this);
 }
 //---------------------------------------------------------
 MfNote::~MfNote( void )
 {
 	delete _amp;
-	delete _flt;
+//	delete _flt;
 	delete _osc;
 }
 
@@ -37,7 +37,7 @@ bool MfNote::keyOn( EventInfo* ei )
 	
 	//	Init
 	_osc->init(true);
-	_flt->init();
+//	_flt->init();
 	_amp->init();
 	
 	return ret;
@@ -49,7 +49,7 @@ void MfNote::keyOff( void )
 {
 	Note::keyOff();
 	_osc->release();
-	_flt->release();
+//	_flt->release();
 	_amp->release();
 }
 //---------------------------------------------------------
@@ -64,7 +64,7 @@ void MfNote::keyOnAlternate( EventInfo* ei )
 
 	//	Init
 	_osc->init(false);
-	_flt->init();
+//	_flt->init();
 	_amp->init();
 }
 //---------------------------------------------------------
@@ -86,7 +86,7 @@ bool MfNote::noteSoundProcess( TgAudioBuffer& buf )
 	_osc->process(buf);
 	
 	//	Filter
-	_flt->process(buf);
+//	_flt->process(buf);
 	
 	//	Amplitude
 	_amp->process(buf);

@@ -278,7 +278,7 @@ double OscPipe::generateWave( double phase )
 {
 	double wave = 0;
 	for ( int j=1; j<4; j++ ){
-		wave += 0.25*sin(phase*j)/(j+j);
+		wave += 0.5*sin(phase*j)/(j*j);
 	}
 	
 	return wave;

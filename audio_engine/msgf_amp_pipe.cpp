@@ -63,7 +63,7 @@ double AmpPipe::calcMidiVolume( double amp )
 //		Process Function
 //---------------------------------------------------------
 const double DEEMED_SAME_VOLUME = 1.0001;
-const double VOLUME_ITP_RATE = 0.0002;			//	/1Dac
+const double VOLUME_ITP_RATE = 0.01;			//	/1Dac
 //---------------------------------------------------------
 void AmpPipe::process( TgAudioBuffer& buf )
 {
