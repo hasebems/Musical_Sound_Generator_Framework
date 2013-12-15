@@ -76,6 +76,7 @@ void MfNote::changeNote( EventInfo* ei )
 	
 	//	Init
 	_osc->changeNote();
+	_amp->changeNote();
 }
 //---------------------------------------------------------
 //		Process Function

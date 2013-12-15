@@ -43,10 +43,53 @@ void AmpPipe::init( void )
 	_am->setCoef();
 	_am->start();
 	_amd = static_cast<double>(getVoicePrm(VP_LFO_AMD))/AMP_PRM_MAX;
+
+	_startNcEgDac = -1;
 }
 
 //---------------------------------------------------------
-//		Calculate Volume
+void AmpPipe::changeNote( void )
+{
+	_startNcEgDac = _dacCounter;
+}
+
+//---------------------------------------------------------
+//		Calculate Note Change EG
+//---------------------------------------------------------
+const int 		NCEG_DOWN_TIME = 3000;		//	*dac count
+const int		NCEG_MIN_TIME  = 2000;		//	*dac count
+const int 		NCEG_UP_TIME   = 6000;		//	*dac count
+const double	NCEG_MIN_LVL   = 0.1f;
+//---------------------------------------------------------
+double AmpPipe::calcNcEg( double amp )
+{
+	if ( _startNcEgDac == -1 ) return amp;
+
+	long	counterDiff = _dacCounter - _startNcEgDac;
+	
+	if ( _dacCounter > _startNcEgDac+NCEG_UP_TIME+NCEG_MIN_TIME+NCEG_DOWN_TIME ){
+		_startNcEgDac = -1;
+		return amp;
+	}
+	else if ( _dacCounter > _startNcEgDac+NCEG_MIN_TIME+NCEG_DOWN_TIME ){
+		//	Level Up
+		double tpdf = (counterDiff-NCEG_DOWN_TIME)*((1-NCEG_MIN_LVL)/NCEG_UP_TIME);
+		if ( tpdf > 1-NCEG_MIN_LVL ) return amp;
+		else return amp*(NCEG_MIN_LVL + tpdf);
+	}
+	else if ( _dacCounter > _startNcEgDac+NCEG_DOWN_TIME ){
+		return amp*NCEG_MIN_LVL;
+	}
+	else if ( _dacCounter > _startNcEgDac ){
+		//	Level Down
+		return amp*(1 - counterDiff*((1-NCEG_MIN_LVL)/NCEG_DOWN_TIME));
+	}
+
+	return amp;
+}
+
+//---------------------------------------------------------
+//		Calculate MIDI Volume
 //---------------------------------------------------------
 double AmpPipe::calcMidiVolume( double amp )
 {
@@ -60,10 +103,29 @@ double AmpPipe::calcMidiVolume( double amp )
 }
 
 //---------------------------------------------------------
-//		Process Function
+//		Interporate Volume
 //---------------------------------------------------------
 const double DEEMED_SAME_VOLUME = 1.0001;
 const double VOLUME_ITP_RATE = 0.01;			//	/1Dac
+//---------------------------------------------------------
+void AmpPipe::interporateVolume( void )
+{
+	if (( _targetVol*DEEMED_SAME_VOLUME >= _realVol ) &&
+		( _targetVol/DEEMED_SAME_VOLUME <= _realVol )){
+		_realVol = _targetVol;
+	}
+	else {
+		if ( _targetVol > _realVol ){
+			_realVol = _realVol + (_targetVol-_realVol)*VOLUME_ITP_RATE;
+		}
+		else {
+			_realVol = _realVol - (_realVol-_targetVol)*VOLUME_ITP_RATE;
+		}
+	}
+}
+
+//---------------------------------------------------------
+//		Process Function
 //---------------------------------------------------------
 void AmpPipe::process( TgAudioBuffer& buf )
 {
@@ -84,28 +146,21 @@ void AmpPipe::process( TgAudioBuffer& buf )
 		_eg->periodicOnceEveryDac(_dacCounter);
 		
 		//	calc real amplitude
-		double aeg = _eg->calcEgLevel();
+		double tempAmp = _eg->calcEgLevel();
 		
 		//	LFO
-		aeg *= (_amd*lfoBuf[i]+1)*aeg;
+		tempAmp = (_amd*lfoBuf[i]+1)*tempAmp;
+		
+		//	Note Change EG
+		tempAmp = calcNcEg( tempAmp );
 		
 		//	calculate Volume
-		_targetVol = aeg * (processVol/AMP_PRM_MAX);
+		_targetVol = tempAmp * (processVol/AMP_PRM_MAX);
 		
 		//	volume interporate
-		if (( _targetVol*DEEMED_SAME_VOLUME >= _realVol ) &&
-			( _targetVol/DEEMED_SAME_VOLUME <= _realVol )){
-			_realVol = _targetVol;
-		}
-		else {
-			if ( _targetVol > _realVol ){
-				_realVol = _realVol + (_targetVol-_realVol)*VOLUME_ITP_RATE;
-			}
-			else {
-				_realVol = _realVol - (_realVol-_targetVol)*VOLUME_ITP_RATE;
-			}
-		}
-		
+		interporateVolume();
+
+		//	reflect volume to buffer
 		buf.mulAudioBuffer( i, _realVol*_realVol );
 		_dacCounter++;
 	}

@@ -27,7 +27,6 @@ namespace msgf {
 		
 		VP_TUNING,				//	-100 - 100(cent)
 		VP_TRANSPOSE,			//	-24 - 24(seminote)
-		VP_WAVEFORM,			//	0:sine, 1:tri
 		
 		VP_PORTAMENTO_MODE,		//	0:rate constant, 1:time constant
 		VP_PORTAMENTO_CURVE,	//	0:cent linear, 1:freqency linear
@@ -81,9 +80,6 @@ namespace msgf {
 		//	process thread
 		void	process( TgAudioBuffer& buf );
 		
-		//	Accessor
-		void	setWaveform( int wvfm ){ _waveform = wvfm; }
-		
 		static const int PEG_MAX = 60;
 		static const int PEG_DEPTH_MAX = 2; // /2 Octave
 		
@@ -93,6 +89,9 @@ namespace msgf {
 		double	getPegPitch( int depth );
 		
 		double	calcDeltaLFO( double lfoDpt, double diff );
+		void	stateOfWaitingPortamento( void );
+		void	stateOfFastMove( void );
+		void	stateOfSlowMove( void );
 		void	managePortamentoState( void );
 		void	setPortamentoCounter( double centDiff );
 		double	generateWave( double phase );
@@ -101,15 +100,10 @@ namespace msgf {
 		
 		static const double tPitchOfA[11];
 
-		const static int PRTM_SLOW_DIFF;
-		const static int PRTM_WAITING_TIME;		//	*dac count
-		const static int PRTM_FAST_MOVE_TIME;	//	*dac count
-
 		//	Basic Reference
 		Note&		_parentNote;
 		
 		//	generate waveform
-		int			_waveform;
 		Uint8		_note;
 		double		_pitch;
 		double		_crntPhase;

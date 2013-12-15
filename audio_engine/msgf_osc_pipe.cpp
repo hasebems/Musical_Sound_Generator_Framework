@@ -13,10 +13,9 @@
 
 using namespace msgf;
 
-const int OscPipe::PRTM_SLOW_DIFF = 2;
-const int OscPipe::PRTM_WAITING_TIME = 2000;		//	*dac count
-const int OscPipe::PRTM_FAST_MOVE_TIME = 500;	//	*dac count
-
+const int PRTM_SLOW_DIFF = 1;
+const int PRTM_WAITING_TIME = 3000;		//	*dac count
+const int PRTM_FAST_MOVE_TIME = 1000;	//	*dac count
 
 //---------------------------------------------------------
 //		Initialize
@@ -36,7 +35,6 @@ void OscPipe::init( bool phaseReset )
 {
 	clearDacCounter();
 	
-	_waveform = getVoicePrm( VP_WAVEFORM );
 	_note = _parentNote.getNote();
 	_pitch = calcPitch( _note );
 	if ( phaseReset == true ) _crntPhase = 0;
@@ -57,41 +55,44 @@ void OscPipe::init( bool phaseReset )
 void OscPipe::changeNote( void )
 {
 	Uint8	newNote;
-	double	tgtCent, tgtPitch;
 
 	newNote = _note = _parentNote.getNote();
-	tgtPitch = calcPitch(newNote);
-	tgtCent = 1200*log(tgtPitch/_pitch)/log(2);
 	_sourcePitch = _pitch;
 
-	if (( tgtCent > PRTM_SLOW_DIFF*100 ) || ( tgtCent < -PRTM_SLOW_DIFF*100 )){
-		//	Move Far
-		switch ( _prtmState ){
-			case NO_MOVE: _portamentoCounter = 0;	// go below
-			case WAITING_PRTM:{
-				_prtmState = WAITING_PRTM;
-				_targetPitch = _pitch;
-				break;
-			}
-			default:{
+	switch ( _prtmState ){
+		case NO_MOVE: _portamentoCounter = 0;	// go below
+		case WAITING_PRTM:{
+			_prtmState = WAITING_PRTM;
+			_targetPitch = _pitch;
+			break;
+		}
+		case FAST_MOVE:
+		case SLOW_MOVE:{
+			double tgtPitch = calcPitch(newNote);
+			double tgtCent = 1200*log(tgtPitch/_pitch)/log(2);
+			if (( tgtCent > PRTM_SLOW_DIFF*100 ) || ( tgtCent < -PRTM_SLOW_DIFF*100 )){
 				_prtmState = FAST_MOVE;
-				_targetPitch = calcPitch( _note - PRTM_SLOW_DIFF );
-				break;
+				if ( tgtCent > 0 ){	//	Upper
+					_targetPitch = calcPitch( _note - PRTM_SLOW_DIFF );
+				}
+				else {				//	Lower
+					_targetPitch = calcPitch( _note + PRTM_SLOW_DIFF );
+				}
 			}
+			else {
+				_portamentoCounter = 0;
+				_prtmState = SLOW_MOVE;
+				_targetPitch = calcPitch( newNote );
+				if ( tgtCent > 0 ){	//	Upper
+					setPortamentoCounter(tgtCent);
+				}
+				else {				//	Lower
+					setPortamentoCounter(-tgtCent);
+				}
+			}
+			break;
 		}
-	}
-
-	else {
-		//	Move Slow
-		_portamentoCounter = 0;
-		_prtmState = SLOW_MOVE;
-		_targetPitch = calcPitch( newNote );
-		if ( tgtCent > 0 ){	//	Upper
-			setPortamentoCounter(tgtCent);
-		}
-		else {	//	Lower
-			setPortamentoCounter(-tgtCent);
-		}
+		default: break;
 	}
 }
 
@@ -190,60 +191,92 @@ double OscPipe::calcDeltaLFO( double lfoDpt, double diff )
 //---------------------------------------------------------
 //		Manage Portamento State
 //---------------------------------------------------------
-void OscPipe::managePortamentoState( void )
+void OscPipe::stateOfWaitingPortamento( void )
 {
-	Uint8	tgtNt;
-	
-	switch ( _prtmState ){
-		case WAITING_PRTM:{
-			if ( PRTM_WAITING_TIME <= _portamentoCounter ){
-				double tmpPitch = calcPitch(_note);
-				if ( _sourcePitch > tmpPitch ){	//	Move Down
-					tgtNt = _note + PRTM_SLOW_DIFF;
-				}
-				else {	//	Move Up
-					tgtNt = _note - PRTM_SLOW_DIFF;
-				}
-				_targetPitch = calcPitch( tgtNt );
-				_portamentoCounter = 0;
-				_sourcePitch = _pitch;
-				_prtmState = FAST_MOVE;
-			}
-			break;
-		}
-
-		case FAST_MOVE:{
-			if ( PRTM_FAST_MOVE_TIME <= _portamentoCounter ){
+	if ( PRTM_WAITING_TIME <= _portamentoCounter ){
+		//	Move to next state
+		Uint8	tgtNt;
+		double tmpPitch = calcPitch(_note);
+		double tgtCent = 1200*log(tmpPitch/_pitch)/log(2);
+		if ( _sourcePitch > tmpPitch ){		//	Move Down
+			if ( tgtCent > PRTM_SLOW_DIFF*(-100) ){
+				_targetPitch = tmpPitch;
 				_prtmState = SLOW_MOVE;
-				_portamentoCounter = 0;
-				_sourcePitch = _pitch;
-				_targetPitch = calcPitch( _note );
 				setPortamentoCounter(PRTM_SLOW_DIFF*100);
 			}
-			else{
-				_pitch = _sourcePitch + ((_targetPitch - _sourcePitch)*_portamentoCounter)/PRTM_FAST_MOVE_TIME;
+			else {
+				tgtNt = _note + PRTM_SLOW_DIFF;
+				_targetPitch = calcPitch( tgtNt );
+				_prtmState = FAST_MOVE;
 			}
-			break;
 		}
-
-		case SLOW_MOVE:{
-			if ( _portamentoCounter > _maxPortamentoCounter ){
-				_prtmState = NO_MOVE;
-				_pitch = _targetPitch;
+		else {	//	Move Up
+			if ( tgtCent < PRTM_SLOW_DIFF*100 ){
+				_targetPitch = tmpPitch;
+				_prtmState = SLOW_MOVE;
+				setPortamentoCounter(PRTM_SLOW_DIFF*100);
 			}
 			else {
-				if ( _targetCent == 0 ){
-					//	freq. linear
-					_pitch = _sourcePitch + ((_targetPitch - _sourcePitch)*_portamentoCounter)/_maxPortamentoCounter;
-				}
-				else {
-					//	cent linear
-					double _crntCent = _targetCent*_portamentoCounter/_maxPortamentoCounter;
-					_pitch = exp(_crntCent*log(2)/1200)*_sourcePitch;
-				}
+				tgtNt = _note - PRTM_SLOW_DIFF;
+				_targetPitch = calcPitch( tgtNt );
+				_prtmState = FAST_MOVE;
 			}
-			break;
 		}
+		_portamentoCounter = 0;
+		_sourcePitch = _pitch;
+	}
+}
+//---------------------------------------------------------
+void OscPipe::stateOfFastMove( void )
+{
+	if ( PRTM_FAST_MOVE_TIME <= _portamentoCounter ){
+		//	Move to next state
+		_prtmState = SLOW_MOVE;
+		_portamentoCounter = 0;
+		_sourcePitch = _pitch;
+		_targetPitch = calcPitch( _note );
+		setPortamentoCounter(PRTM_SLOW_DIFF*100);
+	}
+	else{
+		_pitch = _sourcePitch + ((_targetPitch - _sourcePitch)*_portamentoCounter)/PRTM_FAST_MOVE_TIME;
+	}
+}
+//---------------------------------------------------------
+void OscPipe::stateOfSlowMove( void )
+{
+	if ( _portamentoCounter > _maxPortamentoCounter ){
+		//	Move to next state
+		_prtmState = NO_MOVE;
+		_pitch = _targetPitch;
+	}
+	else {
+		if ( _targetCent == 0 ){
+			//	freq. linear
+			_pitch = _sourcePitch + ((_targetPitch - _sourcePitch)*_portamentoCounter)/_maxPortamentoCounter;
+		}
+		else {
+			//	cent linear
+			double _crntCent = _targetCent*_portamentoCounter/_maxPortamentoCounter;
+			_pitch = exp(_crntCent*log(2)/1200)*_sourcePitch;
+		}
+	}
+}
+//---------------------------------------------------------
+void OscPipe::managePortamentoState( void )
+{
+	switch ( _prtmState ){
+		case WAITING_PRTM:
+			stateOfWaitingPortamento();
+			break;
+			
+		case FAST_MOVE:
+			stateOfFastMove();
+			break;
+
+		case SLOW_MOVE:
+			stateOfSlowMove();
+			break;
+
 		default: break;
 	}
 

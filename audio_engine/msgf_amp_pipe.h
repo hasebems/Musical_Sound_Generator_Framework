@@ -47,6 +47,7 @@ namespace msgf {
 		~AmpPipe( void );
 		
 		void	init( void );
+		void	changeNote( void );
 		void	release( void ){ _eg->moveToRelease(); }
 		
 		//	process thread
@@ -55,8 +56,9 @@ namespace msgf {
 		static const int AMP_PRM_MAX = 100;
 		
 	private:
-		//	original
 		double	calcMidiVolume( double amp );
+		double	calcNcEg( double amp );
+		void	interporateVolume( void );
 		
 		//	Get Segment Parameter
 		int		getVoicePrm( int id ){ return _parentNote.getVoiceContext()->getParameter( VP_AMP_PIPE_ID, id ); }
@@ -69,12 +71,16 @@ namespace msgf {
 		//	EG Level
 		AegPCallBack*	_cbInst;
 		Eg2segment*		_eg;
-		double			_realVol;
-		double			_targetVol;
+		double			_realVol;		//	0 - 1
+		double			_targetVol;		//	0 - 1
 		
 		//	LFO
 		Lfo*	_am;
 		double	_amd;
+
+		//	Note Change EG
+		long			_startNcEgDac;
+	
 	};
 	//---------------------------------------------------------
 	class AegPCallBack : public CallBack {
