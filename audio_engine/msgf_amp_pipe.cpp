@@ -56,9 +56,9 @@ void AmpPipe::changeNote( void )
 //---------------------------------------------------------
 //		Calculate Note Change EG
 //---------------------------------------------------------
-const int 		NCEG_DOWN_TIME = 3000;		//	*dac count
-const int		NCEG_MIN_TIME  = 2000;		//	*dac count
-const int 		NCEG_UP_TIME   = 6000;		//	*dac count
+const int 		NCEG_DOWN_TIME = 2000;		//	*dac count
+const int		NCEG_MIN_TIME  = 1000;		//	*dac count
+const int 		NCEG_UP_TIME   = 5000;		//	*dac count
 const double	NCEG_MIN_LVL   = 0.1f;
 //---------------------------------------------------------
 double AmpPipe::calcNcEg( double amp )
