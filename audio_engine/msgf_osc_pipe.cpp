@@ -17,8 +17,8 @@ using namespace msgf;
 //		Constant Value
 //---------------------------------------------------------
 const int PRTM_SLOW_DIFF = 1;
-const int PRTM_WAITING_TIME = 2000;		//	*dac count
-const int PRTM_FAST_MOVE_TIME = 1000;	//	*dac count
+const int PRTM_WAITING_TIME = 1000;		//	*dac count
+const int PRTM_FAST_MOVE_TIME = 800;	//	*dac count
 
 //---------------------------------------------------------
 //		Initialize
