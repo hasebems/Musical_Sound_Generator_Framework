@@ -56,33 +56,35 @@ void AmpPipe::changeNote( void )
 //---------------------------------------------------------
 //		Calculate Note Change EG
 //---------------------------------------------------------
-const int 		NCEG_DOWN_TIME = 1000;		//	*dac count
-const int		NCEG_MIN_TIME  = 800;		//	*dac count
-const int 		NCEG_UP_TIME   = 3000;		//	*dac count
-const double	NCEG_MIN_LVL   = 0.1f;
-//---------------------------------------------------------
 double AmpPipe::calcNcEg( double amp )
 {
 	if ( _startNcEgDac == -1 ) return amp;
 
 	long	counterDiff = _dacCounter - _startNcEgDac;
+	double	minLvl = static_cast<double>(getVoicePrm(VP_MINLVL))/10000;
+	int		upDcnt = getVoicePrm(VP_UP_DCNT);
+	int		minlvlDcnt = getVoicePrm(VP_MINLVL_DCNT);
+	int		downDcnt = getVoicePrm(VP_DOWN_DCNT);
 	
-	if ( _dacCounter > _startNcEgDac+NCEG_UP_TIME+NCEG_MIN_TIME+NCEG_DOWN_TIME ){
+	if ( counterDiff > upDcnt + minlvlDcnt + downDcnt ){
 		_startNcEgDac = -1;
 		return amp;
 	}
-	else if ( _dacCounter > _startNcEgDac+NCEG_MIN_TIME+NCEG_DOWN_TIME ){
+
+	else if ( counterDiff > minlvlDcnt + downDcnt ){
 		//	Level Up
-		double tpdf = (counterDiff-NCEG_DOWN_TIME)*((1-NCEG_MIN_LVL)/NCEG_UP_TIME);
-		if ( tpdf > 1-NCEG_MIN_LVL ) return amp;
-		else return amp*(NCEG_MIN_LVL + tpdf);
+		double tpdf = (counterDiff - minlvlDcnt - downDcnt)*((1-minLvl)/upDcnt);
+		if ( tpdf > 1-minLvl ) return amp;
+		else return amp*(minLvl + tpdf);
 	}
-	else if ( _dacCounter > _startNcEgDac+NCEG_DOWN_TIME ){
-		return amp*NCEG_MIN_LVL;
+
+	else if ( counterDiff > downDcnt ){
+		return amp*minLvl;
 	}
-	else if ( _dacCounter > _startNcEgDac ){
+
+	else if ( counterDiff > 0 ){
 		//	Level Down
-		return amp*(1 - counterDiff*((1-NCEG_MIN_LVL)/NCEG_DOWN_TIME));
+		return amp*(1 - counterDiff*((1-minLvl)/downDcnt));
 	}
 
 	return amp;

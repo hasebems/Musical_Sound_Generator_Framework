@@ -36,7 +36,7 @@ void OscMono::init( bool phaseReset )
 	clearDacCounter();
 	
 	_waveform = getVoicePrm( VP_WAVEFORM );
-	_note = _parentNote.getNote();
+	_note = _parentNote.getNote() + getVoicePrm(VP_TRANSPOSE);
 	_pitch = calcPitch( _note );
 	if ( phaseReset == true ) _crntPhase = 0;
 	_cndDuringPortamento = false;
@@ -58,7 +58,7 @@ void OscMono::changeNote( void )
 	Uint8	oldNote, newNote;
 	
 	oldNote = _note;
-	newNote = _note = _parentNote.getNote();
+	newNote = _note = _parentNote.getNote() + getVoicePrm(VP_TRANSPOSE);
 	
 	//	Analyze Portamento Difference
 	int diff = getVoicePrm(VP_PORTAMENTO_DIFF);
@@ -129,6 +129,13 @@ double OscMono::calcPitch( const Uint8 note )
 	double ratio = exp(log(2)/12);
 	for ( int i=0; i<toneName; i++ ){
 		ap *= ratio;
+	}
+	
+	//	calculate tuning
+	int	tune = getVoicePrm(VP_TUNING);
+	if ( tune != 0 ){
+		double fct = tune*log(2)/1200;
+		ap *= exp(fct);
 	}
 	
 	return ap;

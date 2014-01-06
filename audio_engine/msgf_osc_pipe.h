@@ -25,18 +25,26 @@ namespace msgf {
 	//---------------------------------------------------------
 	typedef enum {
 		
-		VP_TUNING,				//	-100 - 100(cent)
+		//	Pitch
+		VP_TUNING,				//	-100 - 100[cent]
 		VP_TRANSPOSE,			//	-24 - 24(seminote)
-		
+		//	Waveform
+		VP_CARRIER_FREQ,		//	0 - 20?
+		VP_CARRIER_LEVEL,		//	0 - 100[%]
+		//	Portamento
 		VP_PORTAMENTO_MODE,		//	0:rate constant, 1:time constant
 		VP_PORTAMENTO_CURVE,	//	0:cent linear, 1:freqency linear
-		VP_PORTAMENTO,			//	0 - ??? (rate: *10ms/100cent, time: *10ms)
-
-		VP_LFO_FREQUENCY,		//	0 - ??? (*0.1[Hz])
-		VP_LFO_DELAY_TIME,		//	0 - ??? (*10ms)
-		VP_LFO_FADEIN_TIME,		//	0 - ??? (*10mc)
+		VP_PORTAMENTO,			//	0 - ??? (rate: *10 =[ms]/100[cent], time: *10 =[ms])
+		//	LFO
+		VP_LFO_FREQUENCY,		//	0 - ??? (*0.1 =[Hz])
+		VP_LFO_DELAY_TIME,		//	0 - ??? (*10 =[ms])
+		VP_LFO_FADEIN_TIME,		//	0 - ??? (*10 =[ms])
 		VP_LFO_PMD,				//	0 - 100 %
-		
+		//	Note Change EG
+		VP_WAITING_DCNT,		//	0 - inf (*22.67 =[us])
+		VP_FAST_MOVE_DCNT,		//	0 - inf	(*22.67 =[us])
+		VP_PORTAMENTO_DIFF,		//	-24 - 24(semitone)
+
 		VP_OSCILLATOR_MAX
 		
 	} VoiceParameter_OscMono;
@@ -107,7 +115,9 @@ namespace msgf {
 		Uint8		_note;
 		double		_pitch;
 		double		_crntPhase;
-		
+		int			_carrierFreq;
+		double		_carrierLevel;
+
 		//	portamento
 		int			_portamentoCounter;
 		int			_maxPortamentoCounter;

@@ -11,7 +11,7 @@
 
 #include <iostream>
 #include "msgf_voice_context.h"
-#include "msgf_iirfilter.h"
+//#include "msgf_iirfilter.h"
 #include "msgf_amp_pipe.h"
 #include "msgf_osc_pipe.h"
 
@@ -20,7 +20,7 @@ struct MfVoiceParameter {
 	
 	int		amp[msgf::VP_AMPLITUDE_MAX];
 	int		osc[msgf::VP_OSCILLATOR_MAX];
-	int		flt[msgf::VP_FILTER_MAX];
+//	int		flt[msgf::VP_FILTER_MAX];
 };
 //---------------------------------------------------------
 class MfVoiceContext : public msgf::VoiceContext {
@@ -32,10 +32,13 @@ public:
 	int		getParameter( int tid, int pid )
 	{
 		int	value = 0;
+		int vceNum = _vNum;
+
+		if ( vceNum >= MAX_MF_VOICE_NUMBER ) vceNum = MAX_MF_VOICE_NUMBER-1;
 		switch (tid){
-			case msgf::VP_AMP_PIPE_ID:	value = tMfVoiceParameter[_vNum].amp[pid]; break;
-			case msgf::VP_FILTER_ID:	value = tMfVoiceParameter[_vNum].flt[pid]; break;
-			case msgf::VP_OSC_PIPE_ID:	value = tMfVoiceParameter[_vNum].osc[pid]; break;
+			case msgf::VP_AMP_PIPE_ID:	value = tMfVoiceParameter[vceNum].amp[pid]; break;
+//			case msgf::VP_FILTER_ID:	value = tMfVoiceParameter[vceNum].flt[pid]; break;
+			case msgf::VP_OSC_PIPE_ID:	value = tMfVoiceParameter[vceNum].osc[pid]; break;
 			default: break;
 		}
 		return value;

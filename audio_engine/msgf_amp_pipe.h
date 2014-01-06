@@ -25,11 +25,16 @@ namespace msgf {
 	typedef enum {
 		
 		VP_VOLUME,				//	0 - 100
-		
-		VP_AEG_ATTACK_TIME,		//	0 - 1000 (*10ms)
-		VP_AEG_RELEASE_TIME,	//	0 - 1000 (*10ms)
-		
-		VP_LFO_AMD,				//	0 - 100 %
+		//	AEG
+		VP_AEG_ATTACK_TIME,		//	0 - 1000 (*10 =[ms])
+		VP_AEG_RELEASE_TIME,	//	0 - 1000 (*10 =[ms])
+		//	LFO
+		VP_LFO_AMD,				//	0 - 100 [%]
+		//	Note Change EG
+		VP_DOWN_DCNT,			//	0 - inf (*22.67 =[us])
+		VP_MINLVL_DCNT,			//	0 - inf	(*22.67 =[us])
+		VP_UP_DCNT,				//	0 - inf	(*22.67 =[us])
+		VP_MINLVL,				//	0 - 10000 (/100 =[%])
 		
 		VP_AMPLITUDE_MAX
 		

@@ -36,7 +36,7 @@ void Oscillator::init( void )
 	clearDacCounter();
 	
 	_waveform = getVoicePrm( VP_WAVEFORM );
-	_pitch = calcPitch( _parentNote.getNote() );
+	_pitch = calcPitch( _parentNote.getNote() + getVoicePrm(VP_TRANSPOSE) );
 	_crntPhase = 0;
 
 	//	LFO Settings as delegation who intend to use LFO
@@ -78,6 +78,13 @@ double Oscillator::calcPitch( const Uint8 note )
 	double ratio = exp(log(2)/12);
 	for ( int i=0; i<toneName; i++ ){
 		ap *= ratio;
+	}
+
+	//	calculate tuning
+	int	tune = getVoicePrm(VP_TUNING);
+	if ( tune != 0 ){
+		double fct = tune*log(2)/1200;
+		ap *= exp(fct);
 	}
 	
 	return ap;
