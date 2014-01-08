@@ -10,6 +10,7 @@
 #include "msgf_osc_pipe.h"
 #include "msgf_audio_buffer.h"
 #include "msgf_note.h"
+#include "msgf_part.h"
 
 using namespace msgf;
 
@@ -33,10 +34,11 @@ void OscPipe::init( bool phaseReset )
 	
 	_note = _parentNote.getNote() + getVoicePrm(VP_TRANSPOSE);
 	_pitch = calcPitch( _note );
+	_pitchAdj = 1;
 	if ( phaseReset == true ) _crntPhase = 0;
 	_prtmState = NO_MOVE;
 	_carrierFreq = getVoicePrm(VP_CARRIER_FREQ);
-	_carrierLevel = static_cast<double>(getVoicePrm(VP_CARRIER_LEVEL))/100;
+	_carrierLevel = 0;
 
 	//	LFO Settings as delegation who intend to use LFO
 	_pm->setFrequency(static_cast<double>(getVoicePrm(VP_LFO_FREQUENCY))/10);
@@ -103,6 +105,9 @@ void OscPipe::process( TgAudioBuffer& buf )
 	//	get LFO pattern
 	double*	lfoBuf = new double[buf.bufferSize()];
 	_pm->process( buf.bufferSize(), lfoBuf );
+
+	//	reflect MIDI controller
+	reflectMidiController();
 	
 	//	Generate each samples
 	for ( int i=0; i<buf.bufferSize(); i++ ){
@@ -115,7 +120,7 @@ void OscPipe::process( TgAudioBuffer& buf )
 		if ( _prtmState != NO_MOVE ) managePortamentoState();
 		
 		//	Calculate next _crntPhase from Pitch
-		double	diff = (2 * M_PI * _pitch )/ SAMPLING_FREQUENCY;
+		double	diff = (2 * M_PI * _pitch * _pitchAdj)/ SAMPLING_FREQUENCY;
 		_crntPhase += calcDeltaLFO( lfoBuf[i], diff );
 	}
 	
@@ -184,6 +189,26 @@ double OscPipe::getPegPitch( int depth )
 	}
 	
 	return pttmp;
+}
+
+//---------------------------------------------------------
+//		Reflect MIDI Controller
+//---------------------------------------------------------
+#define EXPANSION_BEGINNING_VALUE		80
+//---------------------------------------------------------
+void OscPipe::reflectMidiController( void )
+{
+	Part*	pt = _parentNote.getInstrument()->getPart();
+	Uint8	midiExp = pt->getCc11();
+	double	expLvl = static_cast<double>(midiExp) - EXPANSION_BEGINNING_VALUE;
+	int		lvl = getVoicePrm(VP_CARRIER_LEVEL);
+	double	dLvl = static_cast<double>(lvl)/100;
+
+	if ( expLvl < 0 ) expLvl = 0;
+	_carrierLevel = dLvl + ((1-dLvl)*expLvl)/(127-EXPANSION_BEGINNING_VALUE);
+
+	double fct = (expLvl/2)*log(2)/1200;
+	_pitchAdj = exp(fct);
 }
 
 //---------------------------------------------------------

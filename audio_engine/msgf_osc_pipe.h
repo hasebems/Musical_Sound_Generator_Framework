@@ -95,7 +95,7 @@ namespace msgf {
 		
 		double	calcPitch( const Uint8 note );
 		double	getPegPitch( int depth );
-		
+		void	reflectMidiController( void );
 		double	calcDeltaLFO( double lfoDpt, double diff );
 		void	stateOfWaitingPortamento( void );
 		void	stateOfFastMove( void );
@@ -114,6 +114,7 @@ namespace msgf {
 		//	generate waveform
 		Uint8		_note;
 		double		_pitch;
+		double		_pitchAdj;
 		double		_crntPhase;
 		int			_carrierFreq;
 		double		_carrierLevel;
