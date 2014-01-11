@@ -29,8 +29,8 @@ namespace msgf {
 		VP_TUNING,				//	-100 - 100[cent]
 		VP_TRANSPOSE,			//	-24 - 24(seminote)
 		//	Waveform
-		VP_CARRIER_FREQ,		//	0 - 20?
-		VP_CARRIER_LEVEL,		//	0 - 100[%]
+		VP_MODULATOR_FREQ,		//	0 - 20?
+		VP_MODULATOR_LEVEL,		//	0 - 100[%]
 		//	Portamento
 		VP_PORTAMENTO_MODE,		//	0:rate constant, 1:time constant
 		VP_PORTAMENTO_CURVE,	//	0:cent linear, 1:freqency linear
@@ -116,8 +116,8 @@ namespace msgf {
 		double		_pitch;
 		double		_pitchAdj;
 		double		_crntPhase;
-		int			_carrierFreq;
-		double		_carrierLevel;
+		int			_modulatorFreq;
+		double		_modulatorLevel;
 
 		//	portamento
 		int			_portamentoCounter;
