@@ -37,8 +37,6 @@ void OscPipe::init( bool phaseReset )
 	_pitchAdj = 1;
 	if ( phaseReset == true ) _crntPhase = 0;
 	_prtmState = NO_MOVE;
-	_modulatorFreq = getVoicePrm(VP_MODULATOR_FREQ);
-	_modulatorLevel = 0;
 
 	//	LFO Settings as delegation who intend to use LFO
 	_pm->setFrequency(static_cast<double>(getVoicePrm(VP_LFO_FREQUENCY))/10);
@@ -201,11 +199,8 @@ void OscPipe::reflectMidiController( void )
 	Part*	pt = _parentNote.getInstrument()->getPart();
 	Uint8	midiExp = pt->getCc11();
 	double	expLvl = static_cast<double>(midiExp) - EXPANSION_BEGINNING_VALUE;
-	int		lvl = getVoicePrm(VP_MODULATOR_LEVEL);
-	double	dLvl = static_cast<double>(lvl)/100;
 
 	if ( expLvl < 0 ) expLvl = 0;
-	_modulatorLevel = dLvl + expLvl/(127-EXPANSION_BEGINNING_VALUE);
 
 	double fct = (expLvl/2)*log(2)/1200;
 	_pitchAdj = exp(fct);
@@ -348,8 +343,8 @@ void OscPipe::setPortamentoCounter( double centDiff )
 //---------------------------------------------------------
 double OscPipe::generateWave( double phase )
 {
-	//	FM
-	return 0.5*sin(phase + _modulatorLevel*sin(phase*_modulatorFreq));
+	//	Sine Wave
+	return sin(phase);
 }
 //---------------------------------------------------------
 //double OscPipe::generateWave( double phase )

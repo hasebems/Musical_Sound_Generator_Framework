@@ -25,8 +25,6 @@ const MfVoiceParameter MfVoiceContext::tMfVoiceParameter[MAX_MF_VOICE_NUMBER] = 
 		{
 			0,		//VP_TUNING,			//	-100 - 100(cent)
 			0,		//VP_TRANSPOSE,			//	-24 - 24(seminote)
-			0,		//VP_MODULATOR_FREQ,	//	0 - 20?
-			10,		//VP_MODULATOR_LEVEL,	//	0 - 100[%]
 
 			1,		//VP_PORTAMENTO_MODE,	//	0:rate constant, 1:time constant
 			0,		//VP_PORTAMENTO_CURVE,	//	0:cent linear, 1:freqency linear
@@ -57,8 +55,6 @@ const MfVoiceParameter MfVoiceContext::tMfVoiceParameter[MAX_MF_VOICE_NUMBER] = 
 		{
 			0,		//VP_TUNING,			//	-100 - 100(cent)
 			0,		//VP_TRANSPOSE,			//	-24 - 24(seminote)
-			1,		//VP_MODULATOR_FREQ,	//	0 - 20?
-			10,		//VP_MODULATOR_LEVEL,	//	0 - 100[%]
 
 			0,		//VP_PORTAMENTO_MODE,	//	0:rate constant, 1:time constant
 			0,		//VP_PORTAMENTO_CURVE,	//	0:cent linear, 1:freqency linear
