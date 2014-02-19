@@ -33,7 +33,7 @@ const MfVoiceParameter MfVoiceContext::tMfVoiceParameter[MAX_MF_VOICE_NUMBER] = 
 			40,		//VP_LFO_FREQUENCY,		//	0 - ??? (*0.1[Hz])
 			50,		//VP_LFO_DELAY_TIME,	//	0 - ??? (*10ms)
 			50,		//VP_LFO_FADEIN_TIME,	//	0 - ??? (*10mc)
-			0,		//VP_LFO_PMD,			//	0 - 100 %
+			10,		//VP_LFO_PMD,			//	0 - 100 %
 
 			1000,	//VP_WAITING_DCNT,		//	0 - inf (*22.67 =[us])	1000
 			800,	//VP_FAST_MOVE_DCNT,	//	0 - inf	(*22.67 =[us])	800
