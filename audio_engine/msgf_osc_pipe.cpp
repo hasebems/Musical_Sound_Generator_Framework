@@ -47,7 +47,7 @@ void OscPipe::init( bool phaseReset )
 	_pm->setWave(LFO_TRI);
 	_pm->setCoef();
 	_pm->start();
-	_pmd = static_cast<double>(getVoicePrm(VP_LFO_PMD))/100;
+	_pmd = static_cast<double>(getVoicePrm(VP_LFO_PMD))/1000;
 }
 //---------------------------------------------------------
 void OscPipe::changeNote( void )
