@@ -42,6 +42,8 @@ namespace msgf {
 		Msgf*	tgObj( void ) const { return _tg; }
 		Uint8	getCc7( void ) const { return _cc7_volume; }
 		Uint8	getCc11( void ) const { return _cc11_expression; }
+		Uint8	getCc1( void ) const { return _cc1_modulationWheel; }
+		Uint8	getCc5( void ) const { return _cc5_portamentoTime; }
 		Instrument*	getInstrument( void ) const { return _inst; }
 
 	private:

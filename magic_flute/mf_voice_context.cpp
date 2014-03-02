@@ -14,7 +14,7 @@ const MfVoiceParameter MfVoiceContext::tMfVoiceParameter[MAX_MF_VOICE_NUMBER] = 
 		{
 			50,		//VP_VOLUME,			//	0 - 100
 			5,		//VP_AEG_ATTACK_TIME,	//	0 - 1000 (10ms)
-			30,		//VP_AEG_RELEASE_TIME,	//	0 - 1000 (10ms)
+			20,		//VP_AEG_RELEASE_TIME,	//	0 - 1000 (10ms)
 			
 			0,		//VP_LFO_AMD,			//	0 - 100 %
 			1000,	//VP_DOWN_DCNT,			//	0 - inf (*22.67 =[us])	1000
@@ -26,7 +26,7 @@ const MfVoiceParameter MfVoiceContext::tMfVoiceParameter[MAX_MF_VOICE_NUMBER] = 
 			0,		//VP_TUNING,			//	-100 - 100(cent)
 			0,		//VP_TRANSPOSE,			//	-24 - 24(seminote)
 
-			1,		//VP_PORTAMENTO_MODE,	//	0:rate constant, 1:time constant
+			0,		//VP_PORTAMENTO_MODE,	//	0:rate constant, 1:time constant
 			0,		//VP_PORTAMENTO_CURVE,	//	0:cent linear, 1:freqency linear
 			3,		//VP_PORTAMENTO,		//	0 - ??? (rate: *10ms/100cent, time: *10ms)	3
 			
@@ -37,7 +37,7 @@ const MfVoiceParameter MfVoiceContext::tMfVoiceParameter[MAX_MF_VOICE_NUMBER] = 
 
 			1000,	//VP_WAITING_DCNT,		//	0 - inf (*22.67 =[us])	1000
 			800,	//VP_FAST_MOVE_DCNT,	//	0 - inf	(*22.67 =[us])	800
-			1		//VP_PORTAMENTO_DIFF,	//	-24 - 24(semitone)
+			4		//VP_PORTAMENTO_DIFF,	//	-24 - 24(semitone)
 		},
 	},
 	{	//	1
