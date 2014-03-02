@@ -31,12 +31,10 @@ namespace msgf {
 		//	Portamento
 		VP_PORTAMENTO_MODE,		//	0:rate constant, 1:time constant
 		VP_PORTAMENTO_CURVE,	//	0:cent linear, 1:freqency linear
-		VP_PORTAMENTO,			//	0 - ??? (rate: *10 =[ms]/100[cent], time: *10 =[ms])
 		//	LFO
 		VP_LFO_FREQUENCY,		//	0 - ??? (*0.1 =[Hz])
 		VP_LFO_DELAY_TIME,		//	0 - ??? (*10 =[ms])
 		VP_LFO_FADEIN_TIME,		//	0 - ??? (*10 =[ms])
-		VP_LFO_PMD,				//	0 - 100 %
 		//	Note Change EG
 		VP_WAITING_DCNT,		//	0 - inf (*22.67 =[us])
 		VP_FAST_MOVE_DCNT,		//	0 - inf	(*22.67 =[us])
@@ -124,7 +122,6 @@ namespace msgf {
 		
 		//	LFO
 		Lfo*	_pm;
-		double	_pmd;
 	};
 }
 #endif /* defined(__ToneGenerator__msgf_osc_pipe__) */

@@ -47,7 +47,6 @@ void OscPipe::init( bool phaseReset )
 	_pm->setWave(LFO_TRI);
 	_pm->setCoef();
 	_pm->start();
-//	_pmd = static_cast<double>(getVoicePrm(VP_LFO_PMD))/1000;
 }
 //---------------------------------------------------------
 void OscPipe::changeNote( void )
@@ -322,9 +321,8 @@ void OscPipe::managePortamentoState( void )
 //---------------------------------------------------------
 void OscPipe::setPortamentoCounter( double centDiff )
 {
-//	int		prtm = getVoicePrm(VP_PORTAMENTO);
 	Part*	pt = _parentNote.getInstrument()->getPart();
-	int		prtm = static_cast<int>(pt->getCc5());
+	int		prtm = static_cast<int>(pt->getCc5())/5;
 	
 	if ( getVoicePrm(VP_PORTAMENTO_MODE) ){
 		//	time constant
