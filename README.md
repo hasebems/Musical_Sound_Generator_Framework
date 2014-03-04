@@ -12,7 +12,7 @@ If you make Xcode project and add these files to it, it will work as a MIDI base
 3. Send MIDI data to receiveMidi(). And then you can get sound.
 
 ## Future Plan
-I will try to make this framework work on a general ARM-Linux board like Raspberry pie.
+I will try to make this framework work on a general ARM-Linux board like Raspberry pi.
 Finally I want to make an original electric music keyboard.
 
 
@@ -28,4 +28,4 @@ Xcodeのプロジェクトに全ファイルを追加することによって、
 3. receiveMidi にMIDIデータを送ります。これで音が鳴ります。
 
 ## 将来目指すこと
-このFrameworkを汎用ARM-Linuxボード(Raspberry pieなど)上で動作させ、鍵盤などを接続することによってオリジナル電子楽器を作ることを目指しています。
+このFrameworkを汎用ARM-Linuxボード(Raspberry piなど)上で動作させ、鍵盤などを接続することによってオリジナル電子楽器を作ることを目指しています。
