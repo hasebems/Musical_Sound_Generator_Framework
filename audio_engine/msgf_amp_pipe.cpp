@@ -48,9 +48,10 @@ void AmpPipe::init( void )
 }
 
 //---------------------------------------------------------
-void AmpPipe::changeNote( void )
+void AmpPipe::changeNote( bool chgNote )
 {
 	_startNcEgDac = _dacCounter;
+	_changeNote = chgNote;
 }
 
 //---------------------------------------------------------
@@ -62,9 +63,18 @@ double AmpPipe::calcNcEg( double amp )
 
 	long	counterDiff = _dacCounter - _startNcEgDac;
 	double	minLvl = static_cast<double>(getVoicePrm(VP_MINLVL))/10000;
-	int		upDcnt = getVoicePrm(VP_UP_DCNT);
-	int		minlvlDcnt = getVoicePrm(VP_MINLVL_DCNT);
-	int		downDcnt = getVoicePrm(VP_DOWN_DCNT);
+	
+	int		upDcnt, minlvlDcnt, downDcnt;
+	if ( _changeNote == true ){
+		upDcnt = getVoicePrm(VP_UP_DCNT);
+		minlvlDcnt = getVoicePrm(VP_MINLVL_DCNT);
+		downDcnt = getVoicePrm(VP_DOWN_DCNT);
+	}
+	else {	//	if Same Note
+		upDcnt = 500;
+		minlvlDcnt = 0;
+		downDcnt = 1500;
+	}
 	
 	if ( counterDiff > upDcnt + minlvlDcnt + downDcnt ){
 		_startNcEgDac = -1;

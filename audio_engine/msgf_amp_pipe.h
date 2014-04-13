@@ -52,7 +52,7 @@ namespace msgf {
 		~AmpPipe( void );
 		
 		void	init( void );
-		void	changeNote( void );
+		void	changeNote( bool chgNote );
 		void	release( void ){ _eg->moveToRelease(); }
 		
 		//	process thread
@@ -85,6 +85,7 @@ namespace msgf {
 
 		//	Note Change EG
 		long			_startNcEgDac;
+		bool			_changeNote;
 	
 	};
 	//---------------------------------------------------------

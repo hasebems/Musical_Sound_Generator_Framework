@@ -72,11 +72,16 @@ void MfNote::keyOnAlternate( EventInfo* ei )
 //---------------------------------------------------------
 void MfNote::changeNote( EventInfo* ei )
 {
-	setNote( ei->getNote() );
+	bool	changeNote = true;
+	
+	if ( getNote() != ei->getNote() ){
+		setNote( ei->getNote() );
+	}
+	else changeNote = false;
 	
 	//	Init
 	_osc->changeNote();
-	_amp->changeNote();
+	_amp->changeNote(changeNote);
 }
 //---------------------------------------------------------
 //		Process Function

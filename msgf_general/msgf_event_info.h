@@ -23,6 +23,8 @@ namespace msgf {
 	public:
 		EventInfo( void ):
 			_velocity(127), _note(60) {}
+		EventInfo( Uint8 nt, Uint8 vel ):
+			_velocity(vel), _note(nt) {}
 
 		//	Accessor
 		void	setVelocity( Uint8 vel ){ _velocity = vel;}

@@ -34,11 +34,8 @@ MfInstrument::~MfInstrument( void )
 //---------------------------------------------------------
 void MfInstrument::keyOn( Uint8 note, Uint8 velocity )
 {
-	EventInfo* ei = new EventInfo();
-	
-	ei->setVelocity( velocity );
-	ei->setNote( note );
-	
+	EventInfo* ei = new EventInfo(note, velocity);
+
 	if ( _topNote != 0 ){
 		if ( _topNote->conditionKeyOn() == true ){
 			//	Change Note
