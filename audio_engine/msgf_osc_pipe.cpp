@@ -137,14 +137,17 @@ const double OscPipe::tPitchOfA[11] =
 //---------------------------------------------------------
 double OscPipe::calcPitch( const Uint8 note )
 {
-	int toneName, octave;
-	
-	if ( note >= 9 ){
-		toneName = (note-9)%12;
-		octave = (note-9)/12 + 1;
+	int toneName, octave, realNote;
+
+	Part*	pt = _parentNote.getInstrument()->getPart();
+	realNote = note + pt->getNoteShift();
+
+	if ( realNote >= 9 ){
+		toneName = (realNote-9)%12;
+		octave = (realNote-9)/12 + 1;
 	}
 	else {
-		toneName = note+3;
+		toneName = realNote+3;
 		octave = 0;
 	}
 	
@@ -160,7 +163,7 @@ double OscPipe::calcPitch( const Uint8 note )
 		double fct = tune*log(2)/1200;
 		ap *= exp(fct);
 	}
-	
+
 	return ap;
 }
 //---------------------------------------------------------

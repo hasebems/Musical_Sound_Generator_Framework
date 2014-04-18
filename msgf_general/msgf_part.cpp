@@ -25,6 +25,8 @@ Part::Part( Msgf* ptg ) :
 	_cc7_volume(100),
 	_cc10_pan(64),
 	_cc11_expression(127),
+	_cc12_noteShift(64),
+	_cc13_tune(64),
 	_cc64_sustain(0),
 	_cc66_sostenuto(0),
 	_cc65_portamento(0),
@@ -75,6 +77,8 @@ void Part::controlChange( int controller, int value )
 			if ( _inst ) _inst->expression( value );
 			break;
 		}
+		case 12:	_cc12_noteShift = value; break;
+		case 13:	_cc13_tune = value; break;
 		case 32:	_cc32_lsb = value; break;
 		case 5:		_cc5_portamentoTime = value; break;
 		case 64:{

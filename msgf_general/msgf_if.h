@@ -18,7 +18,7 @@
 
 namespace msgf {
 	//---------------------------------------------------------
-	const int MAX_PART_NUM = 2;
+	const int MAX_PART_NUM = 1;
 	const Uint8	DONT_CARE = 0xff;
 
 	//---------------------------------------------------------

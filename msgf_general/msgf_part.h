@@ -44,6 +44,8 @@ namespace msgf {
 		Uint8	getCc11( void ) const { return _cc11_expression; }
 		Uint8	getCc1( void ) const { return _cc1_modulationWheel; }
 		Uint8	getCc5( void ) const { return _cc5_portamentoTime; }
+		int		getNoteShift( void ) const { return (int)_cc12_noteShift-64; }
+		int		getTune( void ) const { return (int)_cc13_tune-64; }
 		Instrument*	getInstrument( void ) const { return _inst; }
 
 	private:
@@ -54,6 +56,8 @@ namespace msgf {
 		Uint8	_cc7_volume;
 		Uint8	_cc10_pan;
 		Uint8	_cc11_expression;
+		Uint8	_cc12_noteShift;	//	out of MIDI
+		Uint8	_cc13_tune;			//	out of MIDI
 		Uint8	_cc32_lsb;
 		Uint8	_cc64_sustain;
 		Uint8	_cc65_portamento;
