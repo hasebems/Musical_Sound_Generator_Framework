@@ -213,15 +213,14 @@ void OscPipe::reflectMidiController( void )
 
 	//	Note Shift
 	int noteDiff = pt->getNoteShift();
-	if ( noteDiff < 0 ){
+	if ( noteDiff >= 0 ){
 		for ( int i=0; i<noteDiff; i++ ){
 			_pitchAdj *= _chromaticRatio;
 		}
 	}
 	else {
-		double ratio = -1*_chromaticRatio;
 		for ( int i=0; i<(-noteDiff); i++ ){
-			_pitchAdj *= ratio;
+			_pitchAdj /= _chromaticRatio;
 		}
 	}
 }
