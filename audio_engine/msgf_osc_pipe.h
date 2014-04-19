@@ -91,7 +91,7 @@ namespace msgf {
 		double	calcPitch( const Uint8 note );
 		double	getPegPitch( int depth );
 		void	reflectMidiController( void );
-		double	calcDeltaLFO( double lfoDpt, double diff );
+		double	calcDeltaLFO( double lfoDpt );
 		void	stateOfWaitingPortamento( void );
 		void	stateOfFastMove( void );
 		void	stateOfSlowMove( void );
@@ -111,6 +111,8 @@ namespace msgf {
 		double		_pitch;
 		double		_pitchAdj;
 		double		_crntPhase;
+		double		_cent2pitch;
+		double		_chromaticRatio;
 
 		//	portamento
 		int			_portamentoCounter;

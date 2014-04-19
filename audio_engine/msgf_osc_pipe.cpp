@@ -21,6 +21,8 @@ OscPipe::OscPipe( Note& parent ):
 _parentNote(parent)
 {
 	_pm = new Lfo();
+	_cent2pitch = log(2)/1200;
+	_chromaticRatio = exp(log(2)/12);
 }
 //---------------------------------------------------------
 OscPipe::~OscPipe( void )
@@ -67,7 +69,7 @@ void OscPipe::changeNote( void )
 		case FAST_MOVE:
 		case SLOW_MOVE:{
 			double tgtPitch = calcPitch(newNote);
-			double tgtCent = 1200*log(tgtPitch/_pitch)/log(2);
+			double tgtCent = log(tgtPitch/_pitch)/_cent2pitch;
 			if (( tgtCent > prtmDiff*100 ) || ( tgtCent < -prtmDiff*100 )){
 				_prtmState = FAST_MOVE;
 				if ( tgtCent > 0 ){	//	Upper
@@ -118,7 +120,7 @@ void OscPipe::process( TgAudioBuffer& buf )
 		
 		//	Calculate next _crntPhase from Pitch
 		double	diff = (2 * M_PI * _pitch * _pitchAdj)/ SAMPLING_FREQUENCY;
-		_crntPhase += calcDeltaLFO( lfoBuf[i], diff );
+		_crntPhase += calcDeltaLFO( lfoBuf[i] )*diff;
 	}
 	
 	_dacCounter += buf.bufferSize();
@@ -137,10 +139,7 @@ const double OscPipe::tPitchOfA[11] =
 //---------------------------------------------------------
 double OscPipe::calcPitch( const Uint8 note )
 {
-	int toneName, octave, realNote;
-
-	Part*	pt = _parentNote.getInstrument()->getPart();
-	realNote = note + pt->getNoteShift();
+	int toneName, octave, realNote = note;
 
 	if ( realNote >= 9 ){
 		toneName = (realNote-9)%12;
@@ -152,15 +151,14 @@ double OscPipe::calcPitch( const Uint8 note )
 	}
 	
 	double ap = tPitchOfA[octave];
-	double ratio = exp(log(2)/12);
 	for ( int i=0; i<toneName; i++ ){
-		ap *= ratio;
+		ap *= _chromaticRatio;
 	}
 
 	//	calculate tuning
 	int	tune = getVoicePrm(VP_TUNING);
 	if ( tune != 0 ){
-		double fct = tune*log(2)/1200;
+		double fct = tune*_cent2pitch;
 		ap *= exp(fct);
 	}
 
@@ -199,23 +197,43 @@ double OscPipe::getPegPitch( int depth )
 void OscPipe::reflectMidiController( void )
 {
 	Part*	pt = _parentNote.getInstrument()->getPart();
+
+	//	Pitch Up by Expression
 	Uint8	midiExp = pt->getCc11();
 	double	expLvl = static_cast<double>(midiExp) - EXPANSION_BEGINNING_VALUE;
+	if ( expLvl < 0 ) expLvl = 0;	//	expLvl : 0 - 30
+	expLvl /= 2;					//	expLvl : 0 - 15(cent)
 
-	if ( expLvl < 0 ) expLvl = 0;
-
-	double fct = (expLvl/2)*log(2)/1200;
+	//	Tune
+	int		tune = pt->getTune();
+	expLvl += tune;
+	
+	double fct = expLvl*_cent2pitch;
 	_pitchAdj = exp(fct);
+
+	//	Note Shift
+	int noteDiff = pt->getNoteShift();
+	if ( noteDiff < 0 ){
+		for ( int i=0; i<noteDiff; i++ ){
+			_pitchAdj *= _chromaticRatio;
+		}
+	}
+	else {
+		double ratio = -1*_chromaticRatio;
+		for ( int i=0; i<(-noteDiff); i++ ){
+			_pitchAdj *= ratio;
+		}
+	}
 }
 
 //---------------------------------------------------------
 //		Calcrate Delta considering LFO
 //---------------------------------------------------------
-double OscPipe::calcDeltaLFO( double lfoDpt, double diff )
+double OscPipe::calcDeltaLFO( double lfoDpt )
 {
 	Part*	pt = _parentNote.getInstrument()->getPart();
 	double	pmd = static_cast<double>(pt->getCc1())/(128*10);
-	return (1+(lfoDpt*pmd))*diff;	// add LFO pattern
+	return (1+(lfoDpt*pmd));	// add LFO pattern
 }
 
 //---------------------------------------------------------
@@ -230,7 +248,7 @@ void OscPipe::stateOfWaitingPortamento( void )
 		//	Move to next state
 		Uint8	tgtNt;
 		double tmpPitch = calcPitch(_note);
-		double tgtCent = 1200*log(tmpPitch/_pitch)/log(2);
+		double tgtCent = log(tmpPitch/_pitch)/_cent2pitch;
 		if ( _sourcePitch > tmpPitch ){		//	Move Down
 			if ( tgtCent > prtmDiff*(-100) ){
 				_targetPitch = tmpPitch;
@@ -293,7 +311,7 @@ void OscPipe::stateOfSlowMove( void )
 		else {
 			//	cent linear
 			double _crntCent = _targetCent*_portamentoCounter/_maxPortamentoCounter;
-			_pitch = exp(_crntCent*log(2)/1200)*_sourcePitch;
+			_pitch = exp(_crntCent*_cent2pitch)*_sourcePitch;
 		}
 	}
 }
@@ -338,7 +356,7 @@ void OscPipe::setPortamentoCounter( double centDiff )
 	
 	if ( getVoicePrm(VP_PORTAMENTO_CURVE) == 0 ){
 		//	cent linear
-		_targetCent = 1200*log(_targetPitch/_sourcePitch)/log(2);
+		_targetCent = log(_targetPitch/_sourcePitch)/_cent2pitch;
 	}
 	else _targetCent = 0;
 }
