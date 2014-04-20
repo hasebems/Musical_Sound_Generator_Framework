@@ -38,7 +38,7 @@ namespace msgf {
 		//	Note Change EG
 		VP_WAITING_DCNT,		//	0 - inf (*22.67 =[us])
 		VP_FAST_MOVE_DCNT,		//	0 - inf	(*22.67 =[us])
-		VP_PORTAMENTO_DIFF,		//	-24 - 24(semitone)
+		VP_PORTAMENTO_DIFF,		//	1 - 24(semitone)
 
 		VP_OSCILLATOR_MAX
 		
@@ -77,7 +77,7 @@ namespace msgf {
 		
 		void	init( void ){ init(true);}
 		void	init( bool phaseReset );
-		void	changeNote( void );
+		void	changeNote( bool chgNote );
 		void	release( void ){}
 		
 		//	process thread
@@ -116,7 +116,8 @@ namespace msgf {
 
 		//	portamento
 		int			_portamentoCounter;
-		int			_maxPortamentoCounter;
+		int			_prtmDiff;				//	copy from VP_PORTAMENTO_DIFF
+		int			_maxPortamentoCounter;	//	prohibit 0
 		double		_sourcePitch;
 		double		_targetPitch;
 		double		_targetCent;

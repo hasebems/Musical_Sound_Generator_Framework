@@ -80,7 +80,7 @@ void MfNote::changeNote( EventInfo* ei )
 	else changeNote = false;
 	
 	//	Init
-	_osc->changeNote();
+	_osc->changeNote(changeNote);
 	_amp->changeNote(changeNote);
 }
 //---------------------------------------------------------

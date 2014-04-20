@@ -39,7 +39,9 @@ void OscPipe::init( bool phaseReset )
 	_pitchAdj = 1;
 	if ( phaseReset == true ) _crntPhase = 0;
 	_prtmState = NO_MOVE;
-
+	_prtmDiff = getVoicePrm(VP_PORTAMENTO_DIFF);
+	if ( _prtmDiff <= 0 ) _prtmDiff = 1;
+	
 	//	LFO Settings as delegation who intend to use LFO
 	_pm->setFrequency(static_cast<double>(getVoicePrm(VP_LFO_FREQUENCY))/10);
 	_pm->setDelay(getVoicePrm(VP_LFO_DELAY_TIME));
@@ -51,12 +53,13 @@ void OscPipe::init( bool phaseReset )
 	_pm->start();
 }
 //---------------------------------------------------------
-void OscPipe::changeNote( void )
+void OscPipe::changeNote( bool chgNote )
 {
-	Uint8	newNote;
-	int		prtmDiff = getVoicePrm(VP_PORTAMENTO_DIFF);
+	Uint8	newNote = _parentNote.getNote() + getVoicePrm(VP_TRANSPOSE);
 
-	newNote = _note = _parentNote.getNote() + getVoicePrm(VP_TRANSPOSE);
+	if ( chgNote == false ) return;
+
+	_note = newNote;
 	_sourcePitch = _pitch;
 
 	switch ( _prtmState ){
@@ -70,13 +73,13 @@ void OscPipe::changeNote( void )
 		case SLOW_MOVE:{
 			double tgtPitch = calcPitch(newNote);
 			double tgtCent = log(tgtPitch/_pitch)/_cent2pitch;
-			if (( tgtCent > prtmDiff*100 ) || ( tgtCent < -prtmDiff*100 )){
+			if (( tgtCent > _prtmDiff*100 ) || ( tgtCent < -_prtmDiff*100 )){
 				_prtmState = FAST_MOVE;
 				if ( tgtCent > 0 ){	//	Upper
-					_targetPitch = calcPitch( _note - prtmDiff );
+					_targetPitch = calcPitch( _note - _prtmDiff );
 				}
 				else {				//	Lower
-					_targetPitch = calcPitch( _note + prtmDiff );
+					_targetPitch = calcPitch( _note + _prtmDiff );
 				}
 			}
 			else {
@@ -241,7 +244,6 @@ double OscPipe::calcDeltaLFO( double lfoDpt )
 void OscPipe::stateOfWaitingPortamento( void )
 {
 	int		waitingDcnt = getVoicePrm(VP_WAITING_DCNT);
-	int		prtmDiff = getVoicePrm(VP_PORTAMENTO_DIFF);
 	
 	if ( waitingDcnt <= _portamentoCounter ){
 		//	Move to next state
@@ -249,25 +251,25 @@ void OscPipe::stateOfWaitingPortamento( void )
 		double tmpPitch = calcPitch(_note);
 		double tgtCent = log(tmpPitch/_pitch)/_cent2pitch;
 		if ( _sourcePitch > tmpPitch ){		//	Move Down
-			if ( tgtCent > prtmDiff*(-100) ){
+			if ( tgtCent > _prtmDiff*(-100) ){
 				_targetPitch = tmpPitch;
 				_prtmState = SLOW_MOVE;
-				setPortamentoCounter(prtmDiff*100);
+				setPortamentoCounter(_prtmDiff*100);
 			}
 			else {
-				tgtNt = _note + prtmDiff;
+				tgtNt = _note + _prtmDiff;
 				_targetPitch = calcPitch( tgtNt );
 				_prtmState = FAST_MOVE;
 			}
 		}
 		else {	//	Move Up
-			if ( tgtCent < prtmDiff*100 ){
+			if ( tgtCent < _prtmDiff*100 ){
 				_targetPitch = tmpPitch;
 				_prtmState = SLOW_MOVE;
-				setPortamentoCounter(prtmDiff*100);
+				setPortamentoCounter(_prtmDiff*100);
 			}
 			else {
-				tgtNt = _note - prtmDiff;
+				tgtNt = _note - _prtmDiff;
 				_targetPitch = calcPitch( tgtNt );
 				_prtmState = FAST_MOVE;
 			}
@@ -280,7 +282,6 @@ void OscPipe::stateOfWaitingPortamento( void )
 void OscPipe::stateOfFastMove( void )
 {
 	int		fastMvDcnt = getVoicePrm(VP_FAST_MOVE_DCNT);
-	int		prtmDiff = getVoicePrm(VP_PORTAMENTO_DIFF);
 
 	if ( fastMvDcnt <= _portamentoCounter ){
 		//	Move to next state
@@ -288,7 +289,7 @@ void OscPipe::stateOfFastMove( void )
 		_portamentoCounter = 0;
 		_sourcePitch = _pitch;
 		_targetPitch = calcPitch( _note );
-		setPortamentoCounter(prtmDiff*100);
+		setPortamentoCounter(_prtmDiff*100);
 	}
 	else{
 		_pitch = _sourcePitch + ((_targetPitch - _sourcePitch)*_portamentoCounter)/fastMvDcnt;
@@ -342,7 +343,7 @@ void OscPipe::managePortamentoState( void )
 void OscPipe::setPortamentoCounter( double centDiff )
 {
 	Part*	pt = _parentNote.getInstrument()->getPart();
-	int		prtm = static_cast<int>(pt->getCc5())/5;
+	int		prtm = static_cast<int>(pt->getCc5())/5 + 1;	// 1 - 26
 	
 	if ( getVoicePrm(VP_PORTAMENTO_MODE) ){
 		//	time constant
