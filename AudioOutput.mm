@@ -163,7 +163,7 @@ static OSStatus OutputCallback(void *inRefCon,
 		UInt32 channels = ioData->mBuffers[i].mNumberChannels;
 
         for (NSInteger j = 0; j < inNumberFrames; j++) {
-			SInt16 dt = static_cast<SInt16>(abuf.getAudioBuffer(j) * 15000);
+			SInt16 dt = static_cast<SInt16>(abuf.getAudioBuffer(static_cast<int>(j)) * 15000);
             for (NSInteger k = 0; k < channels; k++) {
 				ptr[j * channels + k] = dt;
             }
