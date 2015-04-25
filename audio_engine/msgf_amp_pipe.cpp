@@ -118,12 +118,12 @@ double AmpPipe::calcMidiVolume( double amp )
 //		Interporate Volume
 //---------------------------------------------------------
 const double DEEMED_SAME_VOLUME = 1.0001;
-const double VOLUME_ITP_RATE = 0.001;			//	/1Dac
+const double VOLUME_ITP_RATE = 0.002;			//	/1Dac
 //---------------------------------------------------------
 void AmpPipe::interporateVolume( void )
 {
-	if (( _targetVol*DEEMED_SAME_VOLUME >= _realVol ) &&
-		( _targetVol/DEEMED_SAME_VOLUME <= _realVol )){
+	if (( _targetVol*DEEMED_SAME_VOLUME > _realVol ) &&
+		( _targetVol/DEEMED_SAME_VOLUME < _realVol )){
 		_realVol = _targetVol;
 	}
 	else {
