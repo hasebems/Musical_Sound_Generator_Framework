@@ -19,7 +19,7 @@
 
 namespace msgf {
 	
-	//	to be defined every Audio Engine that wants an original parameter set
+	//	to be defined in every Audio Engine that demands an original parameter set
 	const int VP_AMP_PIPE_ID = 220;
 	//---------------------------------------------------------
 	typedef enum {
