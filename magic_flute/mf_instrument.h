@@ -25,7 +25,7 @@ public:
 
 private:
 	msgf::Uint8		_lastNote;
-
+	int				_konCount[128];
 };
 
 #endif /* defined(__mf_instrument__) */

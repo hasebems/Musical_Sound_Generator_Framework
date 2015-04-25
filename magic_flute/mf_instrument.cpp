@@ -19,7 +19,8 @@ using namespace msgf;
 //---------------------------------------------------------
 MfInstrument::MfInstrument( Part* pt, int vid ):
 Instrument(pt,vid),
-_lastNote(0x3c)
+_lastNote(0x3c),
+_konCount()
 {
 	_vc = new MfVoiceContext( vid );
 }
@@ -54,6 +55,7 @@ void MfInstrument::keyOn( Uint8 note, Uint8 velocity )
 		}
 	}
 
+	_konCount[note]++;
 	_lastNote = note;
 }
 
@@ -63,7 +65,16 @@ void MfInstrument::keyOn( Uint8 note, Uint8 velocity )
 void MfInstrument::keyOff( Uint8 note, Uint8 velocity )
 {
 	Note* kfNote = searchNote( note, DURING_KON );
-	if ( kfNote ) kfNote->keyOff();
+	if ( kfNote ){
+		if ( _konCount[note] > 1 ){
+			//	check duplicated KeyOn & let it not KeyOff
+			_konCount[note]--;
+		}
+		else {
+			kfNote->keyOff();
+			_konCount[note] = 0;
+		}
+	}
 }
 
 //---------------------------------------------------------
