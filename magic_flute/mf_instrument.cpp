@@ -43,7 +43,7 @@ void MfInstrument::keyOn( Uint8 note, Uint8 velocity )
 			_topNote->changeNote( ei );
 		}
 		else {
-			//
+			//	Alternate KeyOn
 			_topNote->keyOnAlternate( ei );
 		}
 	}
@@ -66,33 +66,26 @@ void MfInstrument::keyOff( Uint8 note, Uint8 velocity )
 {
 	Note* kfNote = searchNote( note, DURING_KON );
 	if ( kfNote ){
-		if ( _konCount[note] > 1 ){
-			//	check duplicated KeyOn & let it not KeyOff
-			_konCount[note]--;
-		}
-		else {
+		//	check duplicated KeyOn & let it not KeyOff
+		if ( _konCount[note] == 1 ){
 			kfNote->keyOff();
-			_konCount[note] = 0;
 		}
+	}
+
+	if ( _konCount[note] > 0 ){
+		_konCount[note]--;
 	}
 }
 
 //---------------------------------------------------------
-//		Expression
+//		All Sound Off
 //---------------------------------------------------------
-void MfInstrument::expression( Uint8 value )
+void MfInstrument::allSoundOff( void )
 {
-	if ( value ){
-		if ( _topNote == 0 ) keyOn( _lastNote, 0x7f );
-		// else : normal amplitude processing
-	}
-	else {
-		//	All Key Off
-		Note* kfNote = _topNote;
-		while ( kfNote != 0 ){
-			Note* ntNxt = kfNote->getNextNote();
-			kfNote->keyOff();
-			kfNote = ntNxt;
-		}
+	Instrument::allSoundOff();
+	
+	for ( int i=0; i<128; i++ ){
+		_konCount[i] = 0;
 	}
 }
+

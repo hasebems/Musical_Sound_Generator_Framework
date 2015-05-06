@@ -21,7 +21,7 @@ public:
 	
 	void	keyOn( msgf::Uint8 note, msgf::Uint8 velocity );
 	void	keyOff( msgf::Uint8 note, msgf::Uint8 velocity );
-	void	expression( msgf::Uint8 value );
+	void 	allSoundOff( void );
 
 private:
 	msgf::Uint8		_lastNote;
