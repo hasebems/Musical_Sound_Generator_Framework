@@ -103,7 +103,7 @@ void Msgf::analyzePartOfChMessage( Uint8 dt1, Uint8 dt2, Uint8 dt3 )
 			break;
 		}
 		case 0xf0:{
-			_pt[part]->specialCommand( dt2, dt3 );
+			_pt[part]->specialCommand( dt1, dt2, dt3 );
 			break;
 		}
 		default:
