@@ -25,6 +25,8 @@ namespace msgf {
 	//---------------------------------------------------------
 	typedef enum {
 		
+		//	Overtone Type
+		VP_OVERTONE_TYPE,		//	0:Sine, 1:LikeRecorder, 2:LikeOboe
 		//	Pitch
 		VP_TUNING,				//	-100 - 100[cent]
 		VP_TRANSPOSE,			//	-24 - 24(seminote)
@@ -85,6 +87,7 @@ namespace msgf {
 		
 		static const int PEG_MAX = 60;
 		static const int PEG_DEPTH_MAX = 2; // /2 Octave
+		static const int MAX_OVERTONE = 8;
 		
 	private:
 		
@@ -102,6 +105,8 @@ namespace msgf {
 		int		getVoicePrm( int id ){ return _parentNote.getVoiceContext()->getParameter( VP_OSC_PIPE_ID, id ); }
 		
 		static const double tPitchOfA[11];
+		static const int MAX_OVERTONE_TYPE = 3;
+		static const int tOverToneRatio[MAX_OVERTONE_TYPE][MAX_OVERTONE];
 
 		//	Basic Reference
 		Note&		_parentNote;

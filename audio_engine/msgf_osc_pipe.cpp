@@ -364,20 +364,24 @@ void OscPipe::setPortamentoCounter( double centDiff )
 //---------------------------------------------------------
 //		Generate Wave
 //---------------------------------------------------------
-//double OscPipe::generateWave( double phase )
-//{
-//	//	Sine Wave
-//	return sin(phase);
-//}
+const int OscPipe::tOverToneRatio[3][MAX_OVERTONE] = {
+ { 1, 0, 0, 0, 0, 0, 0, 0 },
+ { 1, 64, 16, 128, 32, 0, 0, 0 },
+ { 8, 8, 4, 4, 2, 8, 16, 64 }
+};
 //---------------------------------------------------------
 double OscPipe::generateWave( double phase )
 {
-	const int MAX_OVERTONE = 5;
-	int		tOverToneRatio[MAX_OVERTONE] = { 1, 64, 16, 128, 32 };
-	//	Sine Summing
 	double wave = 0;
+	int		overToneType = getVoicePrm(VP_OVERTONE_TYPE);
+	if ( overToneType >= MAX_OVERTONE_TYPE ){ overToneType = 0; }
+
+	//	Sine Summing
 	for ( int j=0; j<MAX_OVERTONE; j++ ){
-		wave += sin(phase*(j+1))/tOverToneRatio[j];
+		int otr = tOverToneRatio[overToneType][j];
+		if (otr){
+			wave += sin(phase*(j+1))/otr;
+		}
 	}
 
 	return wave*0.5;
