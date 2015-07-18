@@ -33,6 +33,7 @@ namespace msgf {
 		void	controlChange( int controller, int value );
 		void	programChange( int number );
 		void	pitchBend( int valule );
+		void	specialCommand( Uint8 p1, Uint8 p2 ) const { if (_inst){ _inst->specialCommand(p1,p2);} }
 		int		getInstrumentId( Uint8 msb, Uint8 lsb, Uint8 pcNum ) const { return 16384*msb + 128*lsb + pcNum;}
 
 		//	process thread

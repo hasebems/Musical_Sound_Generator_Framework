@@ -45,6 +45,7 @@ namespace msgf {
 		virtual void	expression( Uint8 value ){}
 		virtual void	sustain( Uint8 value );
 		virtual void	allSoundOff( void );
+		virtual void	specialCommand( Uint8 parameter1, Uint8 parameter2 ){}
 
 		//	process thread
 		virtual void	process( TgAudioBuffer& buf );
