@@ -79,6 +79,13 @@ void Msgf::makeChMessage( Uint8 byteData )
 void Msgf::analyzePartOfChMessage( Uint8 dt1, Uint8 dt2, Uint8 dt3 )
 {
 	int part =  dt1 & 0x0f;
+
+	if ((dt1 & 0xf0) == 0xf0 ) {
+		for ( int i=0; i<MAX_PART_NUM; i++ ){
+			_pt[i]->specialCommand( dt1, dt2, dt3 );
+		}
+	}
+
 	if ( part >= MAX_PART_NUM ) return;
 	
 	switch ( dt1 & 0xf0 ) {
@@ -100,10 +107,6 @@ void Msgf::analyzePartOfChMessage( Uint8 dt1, Uint8 dt2, Uint8 dt3 )
 			bendValue += dt2*128;
 			bendValue -= 8192;
 			_pt[part]->pitchBend( bendValue );
-			break;
-		}
-		case 0xf0:{
-			_pt[part]->specialCommand( dt1, dt2, dt3 );
 			break;
 		}
 		default:
