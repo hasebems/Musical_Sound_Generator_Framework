@@ -1,6 +1,7 @@
 //
 //  msgf_iirfilter.h
-//  ToneGenerator
+//
+//	Musical Sound Generator Framework
 //
 //  Created by 長谷部 雅彦 on 2013/01/20.
 //  Copyright (c) 2013年 長谷部 雅彦. All rights reserved.
