@@ -44,7 +44,7 @@ public:
 		return value;
 	}
 	
-	static const int MAX_MF_VOICE_NUMBER = 1;
+	static const int MAX_MF_VOICE_NUMBER = 2;
 	
 private:
 	static const MfVoiceParameter	tMfVoiceParameter[MAX_MF_VOICE_NUMBER];
