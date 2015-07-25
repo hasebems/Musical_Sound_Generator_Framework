@@ -154,6 +154,8 @@ static OSStatus OutputCallback(void *inRefCon,
 	
 	msgf::TgAudioBuffer	abuf;						//	MSGF IF
 	msgf::Msgf*	tg = static_cast<msgf::Msgf*>(_tg);
+	if ( tg == NULL ) return err;
+	
 	abuf.obtainAudioBuffer(inNumberFrames);			//	MSGF IF
 	tg->process( abuf );							//	MSGF IF
 	
