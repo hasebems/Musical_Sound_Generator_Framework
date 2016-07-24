@@ -35,21 +35,21 @@ MfInstrument::~MfInstrument( void )
 //---------------------------------------------------------
 void MfInstrument::keyOn( Uint8 note, Uint8 velocity )
 {
-	EventInfo* ei = new EventInfo(note, velocity);
+	EventInfo ei = EventInfo(note, velocity);
 
 	if ( _topNote != 0 ){
 		if ( _topNote->conditionKeyOn() == true ){
 			//	Change Note
-			_topNote->changeNote( ei );
+			_topNote->changeNote( &ei );
 		}
 		else {
 			//	Alternate KeyOn
-			_topNote->keyOnAlternate( ei );
+			_topNote->keyOnAlternate( &ei );
 		}
 	}
 	else {
 		Note* nt = new MfNote(this);
-		if ( nt->keyOn( ei ) == true ){
+		if ( nt->keyOn( &ei ) == true ){
 			//	New Key On
 			appendNoteList( nt );
 		}
