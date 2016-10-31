@@ -17,10 +17,10 @@
 namespace msgf {
 	//---------------------------------------------------------
 	typedef enum {
-		
+
 		DURING_KON,
 		MAX_CONDITION
-		
+
 	} CONDITION;
 	//---------------------------------------------------------
 	class Note;
@@ -28,14 +28,14 @@ namespace msgf {
 	class Part;
 	//---------------------------------------------------------
 	class Instrument {
-		
+
 	public:
 		Instrument( Part* pt, int vid ):
 			_parentPart(pt),
+			_vc(0),
 			_voiceId(vid),
 			_topNote(0),
 			_endNote(0),
-			_vc(0),
 			_noteCounter(0){}
 		virtual	~Instrument( void ){}
 
@@ -52,18 +52,18 @@ namespace msgf {
 
 		void	releaseNote( const Note* nt );
 		double	searchMinimumLevelNote( Note** nt );
-		
+
 		//	Accessor
 		int		getVoiceId( void ) const { return _voiceId; }
 		VoiceContext*	getVoiceContext( void ) const { return _vc; }
 		Part*	getPart( void ) const { return _parentPart; }
 		Note*	getTopNote( void ) const { return _topNote; }
 		Note*	getEndNote( void ) const { return _endNote; }
-		
+
 	protected:
 		void	appendNoteList( Note* nt );
 		Note*	searchNote( Uint8 note, CONDITION cd );
-		
+
 		Part*	_parentPart;
 		VoiceContext*	_vc;
 

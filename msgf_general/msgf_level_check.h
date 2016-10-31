@@ -24,6 +24,7 @@ namespace msgf {
 		LevelCheck( int bufSz )
 		{
 			int	dac = (SAMPLING_FREQUENCY*MEASUREMENT_TIME_MS)/1000;
+			if ( bufSz <= 0 ){ bufSz = 1; } //	for safety
 			_maxSize = dac/bufSz;
 			_writePtr = 0;
 			_buf = new double[_maxSize];
