@@ -16,7 +16,7 @@
 namespace msgf {
 	//---------------------------------------------------------
 	class Eg4segment : public Eg {
-		
+
 		//	4segments mean :
 		//		Attack	:	level: EG_NOT_YET	->	EG_ATTACK
 		//		Decay1	:	level: EG_ATTACK	->	EG_DECAY1
@@ -25,18 +25,20 @@ namespace msgf {
 
 	public:
 		Eg4segment( CallBack& cbObj, Note& parent ):
-		_cbFunc(cbObj),
-		_parentNote(parent),
+		_dacCounter(0),
 		_egState(EG_NOT_YET),
-		_dacCounter(0){}
+		_cbFunc(cbObj),
+		_parentNote(parent)
+		{}
+
 		virtual ~Eg4segment( void ){}
 		virtual void	moveToRelease( void ){ toRelease(); }
-		
+
 		//	Judge Segment change
 		virtual void	periodicOnceEveryProcess( void );		//	PT
 		virtual void	periodicOnceEveryDac( long dacCnt );	//	PT
 		virtual double	calcEgLevel( void );					//	PT
-		
+
 	private:
 		//	Move to next EG Segment
 		void	toAttack( void );			//	EG_NOT_YET -> ATTACK
@@ -45,7 +47,7 @@ namespace msgf {
 		void	toKeyOnSteady( void );		//	keep DECAY2
 		void	toRelease( void );			//	any Segment -> RELEASE
 		void	toKeyOffSteady( void );		//	keep RELEASE
-		
+
 		//	Get Segment Parameter
 		int		getAttackDacCount( void ){ return _cbFunc.getEgTime(EG_ATTACK); }
 		int		getDecay1DacCount( void ){ return _cbFunc.getEgTime(EG_DECAY1); }
@@ -56,18 +58,18 @@ namespace msgf {
 		double	getDecay1Level( void ){ return _cbFunc.getEgLvl(EG_DECAY1); }
 		double	getDecay2Level( void ){ return _cbFunc.getEgLvl(EG_DECAY2); }
 		double	getReleaseLevel( void ){ return _cbFunc.getEgLvl(EG_RELEASE); }
-		
+
 		//	EG Level
 		double		_egStartLevel;			//	-1-0-+1
 		double		_egTargetLevel;			//	-1-0-+1
 		double		_egCrntLevel;			//	-1-0-+1
-		
+
 		//	EG Time Manage
 		long		_egStartDac;
 		long		_egTargetDac;
 		long		_dacCounter;
 		EG_STATE	_egState;
-		
+
 		//	Relation
 		CallBack&	_cbFunc;
 		Note&		_parentNote;
