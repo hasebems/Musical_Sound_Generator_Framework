@@ -3,8 +3,8 @@
 //
 //	Musical Sound Generator Framework
 //
-//  Created by 長谷部 雅彦 on 2012/09/23.
-//  Copyright (c) 2012年 長谷部 雅彦. All rights reserved.
+//  Created by Hasebe Masahiko on 2012/09/23.
+//  Copyright (c) 2012 Hasebe Masahiko. All rights reserved.
 //
 
 #ifndef __msgf_type__

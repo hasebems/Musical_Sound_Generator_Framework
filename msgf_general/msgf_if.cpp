@@ -3,8 +3,8 @@
 //
 //	Musical Sound Generator Framework
 //
-//  Created by 長谷部 雅彦 on 2012/09/22.
-//  Copyright (c) 2012年 長谷部 雅彦. All rights reserved.
+//  Created by Hasebe Masahiko on 2012/09/22.
+//  Copyright (c) 2012 Hasebe Masahiko. All rights reserved.
 //
 
 #include "msgf_if.h"
@@ -18,14 +18,14 @@ using namespace msgf;
 Msgf::Msgf( void )
 {
 	for ( int i=0; i<MAX_PART_NUM; i++ ){
-		_pt[i] = new Part(this);
+		_part[i] = new Part(this);
 	}
 }
 //---------------------------------------------------------
 Msgf::~Msgf()
 {
 	for ( int i=0; i<MAX_PART_NUM; i++ ){
-		delete _pt[i];
+		delete _part[i];
 	}
 }
 
@@ -79,34 +79,35 @@ void Msgf::makeChMessage( Uint8 byteData )
 void Msgf::analyzePartOfChMessage( Uint8 dt1, Uint8 dt2, Uint8 dt3 )
 {
 	int part =  dt1 & 0x0f;
+	int status = dt1 & 0xf0;
 
-	if ((dt1 & 0xf0) == 0xf0 ) {
+	if ( status == 0xf0 ) {
 		for ( int i=0; i<MAX_PART_NUM; i++ ){
-			_pt[i]->specialCommand( dt1, dt2, dt3 );
+			_part[i]->specialCommand( dt1, dt2, dt3 );
 		}
 	}
 
 	if ( part >= MAX_PART_NUM ) return;
 	
-	switch ( dt1 & 0xf0 ) {
+	switch ( status ) {
 		case 0x80:
-			_pt[part]->keyOff( dt2, dt3 );
+			_part[part]->keyOff( dt2, dt3 );
 			break;
 		case 0x90:
-			if ( dt3 == 0 ) _pt[part]->keyOff( dt2, 0x40 );
-			else _pt[part]->keyOn( dt2, dt3 );
+			if ( dt3 == 0 ) _part[part]->keyOff( dt2, 0x40 );
+			else _part[part]->keyOn( dt2, dt3 );
 			break;
 		case 0xb0:
-			_pt[part]->controlChange( dt2, dt3 );
+			_part[part]->controlChange( dt2, dt3 );
 			break;
 		case 0xc0:
-			_pt[part]->programChange( dt2 );
+			_part[part]->programChange( dt2 );
 			break;
 		case 0xe0:{
 			int bendValue = dt3;
 			bendValue += dt2*128;
 			bendValue -= 8192;
-			_pt[part]->pitchBend( bendValue );
+			_part[part]->pitchBend( bendValue );
 			break;
 		}
 		default:
@@ -120,12 +121,12 @@ void Msgf::analyzePartOfChMessage( Uint8 dt1, Uint8 dt2, Uint8 dt3 )
 void Msgf::reduceResource( void )
 {
 	double	lvl = 1;
-	Note*	ntRsc = 0;
+	Note*	ntRsc = nullptr;
 
 	for ( int i=0; i<MAX_PART_NUM; i++ ){
-		Note *ntPtr = 0;
-		double ptLvl = _pt[i]->getInstrument()->searchMinimumLevelNote( &ntPtr );
-		if ( ntPtr && ( ptLvl < lvl )){
+		Note *ntPtr = nullptr;
+		double ptLvl = _part[i]->getInstrument()->searchMinimumLevelNote( &ntPtr );
+		if (( ntPtr != nullptr ) && ( ptLvl < lvl )){
 			lvl = ptLvl;
 			ntRsc = ntPtr;
 		}
@@ -140,7 +141,7 @@ void Msgf::reduceResource( void )
 void Msgf::process( TgAudioBuffer& inputBuf )
 {
 	for ( int i=0; i<MAX_PART_NUM; i++ ){
-		_pt[i]->process( inputBuf );
+		_part[i]->process( inputBuf );
 	}
 }
 

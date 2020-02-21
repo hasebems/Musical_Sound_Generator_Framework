@@ -3,8 +3,8 @@
 //
 //	Musical Sound Generator Framework
 //
-//  Created by 長谷部 雅彦 on 2012/09/23.
-//  Copyright (c) 2012年 長谷部 雅彦. All rights reserved.
+//  Created by Hasebe Masahiko on 2012/09/23.
+//  Copyright (c) 2012 Hasebe Masahiko. All rights reserved.
 //
 
 #include "msgf_part.h"
@@ -42,7 +42,7 @@ Part::Part( Msgf* ptg ) :
 //---------------------------------------------------------
 Part::~Part( void )
 {
-	if ( _inst != 0 ) delete _inst;
+	if ( _inst != nullptr ) delete _inst;
 	delete _instFactory;
 }
 

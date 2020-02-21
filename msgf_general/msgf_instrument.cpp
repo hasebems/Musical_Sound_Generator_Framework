@@ -3,8 +3,8 @@
 //
 //	Musical Sound Generator Framework
 //
-//  Created by 長谷部 雅彦 on 2012/10/08.
-//  Copyright (c) 2012年 長谷部 雅彦. All rights reserved.
+//  Created by Hasebe Masahiko on 2012/10/08.
+//  Copyright (c) 2012 Hasebe Masahiko. All rights reserved.
 //
 
 #include "msgf_instrument.h"
@@ -23,7 +23,7 @@ using namespace msgf;
 //---------------------------------------------------------
 void Instrument::appendNoteList( Note* nt )
 {
-	if ( _topNote == 0 ){
+	if ( _topNote == nullptr ){
 		_topNote = nt;
 	}
 	_endNote = nt;
@@ -45,7 +45,7 @@ void Instrument::keyOff( Uint8 note, Uint8 velocity )
 void Instrument::sustain( Uint8 value )
 {
 	Note* ntSus = _topNote;
-	while ( ntSus != 0 ){
+	while ( ntSus != nullptr ){
 		ntSus->sustain( value );
 		ntSus = ntSus->getNextNote();
 	}
@@ -57,7 +57,7 @@ void Instrument::sustain( Uint8 value )
 void Instrument::allSoundOff( void )
 {
 	Note* ntDamp = _topNote;
-	while ( ntDamp != 0 ){
+	while ( ntDamp != nullptr ){
 		Note* ntNxt = ntDamp->getNextNote();
 		ntDamp->damp();
 		ntDamp = ntNxt;
@@ -85,7 +85,7 @@ double Instrument::searchMinimumLevelNote( Note** nt )
 	Note* ntPr = _topNote;
 	double	minLvl = 1;
 	
-	while ( ntPr != 0 ){
+	while ( ntPr != nullptr ){
 		LevelCheck* lc = ntPr->getLvlChk();
 		if ( lc ){
 			double lvl = lc->getMaxLevel();
@@ -101,7 +101,7 @@ double Instrument::searchMinimumLevelNote( Note** nt )
 	//	return top Note Object as released note.
 	Note* ntPr = _topNote;
 	
-	while ( ntPr != 0 ){
+	while ( ntPr != nullptr ){
 		if ( ntPr->conditionKeyOn() == false ){
 			*nt = ntPr;
 			goto CHK_LVL;
@@ -128,7 +128,7 @@ void Instrument::process( TgAudioBuffer& buf )
 	Note* ntPr = _topNote;
 	Note* ntTmp = 0;
 	
-	while ( ntPr != 0 ){
+	while ( ntPr != nullptr ){
 		TgAudioBuffer	nbuf;
 		nbuf.obtainAudioBuffer(buf.bufferSize());
 
@@ -157,7 +157,7 @@ Note* Instrument::searchNote( Uint8 note, CONDITION cd )
 {
 	if ( cd == DURING_KON ){
 		Note* nt = _topNote;
-		while ( nt != 0 ){
+		while ( nt != nullptr ){
 			if (( nt->getNote() == note ) && ( nt->conditionKeyOn() == true )){
 				return nt;
 			}

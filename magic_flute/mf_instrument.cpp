@@ -2,8 +2,8 @@
 //  mf_instrument.cpp
 //  ToneGenerator
 //
-//  Created by 長谷部 雅彦 on 2013/07/19.
-//  Copyright (c) 2013年 長谷部 雅彦. All rights reserved.
+//  Created by Hasebe Masahiko on 2013/07/19.
+//  Copyright (c) 2013 Hasebe Masahiko. All rights reserved.
 //
 
 #include "msgf_event_info.h"
@@ -37,7 +37,7 @@ void MfInstrument::keyOn( Uint8 note, Uint8 velocity )
 {
 	EventInfo ei = EventInfo(note, velocity);
 
-	if ( _topNote != 0 ){
+	if ( _topNote != nullptr ){
 		if ( _topNote->conditionKeyOn() == true ){
 			//	Change Note
 			_topNote->changeNote( &ei );

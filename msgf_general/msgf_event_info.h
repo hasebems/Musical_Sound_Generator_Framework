@@ -3,8 +3,8 @@
 //
 //	Musical Sound Generator Framework
 //
-//  Created by 長谷部 雅彦 on 2012/10/13.
-//  Copyright (c) 2012年 長谷部 雅彦. All rights reserved.
+//  Created by Hasebe Masahiko on 2012/10/13.
+//  Copyright (c) 2012 Hasebe Masahiko. All rights reserved.
 //
 
 #ifndef __msgf_event_info__
@@ -30,8 +30,8 @@ namespace msgf {
 		void	setVelocity( Uint8 vel ){ _velocity = vel;}
 		void	setNote( Uint8 nt ){ _note = nt; }
 
-		Uint8	getVelocity( void ){ return _velocity; }
-		Uint8	getNote( void ){ return _note; }
+		Uint8	getVelocity( void ) const { return _velocity; }
+		Uint8	getNote( void ) const { return _note; }
 
 	private:
 		Uint8			_velocity;

@@ -2,8 +2,8 @@
 //  msgf_lfo.h
 //  ToneGenerator
 //
-//  Created by 長谷部 雅彦 on 2012/12/09.
-//  Copyright (c) 2012年 長谷部 雅彦. All rights reserved.
+//  Created by Hasebe Masahiko on 2012/12/09.
+//  Copyright (c) 2012 Hasebe Masahiko. All rights reserved.
 //
 
 #ifndef __msgf_lfo__

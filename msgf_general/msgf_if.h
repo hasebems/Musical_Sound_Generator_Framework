@@ -3,8 +3,8 @@
 //
 //	Musical Sound Generator Framework
 //
-//  Created by 長谷部 雅彦 on 2012/09/22.
-//  Copyright (c) 2012年 長谷部 雅彦. All rights reserved.
+//  Created by Hasebe Masahiko on 2012/09/22.
+//  Copyright (c) 2012 Hasebe Masahiko. All rights reserved.
 //
 
 #ifndef __msgf_if__
@@ -39,12 +39,12 @@ namespace msgf {
 		void	process( TgAudioBuffer& inputBuf );
 
 		//	Accessor
-		Part*	part( int number ){ return _pt[number]; }
-		VoiceContext*	vc( void ){ return _vc; }
+		Part*	part( int number ) const { return _part[number]; }
+		VoiceContext*	vc( void ) const { return _vc; }
 
 	private:
 		//	Composite Object
-		Part*	_pt[MAX_PART_NUM];
+		Part*	_part[MAX_PART_NUM];
 
 		//	Member Variables
 		Uint8	_tempFirstByte;

@@ -3,8 +3,8 @@
 //
 //	Musical Sound Generator Framework
 //
-//  Created by 長谷部 雅彦 on 2012/10/08.
-//  Copyright (c) 2012年 長谷部 雅彦. All rights reserved.
+//  Created by Hasebe Masahiko on 2012/10/08.
+//  Copyright (c) 2012 Hasebe Masahiko. All rights reserved.
 //
 
 #include "msgf_note.h"
@@ -21,8 +21,8 @@ using namespace msgf;
 //---------------------------------------------------------
 Note::Note( Instrument* inst ) :
 	_parentInst(inst),
-	_nextNote(0),
-	_prevNote(0),
+	_nextNote(nullptr),
+	_prevNote(nullptr),
 	_lvlChk(0),
 	_dampCounter(0),
 	_cndKeyOn(false),
@@ -39,8 +39,8 @@ Note::~Note( void )
 	//	Release from List
 	_parentInst->releaseNote( this );
 	
-	if ( _prevNote != 0 ) _prevNote->setNextNote( _nextNote );
-	if ( _nextNote != 0 ) _nextNote->setPrevNote( _prevNote );
+	if ( _prevNote != nullptr ) _prevNote->setNextNote( _nextNote );
+	if ( _nextNote != nullptr ) _nextNote->setPrevNote( _prevNote );
 }
 
 //---------------------------------------------------------
@@ -55,7 +55,7 @@ bool Note::keyOn( EventInfo* ei )
 
 	//	Make List
 	Note* lastKeyOnNote = _parentInst->getEndNote();
-	if ( lastKeyOnNote != 0 ) lastKeyOnNote->setNextNote(this);
+	if ( lastKeyOnNote != nullptr ) lastKeyOnNote->setNextNote(this);
 	_prevNote = lastKeyOnNote;
 	_nextNote = 0;
 
@@ -104,7 +104,7 @@ void Note::damp( void )
 //---------------------------------------------------------
 void Note::manageNoteLevel( TgAudioBuffer& buf )
 {
-	if ( _lvlChk == 0 ) _lvlChk = new LevelCheck(buf.bufferSize());
+	if ( _lvlChk == nullptr ) _lvlChk = new LevelCheck(buf.bufferSize());
 
 	if ( _cndDuringDamp == false ){
 		//	Check Level
