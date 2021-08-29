@@ -16,8 +16,6 @@
 #include "msgf_amp4seg.h"
 
 //---------------------------------------------------------
-class msgf::EventInfo;
-//---------------------------------------------------------
 class VasNote : public msgf::Note {
 	
 public:
